@@ -67,7 +67,7 @@ namespace Hologram
             _commandList.SetIndexBuffer(_indexBuffer, IndexFormat.UInt16);
             _commandList.SetPipeline(_pipeline);
             _commandList.DrawIndexed(
-                indexCount: 4,
+                indexCount: _indexBuffer.SizeInBytes / 2,
                 instanceCount: 1,
                 indexStart: 0,
                 vertexOffset: 0,
@@ -91,24 +91,58 @@ namespace Hologram
         {
             ResourceFactory factory = _graphicsDevice.ResourceFactory;
 
-            VertexPositionColor[] quadVertices =
+            VertexPositionColor[] vertices = new VertexPositionColor[]
             {
-                new VertexPositionColor(new Vector2(-0.75f, 0.75f), RgbaFloat.Red),
-                new VertexPositionColor(new Vector2(0.75f, 0.75f), RgbaFloat.Green),
-                new VertexPositionColor(new Vector2(-0.75f, -0.75f), RgbaFloat.Blue),
-                new VertexPositionColor(new Vector2(0.75f, -0.75f), RgbaFloat.Yellow),
+                // Top
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, -0.5f), RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, -0.5f), RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, +0.5f), RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, +0.5f), RgbaFloat.Yellow),
+                // Bottom                                                             
+                new VertexPositionColor(new Vector3(-0.5f,-0.5f, +0.5f),  RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(+0.5f,-0.5f, +0.5f),  RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(+0.5f,-0.5f, -0.5f),  RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(-0.5f,-0.5f, -0.5f),  RgbaFloat.Yellow),
+                // Left                                                               
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, -0.5f), RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, +0.5f), RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, +0.5f), RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, -0.5f), RgbaFloat.Yellow),
+                // Right                                                              
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, +0.5f), RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, -0.5f), RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, -0.5f), RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, +0.5f), RgbaFloat.Yellow),
+                // Back                                                               
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, -0.5f), RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, -0.5f), RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, -0.5f), RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, -0.5f), RgbaFloat.Yellow),
+                // Front                                                              
+                new VertexPositionColor(new Vector3(-0.5f, +0.5f, +0.5f), RgbaFloat.Red),
+                new VertexPositionColor(new Vector3(+0.5f, +0.5f, +0.5f), RgbaFloat.Green),
+                new VertexPositionColor(new Vector3(+0.5f, -0.5f, +0.5f), RgbaFloat.Blue),
+                new VertexPositionColor(new Vector3(-0.5f, -0.5f, +0.5f), RgbaFloat.Yellow),
             };
 
-            ushort[] quadIndices = { 0, 1, 2, 3 };
+            ushort[] cubeIndices =
+            {
+                0,1,2, 0,2,3,
+                4,5,6, 4,6,7,
+                8,9,10, 8,10,11,
+                12,13,14, 12,14,15,
+                16,17,18, 16,18,19,
+                20,21,22, 20,22,23,
+            };
 
-            _vertexBuffer = factory.CreateBuffer(new BufferDescription(4 * VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer));
-            _indexBuffer = factory.CreateBuffer(new BufferDescription(4 * 2, BufferUsage.IndexBuffer));
+            _vertexBuffer = factory.CreateBuffer(new BufferDescription((uint)(vertices.Length * VertexPositionColor.SizeInBytes), BufferUsage.VertexBuffer));
+            _indexBuffer = factory.CreateBuffer(new BufferDescription((uint)(cubeIndices.Length * 2), BufferUsage.IndexBuffer));
 
-            _graphicsDevice.UpdateBuffer(_vertexBuffer, 0, quadVertices);
-            _graphicsDevice.UpdateBuffer(_indexBuffer, 0, quadIndices);
+            _graphicsDevice.UpdateBuffer(_vertexBuffer, 0, vertices);
+            _graphicsDevice.UpdateBuffer(_indexBuffer, 0, cubeIndices);
 
             VertexLayoutDescription vertexLayout = new VertexLayoutDescription(
-                new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2),
+                new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
                 new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4));
 
             ShaderDescription vertexShaderDesc = new ShaderDescription(
@@ -156,14 +190,14 @@ namespace Hologram
         private const string VertexCode = @"
         #version 450
 
-        layout(location = 0) in vec2 Position;
+        layout(location = 0) in vec3 Position;
         layout(location = 1) in vec4 Color;
 
         layout(location = 0) out vec4 fsin_Color;
 
         void main()
         {
-            gl_Position = vec4(Position, 0, 1);
+            gl_Position = vec4(Position, 1);
             fsin_Color = Color;
         }";
 
@@ -179,16 +213,27 @@ namespace Hologram
         }";
     }
 
-
     struct VertexPositionColor
     {
-        public Vector2 Position; // This is the position, in normalized device coordinates.
-        public RgbaFloat Color; // This is the color of the vertex.
-        public VertexPositionColor(Vector2 position, RgbaFloat color)
+        public Vector3 Position;
+        public RgbaFloat Color;
+        public VertexPositionColor(Vector3 position, RgbaFloat color)
         {
             Position = position;
             Color = color;
         }
-        public const uint SizeInBytes = 24;
+        public const uint SizeInBytes = 28;
     }
+
+    //struct VertexPositionColor
+    //{
+    //    public Vector2 Position; // This is the position, in normalized device coordinates.
+    //    public RgbaFloat Color; // This is the color of the vertex.
+    //    public VertexPositionColor(Vector2 position, RgbaFloat color)
+    //    {
+    //        Position = position;
+    //        Color = color;
+    //    }
+    //    public const uint SizeInBytes = 24;
+    //}
 }
