@@ -435,11 +435,11 @@ namespace Hologram.FileTypes.GSC
             }
 
 			for (int i = firstPart.OffsetIndices; i < firstPart.OffsetIndices + firstPart.NumberIndices; i += 3)
-            {
+			{
 				Face thisFace = new Face();
-				thisFace.vert1 = (ushort)(indexList[i] - firstPart.NumberVertices);
-				thisFace.vert2 = (ushort)(indexList[i + 1] - firstPart.NumberVertices);
-				thisFace.vert3 = (ushort)(indexList[i + 2] - firstPart.NumberVertices);
+				thisFace.vert1 = (ushort)(indexList[i]);
+				thisFace.vert2 = (ushort)(indexList[i + 1]);
+				thisFace.vert3 = (ushort)(indexList[i + 2]);
                 mesh.Faces[(i - firstPart.OffsetIndices) / 3] = thisFace;
             }
 

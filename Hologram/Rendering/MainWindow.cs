@@ -52,6 +52,8 @@ namespace Hologram.Rendering
             {
                 cameraPos.Y -= cameraSpeed * (float)args.Time;
             }
+
+            cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -85,7 +87,7 @@ namespace Hologram.Rendering
             GL.ClearColor(Color4.Black);
 
             VertexPosNorm[] vertices = new VertexPosNorm[mesh.VertexCount];
-            ushort[] vertexIndex = new ushort[mesh.FaceCount * 6];
+            ushort[] vertexIndex = new ushort[mesh.FaceCount * 3];
             uint currentOffset = 0;
 
             int biggestOffset = 0;
@@ -97,7 +99,7 @@ namespace Hologram.Rendering
                 Vector3 vert1 = mesh.Vertices[currentFace.vert1];
                 Vector3 vert2 = mesh.Vertices[currentFace.vert2];
                 Vector3 vert3 = mesh.Vertices[currentFace.vert3];
-                Vector3 vert4 = mesh.Vertices[currentFace.vert4];
+                //Vector3 vert4 = mesh.Vertices[currentFace.vert4];
 
                 Vector3 normal = Vector3.Cross(vert2 - vert1, vert3 - vert1);
 
@@ -110,16 +112,16 @@ namespace Hologram.Rendering
                 vertices[currentFace.vert1].Normal += normal;
                 vertices[currentFace.vert2].Normal += normal;
                 vertices[currentFace.vert3].Normal += normal;
-                vertices[currentFace.vert4].Normal += normal;
+                //vertices[currentFace.vert4].Normal += normal;
 
                 vertexIndex[currentOffset] = currentFace.vert1;
                 vertexIndex[currentOffset + 1] = currentFace.vert2;
                 vertexIndex[currentOffset + 2] = currentFace.vert3;
-                vertexIndex[currentOffset + 3] = currentFace.vert1;
-                vertexIndex[currentOffset + 4] = currentFace.vert3;
-                vertexIndex[currentOffset + 5] = currentFace.vert4;
+                //vertexIndex[currentOffset + 3] = currentFace.vert1;
+                //vertexIndex[currentOffset + 4] = currentFace.vert3;
+                //vertexIndex[currentOffset + 5] = currentFace.vert4;
 
-                currentOffset += 6;
+                currentOffset += 3; // should be 6
             }
 
             for (int i = 0; i < mesh.VertexCount; i++)
@@ -128,8 +130,8 @@ namespace Hologram.Rendering
                 vertices[i].Normal.Normalize();
             }
 
-            Face biggestFace = mesh.Faces[biggestOffset];
-            vertices[biggestFace.vert1].Position = Vector3.Zero; vertices[biggestFace.vert2].Position = Vector3.Zero; vertices[biggestFace.vert3].Position = Vector3.Zero; vertices[biggestFace.vert4].Position = Vector3.Zero;
+            //Face biggestFace = mesh.Faces[biggestOffset];
+            //vertices[biggestFace.vert1].Position = Vector3.Zero; vertices[biggestFace.vert2].Position = Vector3.Zero; vertices[biggestFace.vert3].Position = Vector3.Zero; vertices[biggestFace.vert4].Position = Vector3.Zero;
 
             vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
