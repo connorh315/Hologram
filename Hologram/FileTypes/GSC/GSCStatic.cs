@@ -19,10 +19,9 @@ namespace Hologram.FileTypes.GSC
                 RawMesh thisMesh = new RawMesh(file);
                 thisMesh.Read();
 
+                Console.WriteLine("Finished reading at: " + file.Position);
+
                 return thisMesh.ConvertToHologramMesh();
-
-
-                Console.WriteLine(file.Position);
             }
 
             //return new GSCFile();

@@ -10,11 +10,15 @@ namespace Hologram.Objects
         public Face[] Faces;
         public int FaceCount => Faces.Length;
 
-        public Mesh(uint vertexCount, uint faceCount)
+        public FaceType Type;
+
+        public Mesh(uint vertexCount, uint faceCount, FaceType type)
         {
             Vertices = new Vector3[vertexCount];
             Faces = new Face[faceCount];
+            Type = type;
         }
+
     }
 
     public struct Face
@@ -24,5 +28,11 @@ namespace Hologram.Objects
         public ushort vert3;
         public ushort vert4;
         public ushort vert5;
+    }
+
+    public enum FaceType
+    {
+        Triangles = 0,
+        Quads
     }
 }

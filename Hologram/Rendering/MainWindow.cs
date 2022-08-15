@@ -29,6 +29,7 @@ namespace Hologram.Rendering
         {
             this.RenderFrequency = 60;
             this.UpdateFrequency = 60;
+            this.Title = "Hologram";
             this.mesh = mesh;
             sw.Start();
         }
@@ -87,7 +88,7 @@ namespace Hologram.Rendering
             GL.ClearColor(Color4.Black);
 
             VertexPosNorm[] vertices = new VertexPosNorm[mesh.VertexCount];
-            ushort[] vertexIndex = new ushort[mesh.FaceCount * 3];
+            ushort[] vertexIndex = new ushort[mesh.FaceCount * (mesh.Type == FaceType.Quads ? 6 : 3)]; // should be 3 when gsc, 6 when dno
             uint currentOffset = 0;
 
             int biggestOffset = 0;
@@ -99,7 +100,7 @@ namespace Hologram.Rendering
                 Vector3 vert1 = mesh.Vertices[currentFace.vert1];
                 Vector3 vert2 = mesh.Vertices[currentFace.vert2];
                 Vector3 vert3 = mesh.Vertices[currentFace.vert3];
-                //Vector3 vert4 = mesh.Vertices[currentFace.vert4];
+                Vector3 vert4 = mesh.Vertices[currentFace.vert4];
 
                 Vector3 normal = Vector3.Cross(vert2 - vert1, vert3 - vert1);
 
@@ -112,16 +113,20 @@ namespace Hologram.Rendering
                 vertices[currentFace.vert1].Normal += normal;
                 vertices[currentFace.vert2].Normal += normal;
                 vertices[currentFace.vert3].Normal += normal;
-                //vertices[currentFace.vert4].Normal += normal;
 
                 vertexIndex[currentOffset] = currentFace.vert1;
                 vertexIndex[currentOffset + 1] = currentFace.vert2;
                 vertexIndex[currentOffset + 2] = currentFace.vert3;
-                //vertexIndex[currentOffset + 3] = currentFace.vert1;
-                //vertexIndex[currentOffset + 4] = currentFace.vert3;
-                //vertexIndex[currentOffset + 5] = currentFace.vert4;
 
-                currentOffset += 3; // should be 6
+                if (mesh.Type == FaceType.Quads)
+                {
+                    vertices[currentFace.vert4].Normal += normal;
+                    vertexIndex[currentOffset + 3] = currentFace.vert1;
+                    vertexIndex[currentOffset + 4] = currentFace.vert3;
+                    vertexIndex[currentOffset + 5] = currentFace.vert4;
+                }
+
+                currentOffset += (mesh.Type == FaceType.Quads ? 6U : 3U); // should be 6
             }
 
             for (int i = 0; i < mesh.VertexCount; i++)

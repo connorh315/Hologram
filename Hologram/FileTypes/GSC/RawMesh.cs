@@ -148,6 +148,7 @@ namespace Hologram.FileTypes.GSC
 				int num4 = ReadRelativePositionList(0);
 				referenceCounter += num4;
 			}
+			Logger.Log(new LogSeg("About to skip: "), new LogSeg(file.Position.ToString(), ConsoleColor.Blue));
 			file.Seek(40, SeekOrigin.Current);
 			referenceCounter++;
 			referenceCounter++;
@@ -417,30 +418,48 @@ namespace Hologram.FileTypes.GSC
 
 		public Mesh ConvertToHologramMesh()
         {
-			Part firstPart = Parts[0];
-			VertexList vertexList = Vertexlistsdictionary[firstPart.VertexListReferences1[0].Reference];
-			VertexList vertexList2 = null;
-			List<ushort> indexList = Indexlistsdictionary[firstPart.IndexListReference1];
-			if (firstPart.VertexListReferences1.Count > 1)
-			{
-				vertexList2 = Vertexlistsdictionary[firstPart.VertexListReferences1[1].Reference];
+			uint vertexCount = 0;
+			uint faceCount = 0;
+			const int start = 0;
+			int partsToRender = Parts.Count;
+			for (int partId = start; partId < partsToRender; partId++)
+            {
+				vertexCount += (uint)Parts[partId].NumberVertices;
+				faceCount += (uint)(Parts[partId].NumberIndices/3);
 			}
 
-			Mesh mesh = new Mesh((uint)firstPart.NumberVertices, (uint)firstPart.NumberIndices / 3);
-
-			for (int i = firstPart.OffsetVertices; i < firstPart.OffsetVertices + firstPart.NumberVertices; i++)
+			int vertexOffset = 0;
+			int faceOffset = 0;
+			Mesh mesh = new Mesh(vertexCount, faceCount, FaceType.Triangles);
+			for (int partId = start; partId < partsToRender; partId++)
             {
-				Vector3 orig = vertexList.Vertices[i].Position;
-				mesh.Vertices[i - firstPart.OffsetVertices] = new OpenTK.Mathematics.Vector3(orig.X, orig.Y, orig.Z);
-            }
+				Part part = Parts[partId];
+				VertexList vertexList = Vertexlistsdictionary[part.VertexListReferences1[0].Reference];
+				VertexList vertexList2 = null;
+				List<ushort> indexList = Indexlistsdictionary[part.IndexListReference1];
+				if (part.VertexListReferences1.Count > 1)
+				{
+					vertexList2 = Vertexlistsdictionary[part.VertexListReferences1[1].Reference];
+				}
 
-			for (int i = firstPart.OffsetIndices; i < firstPart.OffsetIndices + firstPart.NumberIndices; i += 3)
-			{
-				Face thisFace = new Face();
-				thisFace.vert1 = (ushort)(indexList[i]);
-				thisFace.vert2 = (ushort)(indexList[i + 1]);
-				thisFace.vert3 = (ushort)(indexList[i + 2]);
-                mesh.Faces[(i - firstPart.OffsetIndices) / 3] = thisFace;
+
+				for (int i = part.OffsetVertices; i < part.OffsetVertices + part.NumberVertices; i++)
+				{
+					Vector3 orig = vertexList.Vertices[i].Position;
+					mesh.Vertices[vertexOffset + (i - part.OffsetVertices)] = new OpenTK.Mathematics.Vector3(orig.X, orig.Y, orig.Z);
+				}
+
+				for (int i = part.OffsetIndices; i < part.OffsetIndices + part.NumberIndices; i += 3)
+				{
+					Face thisFace = new Face();
+					thisFace.vert1 = (ushort)(vertexOffset + indexList[i]);
+					thisFace.vert2 = (ushort)(vertexOffset + indexList[i + 1]);
+					thisFace.vert3 = (ushort)(vertexOffset + indexList[i + 2]);
+					mesh.Faces[faceOffset + ((i - part.OffsetIndices) / 3)] = thisFace;
+				}
+
+				vertexOffset += part.NumberVertices;
+				faceOffset += part.NumberIndices / 3;
             }
 
 			return mesh;
