@@ -31,8 +31,8 @@ namespace Hologram.Rendering
         public MainWindow(Mesh mesh)
             : base(GameWindowSettings.Default, NativeWindowSettings.Default)
         {
-            this.RenderFrequency = 120;
-            this.UpdateFrequency = 120;
+            this.RenderFrequency = 0;
+            this.UpdateFrequency = 0;
             this.Title = "Hologram";
             this.mesh = mesh;
             sw.Start();
@@ -41,11 +41,14 @@ namespace Hologram.Rendering
         const float cameraHSpeed = 24f;
         const float cameraVSpeed = 24f;
 
-        double[] frameTimeBuffer = new double[100];
+        double[] frameTimeBuffer = new double[240];
         int offset = 0;
 
         private float yaw = (float)(Math.PI/2);
         private float pitch = (float)Math.PI;
+
+        private const float lClamp = 0.99f * (float)((3*Math.PI)/2);
+        private const float uClamp = 1.01f * (float)(Math.PI/2);
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
@@ -110,13 +113,10 @@ namespace Hologram.Rendering
                 {
                     yaw += MouseState.Delta.X.Deg2Rad() * 0.1f;
                     pitch += MouseState.Delta.Y.Deg2Rad() * 0.1f;
-                    pitch = Math.Clamp(pitch, -89f, 89f);
+                    pitch = Math.Clamp(pitch, uClamp, lClamp);
                     Vector3 dir = new Vector3((float)(Math.Cos(yaw) * Math.Cos(pitch)), (float)(Math.Sin(pitch)), (float)(Math.Sin(yaw) * Math.Cos(pitch)));
                     cameraFront = dir.Normalized();
-                    cameraRight = Vector3.Cross(cameraFront, cameraUp);
-                    Console.WriteLine(yaw);
-                    Console.WriteLine(pitch);
-                    Console.WriteLine("---");
+                    cameraRight = Vector3.Cross(cameraFront, cameraUp).Normalized();
                 }
             }
             else
@@ -144,8 +144,9 @@ namespace Hologram.Rendering
             Matrix4 rotMat = Matrix4.Identity;
             GL.UniformMatrix4(worldLoc, true, ref rotMat);
 
+            int cameraDir = GL.GetUniformLocation(shader, "cameraDir");
+            GL.Uniform3(cameraDir, cameraFront);
             GL.UseProgram(shader);
-
             GL.BindVertexArray(vertexArray);
             GL.DrawElements(PrimitiveType.Triangles, indexCount, DrawElementsType.UnsignedShort, 0);
 
@@ -228,7 +229,7 @@ namespace Hologram.Rendering
                 void main()
                 {
                     gl_Position = vec4(Position, 1) * world * view * projection;
-                    outPosition = Position;
+                    outPosition = vec3(world * vec4(Position, 1));
                     outNormal = Normal;
                 }
             ";
@@ -239,21 +240,22 @@ namespace Hologram.Rendering
                 in vec3 outPosition;
                 in vec3 outNormal;
 
+                uniform vec3 cameraDir;
+
                 out vec4 Color;                
 
                 void main()
                 {
                     float ambientStrength = 0.2;
                     vec3 lightColor = vec3(1,1,1);
-                    vec3 lightPos = vec3(0, 2, 0);
                     vec3 objColor = vec3(0.8, 0.8, 0.8);
                     vec3 ambient = ambientStrength * lightColor;
                     
                     // Diffuse:
-                    vec3 lightDir = (lightPos - outPosition);
+                    //vec3 lightDir = (lightPos - outPosition);
                     //vec3 lightDir = (-outPosition);
 
-                    float diff = max(dot(outNormal, lightDir), 0.0);
+                    float diff = min(max(dot(outNormal, cameraDir), 0.0),0.9); // max(...,0.9) bc otherwise eyes are scorched
                     vec3 diffuse = diff * lightColor;
                     
                     vec3 result = (ambient + diffuse) * objColor;

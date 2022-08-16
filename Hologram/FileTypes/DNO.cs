@@ -54,14 +54,14 @@ namespace Hologram.FileTypes
                     str.AppendLine(String.Format("f {0} {1} {2}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
                     str.AppendLine(String.Format("f {0} {2} {3}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
 
-                    if (Vector3.Cross(mesh.Vertices[thisFace.vert4] - mesh.Vertices[thisFace.vert3], mesh.Vertices[thisFace.vert5] - mesh.Vertices[thisFace.vert3]).Length <= 0.4)
-                    {
-                        str.AppendLine(String.Format("f {2} {3} {4}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
-                    }
-                    else
-                    {
-                        //Console.WriteLine("{0} {1} {2} {3} {4}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1);
-                    }
+                    //if (Vector3.Cross(mesh.Vertices[thisFace.vert4] - mesh.Vertices[thisFace.vert3], mesh.Vertices[thisFace.vert5] - mesh.Vertices[thisFace.vert3]).Length <= 0.4)
+                    //{
+                    //    str.AppendLine(String.Format("f {2} {3} {4}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
+                    //}
+                    //else
+                    //{
+                    //    //Console.WriteLine("{0} {1} {2} {3} {4}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1);
+                    //}
 
                     //face += " " + (thisFace.vert5 + 1);
                     //count++;
