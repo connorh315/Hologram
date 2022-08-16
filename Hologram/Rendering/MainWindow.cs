@@ -5,6 +5,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Hologram.Objects;
+using Hologram.Extensions;
 
 using System.Diagnostics;
 
@@ -20,6 +21,9 @@ namespace Hologram.Rendering
         private int shader;
 
         private Vector3 cameraPos = new Vector3(30, 30, 30);
+        private Vector3 cameraFront = new Vector3(0, 0, -1);
+        private Vector3 cameraUp = new Vector3(0, 1, 0);
+        private Vector3 cameraRight = new Vector3(1, 0, 0);
 
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
@@ -27,12 +31,21 @@ namespace Hologram.Rendering
         public MainWindow(Mesh mesh)
             : base(GameWindowSettings.Default, NativeWindowSettings.Default)
         {
-            this.RenderFrequency = 60;
-            this.UpdateFrequency = 60;
+            this.RenderFrequency = 120;
+            this.UpdateFrequency = 120;
             this.Title = "Hologram";
             this.mesh = mesh;
             sw.Start();
         }
+
+        const float cameraHSpeed = 24f;
+        const float cameraVSpeed = 24f;
+
+        double[] frameTimeBuffer = new double[100];
+        int offset = 0;
+
+        private float yaw = (float)(Math.PI/2);
+        private float pitch = (float)Math.PI;
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
@@ -42,19 +55,76 @@ namespace Hologram.Rendering
 
             var input = KeyboardState;
 
-            const float cameraSpeed = 24f;
-            const float sensitivity = 0.2f;
-
-            if (input.IsKeyDown(Keys.LeftShift))
+            if (input.IsKeyDown(Keys.Space))
             {
-                cameraPos.Y += cameraSpeed * (float)args.Time;
+                cameraPos.Y += cameraVSpeed * (float)args.Time;
             }
             else if (input.IsKeyDown(Keys.LeftControl))
             {
-                cameraPos.Y -= cameraSpeed * (float)args.Time;
+                cameraPos.Y -= cameraVSpeed * (float)args.Time;
             }
 
-            cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
+            float adjustedSpeed = cameraHSpeed * (float)args.Time;
+
+            if (input.IsKeyDown(Keys.LeftShift))
+            {
+                adjustedSpeed *= 2;
+            }
+
+            if (input.IsKeyDown(Keys.W))
+            {
+                cameraPos += adjustedSpeed * cameraFront;
+            }
+            if (input.IsKeyDown(Keys.S))
+            {
+                cameraPos -= adjustedSpeed * cameraFront;
+            }
+            if (input.IsKeyDown(Keys.A))
+            {
+                cameraPos -= adjustedSpeed * cameraRight;
+            }
+            if (input.IsKeyDown(Keys.D))
+            {
+                cameraPos += adjustedSpeed * cameraRight;
+            }
+
+            frameTimeBuffer[offset] = args.Time;
+            offset++;
+            if (offset == frameTimeBuffer.Length)
+            {
+                offset = 0;
+            }
+
+            double totalTime = 0;
+            for (int i = 0; i < frameTimeBuffer.Length; i++)
+            {
+                totalTime += frameTimeBuffer[i];
+            }
+
+            Title = "Hologram - " + Math.Round(frameTimeBuffer.Length / totalTime) + " FPS";
+
+            if (MouseState.IsButtonDown(MouseButton.Right))
+            {
+                CursorState = CursorState.Grabbed;
+                if (MouseState.Delta.X != 0 || MouseState.Delta.Y != 0)
+                {
+                    yaw += MouseState.Delta.X.Deg2Rad() * 0.1f;
+                    pitch += MouseState.Delta.Y.Deg2Rad() * 0.1f;
+                    pitch = Math.Clamp(pitch, -89f, 89f);
+                    Vector3 dir = new Vector3((float)(Math.Cos(yaw) * Math.Cos(pitch)), (float)(Math.Sin(pitch)), (float)(Math.Sin(yaw) * Math.Cos(pitch)));
+                    cameraFront = dir.Normalized();
+                    cameraRight = Vector3.Cross(cameraFront, cameraUp);
+                    Console.WriteLine(yaw);
+                    Console.WriteLine(pitch);
+                    Console.WriteLine("---");
+                }
+            }
+            else
+            {
+                CursorState = CursorState.Normal;
+            }
+
+            //cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -66,11 +136,12 @@ namespace Hologram.Rendering
             GL.UniformMatrix4(projectionLoc, true, ref projectionMat);
 
             int viewLoc = GL.GetUniformLocation(shader, "view");
-            Matrix4 viewMat = Matrix4.LookAt(cameraPos, Vector3.Zero, Vector3.UnitY);
+            Matrix4 viewMat = Matrix4.LookAt(cameraPos, cameraPos + cameraFront, Vector3.UnitY);
             GL.UniformMatrix4(viewLoc, true, ref viewMat);
 
             int worldLoc = GL.GetUniformLocation(shader, "world");
-            Matrix4 rotMat = Matrix4.CreateRotationY((float)TimeAlive);
+            //Matrix4 rotMat = Matrix4.CreateRotationY((float)TimeAlive);
+            Matrix4 rotMat = Matrix4.Identity;
             GL.UniformMatrix4(worldLoc, true, ref rotMat);
 
             GL.UseProgram(shader);
