@@ -2,7 +2,7 @@
 
 namespace Hologram.Rendering
 {
-    struct VertexNormPosCol
+    public struct VertexNormPosCol
     {
         public Vector3 Position;
         public Vector3 Normal;
@@ -17,7 +17,7 @@ namespace Hologram.Rendering
         public const int SizeInBytes = 40;
     }
 
-    struct VertexPosNorm
+    public struct VertexPosNorm
     {
         public Vector3 Position;
         public Vector3 Normal = Vector3.Zero;
