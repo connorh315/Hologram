@@ -99,13 +99,19 @@ namespace Hologram.Engine
 
                 if (v < 0 || u + v > 1) continue;
 
-                if ((Vector3.Dot(edge2, q)) > 0.0001)
+                float dot = Vector3.Dot(edge2, q);
+                if (dot > 0.0001)
                 {
-                    return i;
+                    float dist = invDet * dot;
+                    if (dist < hitDist)
+                    {
+                        lastHit = i;
+                        hitDist = dist;
+                    }
                 }
             }
 
-            return -1;
+            return lastHit;
         }
     }
 }

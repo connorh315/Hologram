@@ -141,6 +141,22 @@ namespace Hologram.Objects
                 vertices2[i].Position = Vertices[i];
                 vertices2[i].Normal.Normalize();
             }
+
+            Face[] oldFaces = Faces;
+            Faces = new Face[Faces.Length * 2];
+            for (int i = 0; i < oldFaces.Length; i++)
+            {
+                Faces[i * 2].vert1 = oldFaces[i].vert1;
+                Faces[i * 2].vert2 = oldFaces[i].vert2;
+                Faces[i * 2].vert3 = oldFaces[i].vert3;
+                Faces[i * 2].normal = oldFaces[i].normal;
+
+                Faces[i * 2 + 1].vert1 = oldFaces[i].vert1;
+                Faces[i * 2 + 1].vert2 = oldFaces[i].vert3;
+                Faces[i * 2 + 1].vert3 = oldFaces[i].vert4;
+                Faces[i * 2 + 1].normal = oldFaces[i].normal;
+
+            }
         }
 
         private int vertexBuffer;

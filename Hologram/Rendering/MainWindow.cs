@@ -57,6 +57,7 @@ namespace Hologram.Rendering
             if (isActive)
             {
                 activeMesh = mesh;
+                
             }
 
             for (int i = 0; i < Meshes.Length; i++)
@@ -270,8 +271,8 @@ namespace Hologram.Rendering
             activeMesh.Draw();
 
             GL.UseProgram(lineShader);
-            activeMesh.DrawLines();
-            debugLine.Draw();
+            //activeMesh.DrawLines();
+            //debugLine.Draw();
 
             this.Context.SwapBuffers();
 
