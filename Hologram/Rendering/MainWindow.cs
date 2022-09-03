@@ -243,13 +243,13 @@ namespace Hologram.Rendering
 
             debugLine = new Line();
             debugLine.Definition.Start = Vector3.Zero;
+            int raycastResult = Physics.Raycast(camera, dir, activeMesh);
             debugLine.Definition.End = Vector3.Zero;
             debugLine.Setup();
-            int raycastResult = Physics.Raycast(camera, dir, activeMesh);
             //Console.WriteLine(dir);
             //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
-            //GL.UseProgram(primaryShader);
-            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+            GL.UseProgram(primaryShader);
+            GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
             //cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
         }
 

@@ -16,34 +16,34 @@ namespace Hologram
             {
                 //window.AddMesh(OBJ.Parse(@"A:\icosphere.obj").PhysicsMesh, true);
 
-                Mesh mesh = new Mesh(6, 4, FaceType.Triangles);
+                //Mesh mesh = new Mesh(6, 4, FaceType.Triangles);
 
-                mesh.Vertices[0] = new Vector3(-10, -10, 0);
-                mesh.Vertices[1] = new Vector3(-10, 10, 0);
-                mesh.Vertices[2] = new Vector3(0, -10, 0);
-                mesh.Vertices[3] = new Vector3(0, 10, 0);
-                mesh.Vertices[4] = new Vector3(10, -10, 0);
-                mesh.Vertices[5] = new Vector3(10, 10, 5);
+                //mesh.Vertices[0] = new Vector3(-10, -10, 0);
+                //mesh.Vertices[1] = new Vector3(-10, 10, 0);
+                //mesh.Vertices[2] = new Vector3(0, -10, 0);
+                //mesh.Vertices[3] = new Vector3(0, 10, 0);
+                //mesh.Vertices[4] = new Vector3(10, -10, 0);
+                //mesh.Vertices[5] = new Vector3(10, 10, 5);
 
-                mesh.Faces[0].vert1 = 0;
-                mesh.Faces[0].vert2 = 1;
-                mesh.Faces[0].vert3 = 2;
+                //mesh.Faces[0].vert1 = 0;
+                //mesh.Faces[0].vert2 = 1;
+                //mesh.Faces[0].vert3 = 2;
 
-                mesh.Faces[1].vert1 = 1;
-                mesh.Faces[1].vert2 = 2;
-                mesh.Faces[1].vert3 = 3;
+                //mesh.Faces[1].vert1 = 1;
+                //mesh.Faces[1].vert2 = 2;
+                //mesh.Faces[1].vert3 = 3;
 
-                mesh.Faces[2].vert1 = 2;
-                mesh.Faces[2].vert2 = 3;
-                mesh.Faces[2].vert3 = 4;
+                //mesh.Faces[2].vert1 = 2;
+                //mesh.Faces[2].vert2 = 3;
+                //mesh.Faces[2].vert3 = 4;
 
-                mesh.Faces[3].vert1 = 4;
-                mesh.Faces[3].vert2 = 5;
-                mesh.Faces[3].vert3 = 3;
+                //mesh.Faces[3].vert1 = 4;
+                //mesh.Faces[3].vert2 = 5;
+                //mesh.Faces[3].vert3 = 3;
 
-                window.AddMesh(mesh, true);
+                //window.AddMesh(mesh, true);
 
-                //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca).PhysicsMesh, true);
+                window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca).PhysicsMesh, true);
                 //Mesh mesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZB\1WIZARDOFOZB_TER.DNO", 0x1ca).PhysicsMesh;
                 //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\HUB\VORTON\VORTON_TERR.DNO", 0x149).PhysicsMesh, true);
                 //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x151).PhysicsMesh);
