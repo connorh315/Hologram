@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using Hologram.Objects;
 using System.Text;
+using System.Collections;
 
 namespace Hologram.FileTypes
 {
@@ -11,6 +12,29 @@ namespace Hologram.FileTypes
     public class DNO
     {
         public Mesh PhysicsMesh;
+
+        private static void PrintBitPattern(short value)
+        {
+            Console.Write((value & 32768) > 0 ? 1 : 0);
+            Console.Write((value & 16384) > 0 ? 1 : 0);
+            Console.Write((value & 8192) > 0 ? 1 : 0);
+            Console.Write((value & 4096) > 0 ? 1 : 0);
+            Console.Write(" ");
+            Console.Write((value & 2048) > 0 ? 1 : 0);
+            Console.Write((value & 1024) > 0 ? 1 : 0);
+            Console.Write((value & 512) > 0 ? 1 : 0);
+            Console.Write((value & 256) > 0 ? 1 : 0);
+            Console.Write(" ");
+            Console.Write((value & 128) > 0 ? 1 : 0);
+            Console.Write((value & 64) > 0 ? 1 : 0);
+            Console.Write((value & 32) > 0 ? 1 : 0);
+            Console.Write((value & 16) > 0 ? 1 : 0);
+            Console.Write(" ");
+            Console.Write((value & 8) > 0 ? 1 : 0);
+            Console.Write((value & 4) > 0 ? 1 : 0);
+            Console.Write((value & 2) > 0 ? 1 : 0);
+            Console.Write((value & 1) > 0 ? 1 : 0);
+        }
 
         public static DNO Parse(string fileLocation, uint tempFileOffset)
         {
@@ -97,10 +121,14 @@ namespace Hologram.FileTypes
                 for (int i = 0; i < vertexCount; i++)
                 {
                     mesh.Vertices[i] = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
-                    //str.AppendLine(string.Format("v {0} {1} {2}", mesh.Vertices[i].X, mesh.Vertices[i].Y + 2, mesh.Vertices[i].Z));
+                    //Console.WriteLine(Math.Round(mesh.Vertices[i].X, 4));
+                    if (Math.Round(mesh.Vertices[i].X, 4) == -2.1413d)
+                    {
+                        Console.WriteLine("FOUND X VALUE");
+                    }
+                    str.AppendLine(string.Format("v {0} {1} {2}", mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z));
                 }
-                Dictionary<ushort, int> count = new();
-                string face = "f";
+                Dictionary<short, int> count = new();
                 for (int i = 0; i < faceCount; i++)
                 {
                     Face thisFace = new Face();
@@ -108,16 +136,27 @@ namespace Hologram.FileTypes
                     thisFace.vert2 = (ushort)file.ReadUshort(true);
                     thisFace.vert3 = (ushort)file.ReadUshort(true);
                     thisFace.vert4 = (ushort)file.ReadUshort(true);
-                    thisFace.vert5 = (ushort)file.ReadUshort(true);
-                    //if (!count.ContainsKey(thisFace.vert5))
+                    //file.WriteUshort(0x00ff);
+                    thisFace.vert5 = file.ReadUshort(true);
+
+                    //if (thisFace.vert1 == 0x48d || thisFace.vert2 == 0x48d || thisFace.vert3 == 0x48d || thisFace.vert4 == 0x48d)
                     //{
-                    //    count.Add(thisFace.vert5, 0);
+                    //    Vector3 vert1 = mesh.Vertices[thisFace.vert1];
+                    //    Vector3 normal = Vector3.Cross(mesh.Vertices[thisFace.vert3] - vert1, mesh.Vertices[thisFace.vert2] - vert1).Normalized();
+                    //    Console.WriteLine(normal);
+                    //    PrintBitPattern(value5);
+                    //    Console.WriteLine(" " + value5);
                     //}
 
-                    //count[thisFace.vert5]++;
+                    //if (!count.ContainsKey(value5))
+                    //{
+                    //    count.Add(value5, 0);
+                    //}
 
-                    //str.AppendLine(String.Format("f {0} {1} {2}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
-                    //str.AppendLine(String.Format("f {0} {2} {3}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
+                    //count[value5]++;
+
+                    str.AppendLine(String.Format("f {0} {1} {2}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
+                    str.AppendLine(String.Format("f {0} {2} {3}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1, thisFace.vert4 + 1, thisFace.vert5 + 1));
 
                     //if (Vector3.Cross(mesh.Vertices[thisFace.vert4] - mesh.Vertices[thisFace.vert3], mesh.Vertices[thisFace.vert5] - mesh.Vertices[thisFace.vert3]).Length <= 0.4)
                     //{
@@ -139,7 +178,7 @@ namespace Hologram.FileTypes
                     mesh.Faces[i] = thisFace;
                 }
 
-                //foreach (KeyValuePair<ushort, int> keyValuePair in count)
+                //foreach (KeyValuePair<short, int> keyValuePair in count)
                 //{
                 //    if (keyValuePair.Value > 10)
                 //    {
@@ -147,25 +186,33 @@ namespace Hologram.FileTypes
                 //    }
                 //}
 
-                for (int i = 0; i <= anotherCount; i++)
-                {
-                    str.AppendLine(string.Format("v {0} {1} {2}", file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true)));
-                    file.ReadInt(true);
-                }
+                // From here:
 
-                for (int i = 0; i < 500; i++)
-                {
-                    Face thisFace = new Face();
-                    thisFace.vert1 = (ushort)(file.ReadUshort(true) & 0x02ff);
-                    thisFace.vert2 = (ushort)(file.ReadUshort(true) & 0x02ff);
-                    thisFace.vert3 = (ushort)(file.ReadUshort(true) & 0x02ff);
-                    thisFace.vert4 = (ushort)(file.ReadUshort(true) & 0x02ff);
-                    thisFace.vert5 = (ushort)(file.ReadUshort(true) & 0x02ff);
+                //for (int i = 0; i <= anotherCount; i++)
+                //{
+                //    str.AppendLine(string.Format("v {0} {1} {2}", file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true)));
+                //    file.ReadInt(true);
+                //}
 
-                    //Logger.Log(new LogSeg("{0} {1} {2}", thisFace.vert1.ToString(), thisFace.vert2.ToString(), thisFace.vert3.ToString()));
+                //for (int i = 0; i < 500; i++)
+                //{
+                //    short vert1 = (short)(file.ReadShort(true) & 0x81ff);
+                //    short vert2 = (short)(file.ReadShort(true) & 0x81ff);
+                //    short vert3 = (short)(file.ReadShort(true) & 0x81ff);
+                //    short vert4 = (short)(file.ReadShort(true) & 0x81ff);
+                //    short vert5 = (short)(file.ReadShort(true) & 0x81ff);
 
-                    str.AppendLine(String.Format("f {0} {1} {2}", thisFace.vert1 + 1, thisFace.vert2 + 1, thisFace.vert3 + 1));
-                }
+                //    //Face thisFace = new Face();
+                //    //thisFace.vert1 = (ushort)(file.ReadUshort(true) & 0x00ff);
+                //    //thisFace.vert2 = (ushort)(file.ReadUshort(true) & 0x00ff);
+                //    //thisFace.vert3 = (ushort)(file.ReadUshort(true) & 0x00ff);
+                //    //thisFace.vert4 = (ushort)(file.ReadUshort(true) & 0x00ff);
+                //    //thisFace.vert5 = (ushort)(file.ReadUshort(true) & 0x00ff);
+
+                //    //Logger.Log(new LogSeg("{0} {1} {2}", thisFace.vert1.ToString(), thisFace.vert2.ToString(), thisFace.vert3.ToString()));
+
+                //    //str.AppendLine(String.Format("f {0} {1} {2}", vert1 + 1, vert2 + 1, vert3 + 1));
+                //}
 
                 File.WriteAllText(@"A:\dno.obj", str.ToString());
 

@@ -2,12 +2,12 @@
 
 namespace Hologram.Rendering
 {
-    public struct VertexNormPosCol
+    public struct VertexPosNormCol
     {
         public Vector3 Position;
         public Vector3 Normal;
         public Color4 Color;
-        public VertexNormPosCol(Vector3 position, Vector3 normal, Color4 color)
+        public VertexPosNormCol(Vector3 position, Vector3 normal, Color4 color)
         {
             Position = position;
             Normal = normal;

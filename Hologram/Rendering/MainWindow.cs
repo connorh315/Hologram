@@ -6,6 +6,8 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Hologram.Objects;
 using Hologram.Extensions;
+using Hologram.Engine;
+using Hologram.FileTypes;
 
 using System.Diagnostics;
 using ModLib;
@@ -17,9 +19,12 @@ namespace Hologram.Rendering
         private Mesh activeMesh;
 
         private Camera camera;
-        private Shader shader;
+        private Shader primaryShader;
+        private Shader lineShader;
 
         private Mesh[] Meshes = new Mesh[50];
+
+        private Mesh mouse;
 
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
@@ -27,8 +32,15 @@ namespace Hologram.Rendering
         public MainWindow()
             : base(GameWindowSettings.Default, NativeWindowSettings.Default)
         {
-            camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero);
-            shader = new Shader(Shaders.Basic.VertexCode, Shaders.Basic.FragmentCode);
+            camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
+            
+            primaryShader = new Shader(Shaders.Colored.VertexCode, Shaders.Colored.FragmentCode);
+            lineShader = new Shader(Shaders.LineS.VertexCode, Shaders.LineS.FragmentCode);
+
+            mouse = OBJ.Parse(@"A:\icosphere.obj").PhysicsMesh;
+            mouse.Setup();
+
+            UpdateViewport(Size);
 
             //this.RenderFrequency = 120;
             //this.UpdateFrequency = 120;
@@ -123,6 +135,22 @@ namespace Hologram.Rendering
             }
         }
 
+        private void UpdateViewport(Vector2i size)
+        {
+            GL.Viewport(0, 0, size.X, size.Y);
+            camera.ResizeViewport(size);
+
+            Matrix4 projectionMat = camera.ProjectionMatrix;
+
+            GL.UseProgram(primaryShader);
+            int projectionLoc = GL.GetUniformLocation(primaryShader, "projection");
+            GL.UniformMatrix4(projectionLoc, false, ref projectionMat);
+
+            GL.UseProgram(lineShader);
+            int projectionLocLine = GL.GetUniformLocation(lineShader, "projection");
+            GL.UniformMatrix4(projectionLocLine, false, ref projectionMat);
+        }
+
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
@@ -133,11 +161,11 @@ namespace Hologram.Rendering
 
             if (input.IsKeyDown(Keys.Space))
             {
-                camera.Position.Y += cameraVSpeed * (float)args.Time;
+                camera.Translate(Vector3.UnitY * cameraVSpeed * (float)args.Time);
             }
             else if (input.IsKeyDown(Keys.LeftControl))
             {
-                camera.Position.Y -= cameraVSpeed * (float)args.Time;
+                camera.Translate(Vector3.UnitY * -cameraVSpeed * (float)args.Time);
             }
 
             float adjustedSpeed = cameraHSpeed * (float)args.Time;
@@ -149,19 +177,19 @@ namespace Hologram.Rendering
 
             if (input.IsKeyDown(Keys.W))
             {
-                camera.Position += adjustedSpeed * camera.Forward;
+                camera.Translate(adjustedSpeed * camera.Forward);
             }
             if (input.IsKeyDown(Keys.S))
             {
-                camera.Position -= adjustedSpeed * camera.Forward;
+                camera.Translate(-adjustedSpeed * camera.Forward);
             }
             if (input.IsKeyDown(Keys.A))
             {
-                camera.Position -= adjustedSpeed * camera.Right;
+                camera.Translate(-adjustedSpeed * camera.Right);
             }
             if (input.IsKeyDown(Keys.D))
             {
-                camera.Position += adjustedSpeed * camera.Right;
+                camera.Translate(adjustedSpeed * camera.Right);
             }
 
             SwitchMeshes();
@@ -194,32 +222,49 @@ namespace Hologram.Rendering
                 CursorState = CursorState.Normal;
             }
 
+            if (camera.CalculateViewMatrix())
+            {
+                Matrix4 viewMat = camera.ViewMatrix;
 
+                GL.UseProgram(primaryShader);
+                int viewLoc = GL.GetUniformLocation(primaryShader, "view");
+                GL.UniformMatrix4(viewLoc, false, ref viewMat);
+
+                GL.UseProgram(lineShader);
+                int viewLocLine = GL.GetUniformLocation(lineShader, "view");
+                GL.UniformMatrix4(viewLocLine, false, ref viewMat);
+            }
+
+            //Logger.Log(new LogSeg(.ToString(), ConsoleColor.Red));
+            //Logger.Log(new LogSeg(camera.Forward.ToString(), ConsoleColor.Green));
+            Vector3 dir = camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
+            //Console.WriteLine(dir);
+            int raycastResult = Physics.Raycast(camera, dir, activeMesh);
+            Console.WriteLine(dir);
+            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+            GL.UseProgram(primaryShader);
+            GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
             //cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);        
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            int projectionLoc = GL.GetUniformLocation(shader, "projection");
-            Matrix4 projectionMat = Matrix4.CreatePerspectiveFieldOfView(1, (float)Size.X / Size.Y, 0.5f, 100f); // Can be setup once as opposed to every frame...
-            GL.UniformMatrix4(projectionLoc, true, ref projectionMat);
+            GL.UseProgram(primaryShader);
 
-            int viewLoc = GL.GetUniformLocation(shader, "view");
-            Matrix4 viewMat = Matrix4.LookAt(camera.Position, camera.Position + camera.Forward, Vector3.UnitY);
-            GL.UniformMatrix4(viewLoc, true, ref viewMat);
-
-            int worldLoc = GL.GetUniformLocation(shader, "world");
+            int worldLoc = GL.GetUniformLocation(primaryShader, "world");
             //Matrix4 rotMat = Matrix4.CreateRotationY((float)TimeAlive);
             Matrix4 rotMat = Matrix4.Identity;
             GL.UniformMatrix4(worldLoc, true, ref rotMat);
 
-            int cameraDir = GL.GetUniformLocation(shader, "cameraDir");
+            int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
             GL.Uniform3(cameraDir, camera.Forward);
-            GL.UseProgram(shader);
 
             activeMesh.Draw();
+
+            GL.UseProgram(lineShader);
+            activeMesh.DrawLines();
 
             this.Context.SwapBuffers();
 
@@ -238,12 +283,14 @@ namespace Hologram.Rendering
 
             GL.Enable(EnableCap.DepthTest);
 
+            //GL.UseProgram(primaryShader);
+
             base.OnLoad();
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
-            GL.Viewport(0, 0, e.Width, e.Height);
+            UpdateViewport(e.Size);
             base.OnResize(e);
         }
 
@@ -252,7 +299,7 @@ namespace Hologram.Rendering
             //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             //GL.DeleteBuffer(vertexBuffer);
 
-            GL.DeleteProgram(shader);
+            GL.DeleteProgram(primaryShader);
 
             base.OnUnload();
         }
