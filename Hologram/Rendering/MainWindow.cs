@@ -26,6 +26,8 @@ namespace Hologram.Rendering
 
         private Mesh mouse;
 
+        private Line debugLine;
+
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
 
@@ -238,12 +240,16 @@ namespace Hologram.Rendering
             //Logger.Log(new LogSeg(.ToString(), ConsoleColor.Red));
             //Logger.Log(new LogSeg(camera.Forward.ToString(), ConsoleColor.Green));
             Vector3 dir = camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
-            //Console.WriteLine(dir);
+
+            debugLine = new Line();
+            debugLine.Definition.Start = Vector3.Zero;
+            debugLine.Definition.End = Vector3.Zero;
+            debugLine.Setup();
             int raycastResult = Physics.Raycast(camera, dir, activeMesh);
-            Console.WriteLine(dir);
+            //Console.WriteLine(dir);
             //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
-            GL.UseProgram(primaryShader);
-            GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+            //GL.UseProgram(primaryShader);
+            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
             //cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
         }
 
@@ -265,6 +271,7 @@ namespace Hologram.Rendering
 
             GL.UseProgram(lineShader);
             activeMesh.DrawLines();
+            debugLine.Draw();
 
             this.Context.SwapBuffers();
 

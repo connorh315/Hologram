@@ -92,7 +92,7 @@ namespace Hologram.Rendering
         private Vector4 ToEyeCoords(Vector4 clipCoords)
         {
             Matrix4 invertedProjection = Matrix4.Invert(ProjectionMatrix);
-            Vector4 eyeCoords = clipCoords * invertedProjection;
+            Vector4 eyeCoords = invertedProjection * clipCoords;
 
             return new Vector4(eyeCoords.X, eyeCoords.Y, -1, 0);
         }
@@ -100,9 +100,9 @@ namespace Hologram.Rendering
         private Vector2 GetNormalizedDeviceCoords(int posX, int posY)
         {
             float x = (2f * posX) / viewportSize.X - 1;
-            float y = (2f * posY) / viewportSize.Y - 1;
+            float y = 1 - (2f * posY) / viewportSize.Y;
 
-            return new Vector2(x, -y);
+            return new Vector2(x, y);
         }
 
         private bool viewNeedsUpdating = true;
