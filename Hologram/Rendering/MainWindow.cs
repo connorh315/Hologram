@@ -24,10 +24,6 @@ namespace Hologram.Rendering
 
         private Mesh[] Meshes = new Mesh[50];
 
-        private Mesh mouse;
-
-        private Line debugLine;
-
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
 
@@ -38,9 +34,6 @@ namespace Hologram.Rendering
             
             primaryShader = new Shader(Shaders.Colored.VertexCode, Shaders.Colored.FragmentCode);
             lineShader = new Shader(Shaders.LineS.VertexCode, Shaders.LineS.FragmentCode);
-
-            mouse = OBJ.Parse(@"A:\icosphere.obj").PhysicsMesh;
-            mouse.Setup();
 
             UpdateViewport(Size);
 
@@ -57,7 +50,6 @@ namespace Hologram.Rendering
             if (isActive)
             {
                 activeMesh = mesh;
-                
             }
 
             for (int i = 0; i < Meshes.Length; i++)
@@ -238,20 +230,16 @@ namespace Hologram.Rendering
                 GL.UniformMatrix4(viewLocLine, false, ref viewMat);
             }
 
-            //Logger.Log(new LogSeg(.ToString(), ConsoleColor.Red));
-            //Logger.Log(new LogSeg(camera.Forward.ToString(), ConsoleColor.Green));
             Vector3 dir = camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
 
-            debugLine = new Line();
-            debugLine.Definition.Start = Vector3.Zero;
-            int raycastResult = Physics.Raycast(camera, dir, activeMesh);
-            debugLine.Definition.End = Vector3.Zero;
-            debugLine.Setup();
-            //Console.WriteLine(dir);
-            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
-            GL.UseProgram(primaryShader);
-            GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
-            //cameraPos.X = cameraPos.Z = Math.Max(cameraPos.Z-MouseState.ScrollDelta.Y, 0.5f);
+            if (MouseState.IsButtonReleased(MouseButton.Left))
+            {
+                int raycastResult = Physics.Raycast(camera, dir, activeMesh);
+                int truePrim = ((raycastResult & 1) == 1) ? (raycastResult - 1) / 2 : raycastResult / 2;
+                Console.WriteLine("Selected primitive: {0}", truePrim);
+                GL.UseProgram(primaryShader);
+                GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
