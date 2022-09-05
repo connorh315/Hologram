@@ -1,0 +1,53 @@
+                Mesh mainMesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca).PhysicsMesh;
+
+                Dictionary<ushort, int> counter = new();
+
+                for (int i = 0; i < mainMesh.FaceCount; i++)
+                {
+                    Face face = mainMesh.Faces[i];
+
+                    if (!counter.ContainsKey(face.vert5))
+                    {
+                        counter[face.vert5] = 0;
+                    }
+                    counter[face.vert5]++;
+                }
+
+                for (int i = 0; i < 30; i++)
+                {
+                    int count = counter.Values.Max();
+
+                    ushort index = 0;
+                    foreach (KeyValuePair<ushort, int> keyValuePair in counter)
+                    {
+                        if (keyValuePair.Value == count)
+                        {
+                            index = keyValuePair.Key;
+                            break;
+                        }
+                    }
+
+                    index = 2116;
+                    count = counter[index];
+
+                    counter[index] = 0;
+
+                    Mesh mesh = new Mesh((uint)mainMesh.VertexCount, (uint)count, FaceType.Quads);
+                    int offset = 0;
+
+                    mesh.Vertices = mainMesh.Vertices;
+
+                    for (int faceId = 0; faceId < mainMesh.FaceCount; faceId++)
+                    {
+                        if (mainMesh.Faces[faceId].vert5 == index)
+                        {
+                            mesh.Faces[offset] = mainMesh.Faces[faceId];
+                            offset++;
+                        }
+                    }
+
+                    mesh.Name = index.ToString();
+
+                    window.AddMesh(mesh, i == 0);
+                    break;
+                }

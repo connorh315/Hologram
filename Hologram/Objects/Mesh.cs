@@ -16,7 +16,7 @@ namespace Hologram.Objects
 
         public FaceType Type;
 
-        public Mesh(uint vertexCount, uint faceCount, FaceType type)
+        public Mesh(int vertexCount, int faceCount, FaceType type)
         {
             Vertices = new Vector3[vertexCount];
             Faces = new Face[faceCount];

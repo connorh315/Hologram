@@ -1,10 +1,10 @@
 ﻿using Hologram.Rendering;
 using Hologram.FileTypes.GSC;
 using Hologram.Objects;
-using Hologram.FileTypes;
 using ModLib;
 
 using OpenTK.Mathematics;
+using Hologram.FileTypes.DNO;
 
 namespace Hologram
 {
@@ -43,12 +43,21 @@ namespace Hologram
 
                 //window.AddMesh(mesh, true);
 
-                window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca).PhysicsMesh, true);
+                //DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca);
+                DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONSA\2THESIMPSONSA_TER.DNO", 0x2ae);
+                foreach (DMesh mesh in dno.Meshes)
+                {
+                    window.AddMesh(mesh.GetPhysicsMesh(), true);
+                }
+
+
+
+
                 //Mesh mesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZB\1WIZARDOFOZB_TER.DNO", 0x1ca).PhysicsMesh;
                 //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\HUB\VORTON\VORTON_TERR.DNO", 0x149).PhysicsMesh, true);
                 //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x151).PhysicsMesh);
                 //Mesh mesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZFREEPLAY\1WIZARDOFOZFREEPLAY_TER.DNO", 0x2a).PhysicsMesh;
-                //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\7APERTURELABS\7APERTURELABSCHAMBER01\7APERTURELABSCHAMBER01_TER.DNO", 0x2ae).PhysicsMesh);
+                //window.AddMesh(.PhysicsMesh);
                 //window.AddMesh(GSCFile.Read(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC"));
 
                 //int completed = 0;

@@ -418,14 +418,14 @@ namespace Hologram.FileTypes.GSC
 
 		public Mesh ConvertToHologramMesh()
         {
-			uint vertexCount = 0;
-			uint faceCount = 0;
+			int vertexCount = 0;
+			int faceCount = 0;
 			const int start = 0;
 			int partsToRender = Parts.Count;
 			for (int partId = start; partId < partsToRender; partId++)
             {
-				vertexCount += (uint)Parts[partId].NumberVertices;
-				faceCount += (uint)(Parts[partId].NumberIndices/3);
+				vertexCount += Parts[partId].NumberVertices;
+				faceCount += (Parts[partId].NumberIndices/3);
 			}
 
 			int vertexOffset = 0;

@@ -147,7 +147,7 @@ namespace Hologram.FileTypes
                     }
                 }
 
-                obj.PhysicsMesh = new Mesh((uint)vertices.Count, (uint)faces.Count, faces[0].vert4 != 0 ? FaceType.Quads : FaceType.Triangles);
+                obj.PhysicsMesh = new Mesh(vertices.Count, faces.Count, faces[0].vert4 != 0 ? FaceType.Quads : FaceType.Triangles);
                 obj.PhysicsMesh.Faces = faces.ToArray();
                 obj.PhysicsMesh.Vertices = vertices.ToArray();
 
