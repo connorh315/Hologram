@@ -44,7 +44,10 @@ namespace Hologram
                 //window.AddMesh(mesh, true);
 
                 //DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x1ca);
-                DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONSA\2THESIMPSONSA_TER.DNO", 0x2ae);
+                //DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZB\1WIZARDOFOZB_TER.DNO", 0x1ca);
+
+                //DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONSA\2THESIMPSONSA_TER.DNO", 0x2ae);
+                DNO dno = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONSB\2THESIMPSONSB_TER.DNO", 0x2ae);
                 foreach (DMesh mesh in dno.Meshes)
                 {
                     window.AddMesh(mesh.GetPhysicsMesh(), true);

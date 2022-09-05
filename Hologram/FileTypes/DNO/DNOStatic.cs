@@ -83,7 +83,7 @@ namespace Hologram.FileTypes.DNO
                     ushort fluidType = file.ReadUshort(true);
                 }
 
-                uint aZero = file.ReadUint(true);
+                //uint aZero = file.ReadUint(true);
                 ushort aTwo = file.ReadUshort(true);
                 uint aZero2 = file.ReadUint(true);
                 ushort aEight = file.ReadUshort(true);
@@ -105,6 +105,7 @@ namespace Hologram.FileTypes.DNO
                     byte unknownXXX = file.ReadByte();
                     byte isInstance = file.ReadByte();
                     byte isSecondaryShape = file.ReadByte();
+                    Console.WriteLine(extents);
                 }
 
                 uint aZeroA = file.ReadUint(true);
@@ -115,6 +116,8 @@ namespace Hologram.FileTypes.DNO
                 ushort aOneC = file.ReadUshort(true);
 
                 ushort type = file.ReadUshort(true);
+
+                uint ROAR = file.ReadUint(true);
 
                 if (type == 9) { throw new Exception("Type == 9"); }
 
