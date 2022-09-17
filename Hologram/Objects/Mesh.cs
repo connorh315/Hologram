@@ -26,7 +26,7 @@ namespace Hologram.Objects
         private ushort[] vertexIndex;
         private VertexPosNorm[] vertices;
 
-        private VertexPosNormCol[] vertices2;
+        public VertexPosNormCol[] vertices2;
 
         private Line[] lines;
 
@@ -113,7 +113,7 @@ namespace Hologram.Objects
                 vertices2[face.vert3].Normal += normal;
 
                 //Color4 col = new Color4((face.vert5 & 256) * 255, 0, 0, 255);
-                Color4 col = new Color4(255, 0, 0, 255);
+                Color4 col = new Color4(255, 255, 255, 255);
 
                 vertices2[face.vert1].Color = col;
                 vertices2[face.vert2].Color = col;

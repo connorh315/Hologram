@@ -5,6 +5,7 @@ using ModLib;
 
 using OpenTK.Mathematics;
 using Hologram.FileTypes.DNO;
+using Hologram.FileTypes;
 
 namespace Hologram
 {
@@ -47,30 +48,34 @@ namespace Hologram
 
                 //Mesh mesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZB\1WIZARDOFOZB_TER.DNO", 0x1ca).PhysicsMesh;
                 //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\HUB\VORTON\VORTON_TERR.DNO", 0x149).Meshes[0].GetPhysicsMesh(), true);
-                //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x151).PhysicsMesh);
-                //Mesh mesh = DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZFREEPLAY\1WIZARDOFOZFREEPLAY_TER.DNO", 0x2a).PhysicsMesh;
+                //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_TER.DNO", 0x151).Meshes[0].GetPhysicsMesh(), true);
+                //window.AddMesh(DNO.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZFREEPLAY\1WIZARDOFOZFREEPLAY_TER.DNO", 0x2a).Meshes[0].GetPhysicsMesh(), true);
                 //window.AddMesh(.PhysicsMesh);
-                window.AddMesh(GSCFile.Read(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC"), true);
+                ;
+                //Mesh mesh = Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC").ConvertToMesh();
+                //Mesh mesh = Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\EXTRACT\CHARCACHE\EGONSPENGLER_R3\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC").ConvertToMesh();
+                //Mesh mesh = Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\game\LEVELS\BUILDER\TESTCANDY\TESTCANDYJL\TESTCANDYJL_NXG.GSC").ConvertToMesh();
+                //window.AddMesh(GSCFile.Read(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC"), true);
+                //window.AddMesh(mesh, true);
+
+                window.AddMesh(Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\EXTRACT\CHARCACHE\JOKER\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC").ConvertToMesh(), true);
+
+                //OBJ obj = OBJ.Parse(@"A:\Toilet2.obj");
+                ////window.AddMesh(obj.PhysicsMesh, true);
+                //obj.PhysicsMesh.Setup();
+                //GSCWrite.Write(obj.PhysicsMesh, @"A:\Dimensions\EXTRACT\CHARCACHE\JOKER\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC");
 
                 //int completed = 0;
                 //foreach (string meshable in Directory.EnumerateFiles(@"A:\Dimensions\EXTRACT\LEVELS\STORY", "*.DNO", SearchOption.AllDirectories))
                 //{
-                //    if (completed == 30) break;
-                //    try
+                //    DNO dno = DNO.Parse(meshable, 0x1);
+                //    foreach (DMesh mesh in dno.Meshes)
                 //    {
-                //        Mesh mesh = DNO.Parse(meshable, 2).PhysicsMesh;
-                //        mesh.Name = Path.GetFileName(meshable);
-                //        window.AddMesh(mesh);
-                //        completed++;
-                //    }
-                //    catch (Exception)
-                //    {
-                //        Logger.Log(new LogSeg("Failed to parse DNO: ", ConsoleColor.Red), new LogSeg(meshable));
+                //        window.AddMesh(mesh.GetPhysicsMesh(), true);
                 //    }
                 //}
 
 
-                //Mesh mesh = GSCFile.Read(@"A:\Dimensions\game\LEVELS\BUILDER\TESTCANDY\TESTCANDYJL\TESTCANDYJL_NXG.GSC");
 
                 window.Run();
             }

@@ -11,6 +11,7 @@ using Hologram.FileTypes;
 
 using System.Diagnostics;
 using ModLib;
+using ImGuiNET;
 
 namespace Hologram.Rendering
 {
@@ -160,7 +161,7 @@ namespace Hologram.Rendering
             }
             else if (input.IsKeyDown(Keys.LeftControl))
             {
-                camera.Translate(Vector3.UnitY * -cameraVSpeed * (float)args.Time);
+                //camera.Translate(Vector3.UnitY * -cameraVSpeed * (float)args.Time);
             }
 
             float adjustedSpeed = cameraHSpeed * (float)args.Time;
