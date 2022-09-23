@@ -58,10 +58,10 @@ namespace Hologram
                 //window.AddMesh(GSCFile.Read(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC"), true);
                 //window.AddMesh(mesh, true);
 
-                window.AddMesh(Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\EXTRACT\CHARCACHE\JOKER\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC").ConvertToMesh(), true);
+                //window.AddMesh(Hologram.FileTypes.GSCNew.GSC.Parse(@"A:\Dimensions\EXTRACT\CHARCACHE\JOKER\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC").ConvertToMesh(), true);
 
-                //OBJ obj = OBJ.Parse(@"A:\Toilet2.obj");
-                ////window.AddMesh(obj.PhysicsMesh, true);
+                OBJ obj = OBJ.Parse(@"A:\Toilet2.obj");
+                window.AddMesh(obj.PhysicsMesh, true);
                 //obj.PhysicsMesh.Setup();
                 //GSCWrite.Write(obj.PhysicsMesh, @"A:\Dimensions\EXTRACT\CHARCACHE\JOKER\CHARS\SUPER_CHARACTER\HAIR\HAIR_GREASER_R3_NXG.GSC");
 

@@ -98,7 +98,7 @@ namespace Hologram.Objects
 
                 Line line = new Line();
                 line.Definition.Start = new Vector3((vert1.X + vert2.X + vert3.X) / 3, (vert1.Y + vert2.Y + vert3.Y) / 3, (vert1.Z + vert2.Z + vert3.Z) / 3);
-                line.Definition.End = line.Definition.Start + normal;
+                line.Definition.End = line.Definition.Start + (normal * 0.1f);
                 lines[i] = line;
                 line.Setup();
 

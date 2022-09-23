@@ -260,7 +260,7 @@ namespace Hologram.Rendering
             activeMesh.Draw();
 
             GL.UseProgram(lineShader);
-            //activeMesh.DrawLines();
+            activeMesh.DrawLines();
             //debugLine.Draw();
 
             this.Context.SwapBuffers();
