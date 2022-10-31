@@ -55,7 +55,7 @@ namespace Hologram.Rendering.Shaders
                 //vec3 lightDir = (lightPos - outPosition);
                 //vec3 lightDir = (-outPosition);
 
-                float diff = min(max(dot(outNormal, cameraDir), 0.0),0.9); // max(...,0.9) bc otherwise eyes are scorched
+                float diff = min(max(dot(outNormal, -cameraDir), 0.0),0.9); // max(...,0.9) bc otherwise eyes are scorched
                 vec3 diffuse = diff * lightColor;
                     
                 vec3 result = (ambient + diffuse) * objColor;

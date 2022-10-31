@@ -105,11 +105,18 @@ namespace Hologram.FileTypes.GSCNew
                     file.ReadPascalString();
                     file.Seek(0x498, SeekOrigin.Current); // Material data pt. 2
 
-                    for (int vertexDefId = 0; vertexDefId < remainingVertexDefinitions; vertexDefId++)
-                    {
-                        VertexList list = gsc.ReadVertexList();
-                    }
+                    //for (int vertexDefId = 0; vertexDefId < remainingVertexDefinitions; vertexDefId++)
+                    //{
+                    //    uint vertexCount = file.ReadUint(true);
+                    //    file.CheckString("DXTV", Locale.GSCStrings.ExpectedVTXD);
+                    //    file.CheckInt(0xA9, Locale.GSCStrings.ExpectedVTXDVersion);
+                    //    file.Seek(0x464, SeekOrigin.Current);
+                    //    file.ReadPascalString();
+                    //    file.Seek(0x498, SeekOrigin.Current);
+                    //}
                 }
+
+                Logger.Log(new LogSeg("Reached offset {0}", ConsoleColor.Green, file.Position.ToString()));
             }
 
             return gsc;
@@ -373,16 +380,14 @@ namespace Hologram.FileTypes.GSCNew
             int vertexCount = 0;
             int faceCount = 0;
             
-            Part part = parts[2];
-            faceCount = part.IndicesCount / 3;
+            //Part part = parts[2];
+            //faceCount = part.IndicesCount / 3;
 
-            //foreach (Part part in parts)
-            //{
-            //    faceCount += part.IndicesCount / 3;
-            //}
-
-            vertexCount = parts[0].VerticesCount;
-            
+            foreach (Part part in parts)
+            {
+                vertexCount += part.VerticesCount;
+                faceCount += part.IndicesCount / 3;
+            }
 
             Mesh mesh = new Mesh(vertexCount, faceCount, FaceType.Triangles);
             int vertexOffset = 0;
@@ -395,8 +400,8 @@ namespace Hologram.FileTypes.GSCNew
             }
 
 
-            //foreach (Part part in parts)
-            //{
+            foreach (Part part in parts)
+            {
 
                 VertexList primaryList = vertexLists[part.VertexListReferences[0].Reference];
                 VertexList secondaryList;
@@ -407,23 +412,23 @@ namespace Hologram.FileTypes.GSCNew
 
                 ushort[] indexList = indexLists[part.IndexListReference];
 
-                //for (int i = part.OffsetVertices; i < part.OffsetVertices + part.VerticesCount; i++)
-                //{
-                //    mesh.Vertices[vertexOffset + i - part.OffsetVertices] = primaryList.Vertices[i].Position;
-                //}
+                for (int i = part.OffsetVertices; i < part.OffsetVertices + part.VerticesCount; i++)
+                {
+                    mesh.Vertices[vertexOffset + i - part.OffsetVertices] = primaryList.Vertices[i].Position;
+                }
 
                 for (int i = part.OffsetIndices; i < part.OffsetIndices + part.IndicesCount; i+=3)
                 {
                     Face face = new Face();
-                    face.vert1 = (ushort)(indexList[i + 2]); // This has been reversed to get normals the right way round
-                    face.vert2 = (ushort)(indexList[i + 1]);
-                    face.vert3 = (ushort)(indexList[i + 0]);
+                    face.vert1 = (ushort)(vertexOffset + indexList[i]);
+                    face.vert2 = (ushort)(vertexOffset + indexList[i + 1]);
+                    face.vert3 = (ushort)(vertexOffset + indexList[i + 2]);
                     mesh.Faces[faceOffset + ((i-part.OffsetIndices)/3)] = face;
                 }
 
                 vertexOffset += part.VerticesCount;
                 faceOffset += part.IndicesCount / 3;
-            //}
+            }
 
             return mesh;
         }

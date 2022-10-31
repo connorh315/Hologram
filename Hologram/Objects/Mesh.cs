@@ -82,7 +82,7 @@ namespace Hologram.Objects
         {
             vertexIndex = new ushort[FaceCount * (Type == FaceType.Quads ? 6 : 3)]; // Quads are two triangles, so will have double the vertices.
             vertices2 = new VertexPosNormCol[VertexCount];
-            lines = new Line[FaceCount];
+            lines = new Line[VertexCount];
 
             int pos = 0;
 
@@ -95,12 +95,6 @@ namespace Hologram.Objects
                 Vector3 vert3 = Vertices[face.vert3];
 
                 Vector3 normal = Vector3.Cross(vert2 - vert1, vert3 - vert1).Normalized();
-
-                Line line = new Line();
-                line.Definition.Start = new Vector3((vert1.X + vert2.X + vert3.X) / 3, (vert1.Y + vert2.Y + vert3.Y) / 3, (vert1.Z + vert2.Z + vert3.Z) / 3);
-                line.Definition.End = line.Definition.Start + (normal * 0.1f);
-                lines[i] = line;
-                line.Setup();
 
                 Faces[i].normal = normal;
 
@@ -140,6 +134,12 @@ namespace Hologram.Objects
             {
                 vertices2[i].Position = Vertices[i];
                 vertices2[i].Normal.Normalize();
+
+                Line line = new Line();
+                line.Definition.Start = Vertices[i];
+                line.Definition.End = line.Definition.Start + (vertices2[i].Normal * 0.1f);
+                lines[i] = line;
+                line.Setup();
             }
 
             Face[] oldFaces = Faces;
@@ -212,7 +212,6 @@ namespace Hologram.Objects
         public ushort vert2;
         public ushort vert3;
         public ushort vert4;
-        public ushort vert5;
         public Vector3 normal;
     }
 
