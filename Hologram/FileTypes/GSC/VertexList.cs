@@ -1,11 +1,22 @@
-﻿namespace Hologram.FileTypes.GSC
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hologram.FileTypes.GSC
 {
     public class VertexList
     {
-        public List<VertexDefinition> VertexDefinitions = new List<VertexDefinition>();
+        public Vertex[] Vertices;
 
-        public List<Vertex> Vertices = new List<Vertex>();
+        public VertexDefinition[] Definitions;
 
-        public int VertexSize;
+        public VertexList(uint vertexCount, uint definitionCount)
+        {
+            Vertices = new Vertex[vertexCount];
+
+            Definitions = new VertexDefinition[definitionCount];
+        }
     }
 }

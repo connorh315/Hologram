@@ -1,13 +1,21 @@
-﻿using System;
+﻿using ModLib;
+using Hologram.Objects;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hologram.FileTypes.GSC
 {
-    public partial class GSCFile
+    public partial class GSC
     {
-        
+        private ModFile file;
+
+        internal int referenceCounter = 5;
+
+        private Dictionary<int, VertexList> vertexLists = new Dictionary<int, VertexList>();
+
+        private Dictionary<int, ushort[]> indexLists = new Dictionary<int, ushort[]>();
+
+        public MeshX Mesh { get; private set; }
+
+        public Part[] parts;
     }
 }

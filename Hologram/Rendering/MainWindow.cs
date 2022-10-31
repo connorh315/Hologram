@@ -17,13 +17,13 @@ namespace Hologram.Rendering
 {
     internal class MainWindow : GameWindow
     {
-        private Mesh activeMesh;
+        private MeshX activeMesh;
 
         private Camera camera;
         private Shader primaryShader;
         private Shader lineShader;
 
-        private Mesh[] Meshes = new Mesh[50];
+        private MeshX[] Meshes = new MeshX[50];
 
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
@@ -46,7 +46,7 @@ namespace Hologram.Rendering
             sw.Start();
         }
 
-        public void AddMesh(Mesh mesh, bool isActive = false)
+        public void AddMesh(MeshX mesh, bool isActive = false)
         {
             if (isActive)
             {
@@ -235,11 +235,11 @@ namespace Hologram.Rendering
 
             if (MouseState.IsButtonReleased(MouseButton.Left))
             {
-                int raycastResult = Physics.Raycast(camera, dir, activeMesh);
-                int truePrim = ((raycastResult & 1) == 1) ? (raycastResult - 1) / 2 : raycastResult / 2;
-                Console.WriteLine("Selected primitive: {0}", truePrim);
-                GL.UseProgram(primaryShader);
-                GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+                //int raycastResult = Physics.Raycast(camera, dir, activeMesh); // Needs converting to MeshX
+                //int truePrim = ((raycastResult & 1) == 1) ? (raycastResult - 1) / 2 : raycastResult / 2;
+                //Console.WriteLine("Selected primitive: {0}", truePrim);
+                //GL.UseProgram(primaryShader);
+                //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
             }
         }
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.FileTypes.GSC.Primitives
+namespace Hologram.FileTypes.GSC.GSCWriter.NU20
 {
-    public class Vector3 : Vector2
+    public class NU2053 : NU204F
     {
-        public float Z;
+        protected override int Version => 0x53;
     }
 }

@@ -1,9 +1,9 @@
-﻿using Hologram.FileTypes.GSC.Primitives;
+﻿using OpenTK.Mathematics;
 
 namespace Hologram.FileTypes.GSC
 {
-    public class Vertex
-    {
+	public class Vertex
+	{
 		public Vector3 Position;
 
 		public Vector3 Normal;

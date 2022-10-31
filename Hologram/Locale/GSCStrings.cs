@@ -24,5 +24,7 @@ namespace Hologram.Locale
 
         public const string ExpectedUMTL = "Expected LTMU at {0} got {1}!";
 
+        public const string ExpectedRNMS = "Expected SMNR at {0} got {1}!";
+        public const string ExpectedRNMSVersion = "Expected 0xC9 at {0} got {1:x}!";
     }
 }

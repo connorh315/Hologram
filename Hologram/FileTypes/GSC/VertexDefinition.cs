@@ -26,7 +26,7 @@ namespace Hologram.FileTypes.GSC
 			lightColSet
 		}
 
-		public enum VariableTypeEnum
+		public enum StorageTypeEnum
 		{
 			vec2float = 2,
 			vec3float,
@@ -40,7 +40,7 @@ namespace Hologram.FileTypes.GSC
 
 		public VariableEnum Variable;
 
-		public VariableTypeEnum VariableType;
+		public StorageTypeEnum VariableType;
 
 		public int Offset;
 	}

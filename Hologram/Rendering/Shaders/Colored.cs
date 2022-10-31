@@ -12,7 +12,8 @@ namespace Hologram.Rendering.Shaders
             #version 330 core
             layout(location = 0) in vec3 Position;
             layout(location = 1) in vec3 Normal;
-            layout(location = 2) in vec4 Color;
+            layout(location = 2) in vec2 UV;
+            layout(location = 3) in vec4 Color;
 
             out vec3 outPosition;
             out vec3 outNormal;
@@ -25,7 +26,7 @@ namespace Hologram.Rendering.Shaders
             void main()
             {
                 //gl_Position = vec4(Position, 1) * world * view * projection;
-                gl_Position = projection * view * vec4(Position, 1);
+                gl_Position = projection * view * world * vec4(Position, 1);
                 outPosition = vec3(world * vec4(Position, 1));
                 outNormal = Normal;
                 outColor = Color;
