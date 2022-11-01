@@ -19,3 +19,5 @@ That's because most of the code for this is derived from a different project I'm
 Credits go to Sluicer for doing most of the work in reading and extracting .GSC files with their set of Extract_MESH tools (of which I have derived most of my understanding of GSC files from)
 
 Additionally, a massive thank you to Bowie and CyberNovaDW for their support in testing the tool!
+
+Powered by [OpenTK](https://github.com/opentk/opentk)
