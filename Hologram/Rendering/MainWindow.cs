@@ -33,10 +33,12 @@ namespace Hologram.Rendering
         {
             camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
             
-            primaryShader = new Shader(Shaders.Colored.VertexCode, Shaders.Colored.FragmentCode);
+            primaryShader = new Shader(Shaders.Textured.VertexCode, Shaders.Textured.FragmentCode);
             lineShader = new Shader(Shaders.LineS.VertexCode, Shaders.LineS.FragmentCode);
 
             UpdateViewport(Size);
+
+            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), -1);
 
             //this.RenderFrequency = 120;
             //this.UpdateFrequency = 120;
@@ -61,6 +63,12 @@ namespace Hologram.Rendering
                     break;
                 }
             }
+        }
+
+        private Entity[] entities;
+        public void AddEntities(Entity[] entities)
+        {
+            this.entities = entities;
         }
 
         const float cameraHSpeed = 24f;
@@ -249,15 +257,20 @@ namespace Hologram.Rendering
 
             GL.UseProgram(primaryShader);
 
-            int worldLoc = GL.GetUniformLocation(primaryShader, "world");
+            //int worldLoc = GL.GetUniformLocation(primaryShader, "world");
             //Matrix4 rotMat = Matrix4.CreateRotationY((float)TimeAlive);
-            Matrix4 rotMat = Matrix4.Identity;
-            GL.UniformMatrix4(worldLoc, true, ref rotMat);
+            //Matrix4 rotMat = Matrix4.Identity;
+            //GL.UniformMatrix4(worldLoc, true, ref rotMat);
 
             int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
             GL.Uniform3(cameraDir, camera.Forward);
 
-            activeMesh.Draw();
+            int worldLoc = GL.GetUniformLocation(primaryShader, "world");
+            foreach (Entity entity in entities)
+            {
+                entity.Draw(worldLoc);
+            }
+            //activeMesh.Draw();
 
             GL.UseProgram(lineShader);
             //activeMesh.DrawLines();

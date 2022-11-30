@@ -17,5 +17,7 @@ namespace Hologram.FileTypes.GSC
         public MeshX Mesh { get; private set; }
 
         public Part[] parts;
+
+        public Entity[] entities;
     }
 }

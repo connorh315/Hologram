@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hologram.Rendering.Shaders
 {
-    internal static class Colored
+    internal static class Textured
     {
         public static string VertexCode = @"
             #version 330 core
@@ -17,6 +17,7 @@ namespace Hologram.Rendering.Shaders
 
             out vec3 outPosition;
             out vec3 outNormal;
+            out vec2 outUV;
             out vec4 outColor;
 
             uniform mat4 world;
@@ -29,6 +30,7 @@ namespace Hologram.Rendering.Shaders
                 gl_Position = projection * view * world * vec4(Position, 1);
                 outPosition = vec3(world * vec4(Position, 1));
                 outNormal = Normal;
+                outUV = UV;
                 outColor = Color;
             }
         ";
@@ -38,10 +40,13 @@ namespace Hologram.Rendering.Shaders
 
             in vec3 outPosition;
             in vec3 outNormal;
+            in vec2 outUV;
             in vec4 outColor;
 
             uniform vec3 cameraDir;
             //uniform int selectedPrimitive;
+
+            uniform sampler2D texture0;
 
             out vec4 Color;                
 
@@ -62,6 +67,8 @@ namespace Hologram.Rendering.Shaders
                 vec3 result = (ambient + diffuse) * objColor;
 
                 Color = vec4(result, 1);
+
+                Color = texture(texture0, outUV);
             }
         ";
     }

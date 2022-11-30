@@ -84,7 +84,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     gsc.referenceCounter += num3;
                 }
 
-                Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkBlue));
+                //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkBlue));
                 file.Seek(40, SeekOrigin.Current);
 
                 gsc.referenceCounter += 2;
@@ -139,6 +139,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.CheckString("ROTV", "Expected ROTV");
             Matrix4x3[] positions = ReadMatrices(file);
 
+            List<Entity> entities = new List<Entity>();
             StringBuilder builder = new StringBuilder();
             int matrixId = -1;
             int meshCount = 0;
@@ -148,6 +149,12 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 DisplayCommand command = commands[commandId];
                 switch (command.Command)
                 {
+                    case Command.Material:
+                        Console.WriteLine(command.Index);
+                        break;
+                    case Command.MaterialClip:
+                        Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
+                        break;
                     case Command.Matrix:
                         matrixId = command.Index;
                         break;
@@ -155,6 +162,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         meshCount++;
                         Matrix4x3 local = positions[matrixId];
                         MeshX mesh = gsc.ConvertPart(gsc.parts[command.Index]);
+                        Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
+                        ent.Mesh = mesh;
+                        mesh.Setup();
+                        entities.Add(ent);
                         //foreach (var vertex in mesh.Vertices)
                         //{
                         //    Vector4 vec4 = new Vector4(vertex.Position, 1);
@@ -170,7 +181,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
                 }
             }
-
+            gsc.entities = entities.ToArray();
             File.WriteAllText(@"A:\massiveoutput.obj", builder.ToString());
         }
 
@@ -181,7 +192,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
             uint count = file.ReadUint(true);
 
             file.Seek(0x40A, SeekOrigin.Current);
-            Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
+            file.ReadPascalString();
+            //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
             file.Seek(0x49C, SeekOrigin.Current);
 
             for (int id = 0; id < count - 1; id++) // We already handled 1 prior to the loop, so we remove 1
@@ -191,7 +203,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 uint defCount = file.ReadUint(true);
                 file.Seek(defCount * 3, SeekOrigin.Current);
                 file.Seek(0x459, SeekOrigin.Current);
-                Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
+                file.ReadPascalString();
+                //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
                 file.Seek(0x49C, SeekOrigin.Current);
             }
 
@@ -308,7 +321,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
         private static void ReadInstances(ModFile file)
         {
-            Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
+            //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
             uint count = file.ReadUint(true);
             for (int id = 0; id < count; id++)
             {
