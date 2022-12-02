@@ -17,6 +17,7 @@ namespace Hologram.FileTypes.DDS
             file.Seek(52, SeekOrigin.Current);
 
             string comSign = file.ReadString(4);
+            file.Seek(40, SeekOrigin.Current);
             InternalFormat compressionFormat;
             int blockSize;
             switch(comSign)
@@ -26,7 +27,7 @@ namespace Hologram.FileTypes.DDS
                     blockSize = 8;
                     break;
                 case "DXT5":
-                    compressionFormat = InternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    compressionFormat = InternalFormat.CompressedRgbaS3tcDxt5Ext;
                     blockSize = 16;
                     break;
                 default:
@@ -39,6 +40,8 @@ namespace Hologram.FileTypes.DDS
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, mipmapCount - 1);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
             byte[] buffer = new byte[CalculateSize(width, height, blockSize)]; // Build an array that is the size of the first mipmap, every subsequent mipmap will be smaller than this and as such can just re-use this.
 
@@ -70,6 +73,7 @@ namespace Hologram.FileTypes.DDS
 
         private static int CalculateSize(int width, int height, int blockSize)
         {
+            //return (width * height * blockSize)/16;
             return Math.Max(1, ((width + 3) / 4) * ((height + 3) / 4)) * blockSize;
         }
     }

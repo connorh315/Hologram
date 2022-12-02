@@ -40,8 +40,8 @@ namespace Hologram.Rendering
 
             //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), -1);
 
-            //this.RenderFrequency = 120;
-            //this.UpdateFrequency = 120;
+            this.RenderFrequency = 120;
+            this.UpdateFrequency = 120;
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
             //this.activeMesh = mesh;
@@ -292,6 +292,8 @@ namespace Hologram.Rendering
             }
 
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             //GL.UseProgram(primaryShader);
 

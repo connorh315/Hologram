@@ -14,7 +14,10 @@
 
   <ItemGroup>
     <Reference Include="ModLib">
-      <HintPath>..\..\ModLib\bin\x64\Release\net6.0\ModLib.dll</HintPath>
+      <HintPath>..\..\ModLib\bin\Release\net6.0\ModLib.dll</HintPath>
+    </Reference>
+    <Reference Include="WiiUTexturesTool">
+      <HintPath>..\..\WiiUTexturesTool\bin\Release\net6.0\WiiUTexturesTool.dll</HintPath>
     </Reference>
   </ItemGroup>
 

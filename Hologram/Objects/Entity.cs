@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
+using Hologram.Rendering;
 
 namespace Hologram.Objects
 {
@@ -17,6 +18,8 @@ namespace Hologram.Objects
 
         public MeshX Mesh;
 
+        public Texture Texture;
+
         public Entity(Matrix4 transformation)
         {
             this.transformation = transformation;
@@ -29,6 +32,8 @@ namespace Hologram.Objects
 
         public void Draw(int programWorldPosition)
         {
+            Texture.Use();
+
             GL.UniformMatrix4(programWorldPosition, false, ref transformation);
             Mesh.Draw();
         }

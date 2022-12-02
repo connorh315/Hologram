@@ -5,6 +5,8 @@ using OpenTK.Mathematics;
 using System.Text;
 using System.Collections.Generic;
 using Hologram.Objects;
+using Hologram.Rendering;
+using WiiUTexturesTool;
 
 // Needs some huge abstractions, but for now this will do.
 
@@ -62,7 +64,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 //Console.WriteLine(part.IndicesCount);
                 //Console.WriteLine(part.OffsetVertices);
 
-                if (file.ReadShort(true) != 0) { throw new Exception("ReadPart Offset Vertices + 4"); }
+                ushort primiviteType = file.ReadUshort(true);
+                if (primiviteType != 0) throw new Exception("Unknown primitiveType!");
 
                 part.VerticesCount = file.ReadInt(true);
 
@@ -91,7 +94,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
 
             file.Seek(8, SeekOrigin.Current);
-            ReadMaterialData(file);
+            Material[] materials = ReadMaterialData(file);
 
             file.Seek(0x15, SeekOrigin.Current);
             file.CheckString("TDML", "Expected LMDT");
@@ -130,7 +133,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.CheckString("ROTV", "Expected ROTV");
             ReadInstances(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            if (!file.CheckString("ROTV", "Expected ROTV"))
+            {
+                file.Seek(file.Find("ROTV") + 4, SeekOrigin.Current);
+            }
             ReadInstancesLODFixups(file);
 
             file.CheckString("ROTV", "Expected ROTV");
@@ -139,9 +145,20 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.CheckString("ROTV", "Expected ROTV");
             Matrix4x3[] positions = ReadMatrices(file);
 
+            DDSFile[] ddsFiles = WiiUTextures.RetrieveTextures(@"A:\Dimensions\EXTRACT\LEVELS\TARDIS\TARDIS11\TARDIS11_NXG.WIIU_TEXTURES");
+            Texture[] textures = new Texture[ddsFiles.Length];
+            for (int i = 0; i < ddsFiles.Length; i++)
+            {
+                if (ddsFiles[i].File == null) continue;
+                textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
+            }
+
+            //textures[16].Use();
+
             List<Entity> entities = new List<Entity>();
             StringBuilder builder = new StringBuilder();
             int matrixId = -1;
+            int materialId = -1;
             int meshCount = 0;
             int vertOffset = 1;
             for (int commandId = 0; commandId < commands.Length; commandId++)
@@ -150,10 +167,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 switch (command.Command)
                 {
                     case Command.Material:
-                        Console.WriteLine(command.Index);
+                        materialId = command.Index;
                         break;
                     case Command.MaterialClip:
-                        Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
+                        //Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
                         break;
                     case Command.Matrix:
                         matrixId = command.Index;
@@ -164,6 +181,14 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         MeshX mesh = gsc.ConvertPart(gsc.parts[command.Index]);
                         Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
                         ent.Mesh = mesh;
+                        if (materials[materialId].Texture != 255)
+                        {
+                            ent.Texture = textures[materials[materialId].Texture];
+                        }
+                        else
+                        {
+                            ent.Texture = textures[0];
+                        }
                         mesh.Setup();
                         entities.Add(ent);
                         //foreach (var vertex in mesh.Vertices)
@@ -182,28 +207,44 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 }
             }
             gsc.entities = entities.ToArray();
-            File.WriteAllText(@"A:\massiveoutput.obj", builder.ToString());
         }
 
-        private static void ReadMaterialData(ModFile file)
+        private static Material[] ReadMaterialData(ModFile file)
         {
             file.CheckString("LTMU", string.Empty);
-            file.CheckInt(0xe4, string.Empty);
+            uint version = file.ReadUint(true);
             uint count = file.ReadUint(true);
 
-            file.Seek(0x40A, SeekOrigin.Current);
+            Material[] materials = new Material[count];
+            Material firstMat = new Material();
+            file.Seek(0x1ad, SeekOrigin.Current);
+            firstMat.Texture = file.ReadByte();
+            file.Seek(0x25C, SeekOrigin.Current);
+            materials[0] = firstMat;
             file.ReadPascalString();
             //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
             file.Seek(0x49C, SeekOrigin.Current);
 
             for (int id = 0; id < count - 1; id++) // We already handled 1 prior to the loop, so we remove 1
             {
+                Material mat = new Material();
+                materials[1 + id] = mat;
+
                 file.CheckString("DXTV", "Expected DXTV");
                 file.CheckInt(0xA9, "Expected DXTV version A9");
                 uint defCount = file.ReadUint(true);
                 file.Seek(defCount * 3, SeekOrigin.Current);
-                file.Seek(0x459, SeekOrigin.Current);
-                file.ReadPascalString();
+                if (version == 0xe5)
+                {
+                    file.Seek(0x1fd, SeekOrigin.Current);
+                }
+                else if (version == 0xe4)
+                {
+                    file.Seek(0x1fc, SeekOrigin.Current);
+                }
+                mat.Texture = file.ReadByte();
+                file.Seek(0x25c, SeekOrigin.Current);
+                Console.WriteLine(file.ReadPascalString());
                 //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
                 file.Seek(0x49C, SeekOrigin.Current);
             }
@@ -222,6 +263,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 file.Seek(0x34, SeekOrigin.Current);
             }
 
+            return materials;
             //Console.WriteLine(file.Position);
         }
 
@@ -397,5 +439,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
     {
         public Command Command;
         public ushort Index;
+    }
+
+    public class Material
+    {
+        public int Texture;
     }
 }

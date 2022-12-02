@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Hologram.Rendering
 {
-    internal class Texture
+    public class Texture
     {
         int Handle;
 

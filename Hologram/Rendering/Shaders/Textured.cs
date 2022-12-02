@@ -66,9 +66,11 @@ namespace Hologram.Rendering.Shaders
                     
                 vec3 result = (ambient + diffuse) * objColor;
 
-                Color = vec4(result, 1);
+                //Color = vec4(result, 1);
 
                 Color = texture(texture0, outUV);
+                //if (Color.a < 0.1) 
+                //    discard;
             }
         ";
     }
