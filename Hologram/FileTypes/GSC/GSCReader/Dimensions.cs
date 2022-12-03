@@ -34,7 +34,28 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             file.Seek(file.ReadInt(true), SeekOrigin.Current); // Big blob of strings
 
-            file.Seek(24, SeekOrigin.Current); // ROTV
+            //file.Seek(24, SeekOrigin.Current); // ROTV
+            file.Seek(4, SeekOrigin.Current); // padding
+
+            // Still not sure what this section is for
+            file.CheckString("ROTV", "Expected ROTV");
+            uint count1 = file.ReadUint(true);
+            for (int i = 0; i < count1; i++)
+            {
+                file.ReadPascalString();
+            }
+
+            file.CheckString("ROTV", "Expected ROTV");
+            uint count2 = file.ReadUint(true);
+            file.Seek(12 * count2, SeekOrigin.Current);
+            if (count2 > 0)
+            {
+                file.CheckString("ROTV", "Expected ROTV");
+                file.CheckInt(0, "Haven't encountered this yet!");
+            }
+
+
+            file.CheckInt(1, "MESH block count > 1!");
 
             file.CheckString("HSEM", Locale.GSCStrings.ExpectedMESH);
             file.CheckInt(0xAF, Locale.GSCStrings.ExpectedMESHVersion);
@@ -99,61 +120,70 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.Seek(0x15, SeekOrigin.Current);
             file.CheckString("TDML", "Expected LMDT");
             file.CheckInt(0x3, "Expected LMDT version 3");
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV1");
             ReadLightmapData(file);
 
             file.Seek(4, SeekOrigin.Current);
             file.CheckString("SUPC", "Expected CPUS");
             file.CheckInt(0x4, "Expected CPUS version 4");
             // No implementation for CPU Skinned yet
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV2");
             file.CheckInt(0, "ROTV is not zero!!"); // This is where the implementation should handle
 
             file.CheckString("PSID", "Expected DISP");
             file.CheckInt(0x20, "Expected DISP version 20");
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV3");
             DisplayCommand[] commands = ReadDefunctItems(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV4");
             ReadClipItems(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV5");
             ReadSpecialObject(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV6");
             ReadSpecialGroupNodes(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV7");
             ReadBoundsCenterAndDist(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV8");
             ReadBoundsExtentsAndRadius(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV9");
             ReadInstances(file);
 
-            if (!file.CheckString("ROTV", "Expected ROTV"))
+            if (!file.CheckString("ROTV", "Expected ROTVInst"))
             {
                 file.Seek(file.Find("ROTV") + 4, SeekOrigin.Current);
             }
             ReadInstancesLODFixups(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV10");
             ReadAnimMtls(file);
 
-            file.CheckString("ROTV", "Expected ROTV");
+            file.CheckString("ROTV", "Expected ROTV11");
             Matrix4x3[] positions = ReadMatrices(file);
 
-            DDSFile[] ddsFiles = WiiUTextures.RetrieveTextures(@"A:\Dimensions\EXTRACT\LEVELS\TARDIS\TARDIS11\TARDIS11_NXG.WIIU_TEXTURES");
+            DDSFile[] ddsFiles = WiiUTextures.RetrieveTextures(Path.ChangeExtension(file.Location, "WIIU_TEXTURES"));
             Texture[] textures = new Texture[ddsFiles.Length];
+            
+            string[] locationSplit = file.Location.Split("LEVELS");
+
+            string root = locationSplit[0].Substring(0, locationSplit[0].Length - 1);
+
             for (int i = 0; i < ddsFiles.Length; i++)
             {
-                if (ddsFiles[i].File == null) continue;
-                textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
+                if (ddsFiles[i].File == null)
+                {
+                    textures[i] = DDS.DDS.Load(root + ddsFiles[i].Attributes.Path);
+                }
+                else
+                {
+                    textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
+                }
             }
-
-            //textures[16].Use();
 
             List<Entity> entities = new List<Entity>();
             StringBuilder builder = new StringBuilder();
@@ -161,9 +191,11 @@ namespace Hologram.FileTypes.GSC.GSCReader
             int materialId = -1;
             int meshCount = 0;
             int vertOffset = 1;
+            Console.WriteLine("START!");
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
+                //Console.WriteLine(command.Command);
                 switch (command.Command)
                 {
                     case Command.Material:
@@ -174,6 +206,9 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         break;
                     case Command.Matrix:
                         matrixId = command.Index;
+                        break;
+                    case Command.DynamicGeo:
+                        //Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
                         break;
                     case Command.Mesh:
                         meshCount++;
@@ -254,7 +289,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             uint finalDefCount = file.ReadUint(true);
             file.Seek(finalDefCount * 3, SeekOrigin.Current);
             file.Seek(0x1a, SeekOrigin.Current);
-            if (file.ReadByte() == 0x8) // idk
+            if (file.ReadByte() != 0x0) // so far it has been when it's 8 and 1
             {
                 file.Seek(0x35, SeekOrigin.Current);
             }
@@ -330,7 +365,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Vector4 min = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 Vector4 max = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 file.Seek(0x1c, SeekOrigin.Current); // Supposedly "m_Sphere"
-                file.Seek(12, SeekOrigin.Current); // Undeterminable, too many variables: "m_clipObjectIdx", "m_Flags", "m_instanceIdx", "m_AnimIdx", "m_WindSpeed", "m_WindScale"
+                uint clipObjectIndex = file.ReadUint(true);
+                file.Seek(8, SeekOrigin.Current); // Undeterminable, too many variables: "m_clipObjectIdx", "m_Flags", "m_instanceIdx", "m_AnimIdx", "m_WindSpeed", "m_WindScale"
             }
         }
         

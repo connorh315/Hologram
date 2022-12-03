@@ -16,7 +16,9 @@ namespace Hologram
         {
             using (MainWindow window = new MainWindow())
             {
-                GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\TARDIS\TARDIS11\TARDIS11_NXG.GSC");
+                //GSC test = GSC.Parse(args[0]);
+                GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONS_INTRO\2THESIMPSONS_SUPERMARKET_NXG.GSC");
+                //GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
                 //DDS.Load(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG\LEGO_Zeus\LEGO_Zeus_Images_Nut\brick\nd_yellowbrickroad_nostud_diff.nut.dds");
                 //MeshX mesh = test.ConvertPart(test.parts[0]);
                 //window.AddMesh(mesh, true);
