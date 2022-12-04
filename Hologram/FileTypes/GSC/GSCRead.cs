@@ -34,6 +34,7 @@ namespace Hologram.FileTypes.GSC
                     //    Logger.Log(new LogSeg("GSC file is from ", ConsoleColor.White), new LogSeg("City Undercover", ConsoleColor.DarkYellow));
                     //    City.Read(file, gsc);
                     //    break;
+                    //case 0x4e: // Uses TXGH block and I cba
                     case 0x4f:
                     case 0x50:
                     case 0x53:

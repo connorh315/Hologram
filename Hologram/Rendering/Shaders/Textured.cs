@@ -44,6 +44,7 @@ namespace Hologram.Rendering.Shaders
             in vec4 outColor;
 
             uniform vec3 cameraDir;
+            uniform vec3 meshColor;
             //uniform int selectedPrimitive;
 
             uniform sampler2D texture0;
@@ -68,7 +69,7 @@ namespace Hologram.Rendering.Shaders
 
                 //Color = vec4(result, 1);
 
-                Color = texture(texture0, outUV);
+                Color = texture(texture0, outUV) * vec4(meshColor, 1) * outColor;
                 //if (Color.a < 0.1) 
                 //    discard;
             }

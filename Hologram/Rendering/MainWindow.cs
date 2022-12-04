@@ -15,13 +15,15 @@ using ImGuiNET;
 
 namespace Hologram.Rendering
 {
-    internal class MainWindow : GameWindow
+    public class MainWindow : GameWindow
     {
         private MeshX activeMesh;
 
         private Camera camera;
         private Shader primaryShader;
         private Shader lineShader;
+
+        public static int MeshColorLocation;
 
         private MeshX[] Meshes = new MeshX[50];
 
@@ -35,6 +37,8 @@ namespace Hologram.Rendering
             
             primaryShader = new Shader(Shaders.Textured.VertexCode, Shaders.Textured.FragmentCode);
             lineShader = new Shader(Shaders.LineS.VertexCode, Shaders.LineS.FragmentCode);
+
+            MeshColorLocation = GL.GetUniformLocation(primaryShader, "meshColor");
 
             UpdateViewport(Size);
 

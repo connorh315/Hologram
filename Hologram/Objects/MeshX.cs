@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
+using Hologram.Rendering;
 
 namespace Hologram.Objects
 {
@@ -43,6 +44,8 @@ namespace Hologram.Objects
 
         public void Draw()
         {
+            GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(Color.R, Color.G, Color.B));
+
             GL.BindVertexArray(vertexArray);
             GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedShort, 0);
         }
