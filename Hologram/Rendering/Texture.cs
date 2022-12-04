@@ -5,7 +5,7 @@ namespace Hologram.Rendering
 {
     public class Texture
     {
-        int Handle;
+        public int Handle { get; private set; }
 
         public Texture()
         {

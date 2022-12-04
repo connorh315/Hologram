@@ -325,6 +325,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     mat.Color.B = ((float)b) / 255;
                     mat.Color.G = ((float)file.ReadByte()) / 255;
                     mat.Color.R = ((float)file.ReadByte()) / 255;
+                    mat.Color.A = 1;
                     file.Seek(0x25c - 0x18 - 3 - 0x146, SeekOrigin.Current);
                 }
                 
