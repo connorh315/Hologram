@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Hologram.Objects;
 using Hologram.Rendering;
 using WiiUTexturesTool;
+using Hologram.Rendering;
 
 // Needs some huge abstractions, but for now this will do.
 
@@ -86,8 +87,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 //Console.WriteLine(part.IndicesCount);
                 //Console.WriteLine(part.OffsetVertices);
 
-                ushort primiviteType = file.ReadUshort(true);
-                if (primiviteType != 0) throw new Exception("Unknown primitiveType!");
+                ushort primitiveType = file.ReadUshort(true);
+                if (primitiveType != 0) throw new Exception("Unknown primitiveType!");
 
                 part.VerticesCount = file.ReadInt(true);
 
@@ -116,7 +117,11 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
 
             file.Seek(8, SeekOrigin.Current);
-            Material[] materials = ReadMaterialData(file);
+
+
+            Texture[] textures = LoadTextures(Path.ChangeExtension(file.Location, "WIIU_TEXTURES"));
+
+            Material[] materials = ReadMaterialData(file, textures);
 
             file.CheckString("ROTV", "Expected ROTV0");
             uint embeddedTexCount = file.ReadUint(true); // 4doctorwhoa1_nxg
@@ -177,30 +182,6 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.CheckString("ROTV", "Expected ROTV11");
             Matrix4x3[] positions = ReadMatrices(file);
 
-            string texturesFile = Path.ChangeExtension(file.Location, "WIIU_TEXTURES");
-            Texture[] textures = new Texture[0];
-            if (File.Exists(texturesFile))
-            {
-                DDSFile[] ddsFiles = WiiUTextures.RetrieveTextures(texturesFile);
-                textures = new Texture[ddsFiles.Length];
-            
-                string[] locationSplit = file.Location.Split("LEVELS");
-
-                string root = locationSplit[0].Substring(0, locationSplit[0].Length - 1);
-
-                for (int i = 0; i < ddsFiles.Length; i++)
-                {
-                    if (ddsFiles[i].File == null)
-                    {
-                        textures[i] = DDS.DDS.Load(root + ddsFiles[i].Attributes.Path);
-                    }
-                    else
-                    {
-                        textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
-                    }
-                }
-            }
-
             List<Entity> entities = new List<Entity>();
             StringBuilder builder = new StringBuilder();
             int matrixId = -1;
@@ -211,7 +192,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
-                //Console.WriteLine(command.Command);
+                Console.WriteLine(command.Command);
                 switch (command.Command)
                 {
                     case Command.Material:
@@ -232,23 +213,24 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         MeshX mesh = gsc.ConvertPart(gsc.parts[command.Index]);
                         Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
                         ent.Mesh = mesh;
-                        if (textures.Length != 0)
-                        {
-                            if (materials[materialId].DiffuseTexture != 255)
-                            {
-                                ent.Texture = textures[materials[materialId].DiffuseTexture];
-                            }
-                            else
-                            {
-                                ent.Texture = Texture.WhiteTexture;
-                                ent.Mesh.Color = materials[materialId].Color; // Debatable
-                            }
+                        ent.Material = materials[materialId];
+                        //if (textures.Length != 0)
+                        //{
+                        //    if (materials[materialId].DiffuseTexture != 255)
+                        //    {
+                        //        ent.Texture = textures[materials[materialId].DiffuseTexture];
+                        //    }
+                        //    else
+                        //    {
+                        //        ent.Texture = Texture.WhiteTexture;
+                        //        ent.Mesh.Color = materials[materialId].Color; // Debatable
+                        //    }
 
-                        }
-                        else
-                        {
-                            ent.Texture = Texture.MissingTexture;
-                        }
+                        //}
+                        //else
+                        //{
+                        //    ent.Texture = Texture.MissingTexture;
+                        //}
                         mesh.Setup();
                         entities.Add(ent);
                         //foreach (var vertex in mesh.Vertices)
@@ -269,7 +251,48 @@ namespace Hologram.FileTypes.GSC.GSCReader
             gsc.entities = entities.ToArray();
         }
 
-        private static Material[] ReadMaterialData(ModFile file)
+        private static Texture[] LoadTextures(string texturesFile)
+        {
+            Texture[] textures = new Texture[0];
+            if (File.Exists(texturesFile))
+            {
+                DDSFile[] ddsFiles = WiiUTextures.RetrieveTextures(texturesFile);
+                textures = new Texture[ddsFiles.Length];
+
+                string[] locationSplit = texturesFile.Split("LEVELS");
+
+                string root = locationSplit[0].Substring(0, locationSplit[0].Length - 1);
+
+                for (int i = 0; i < ddsFiles.Length; i++)
+                {
+                    if (ddsFiles[i].File == null)
+                    {
+                        textures[i] = DDS.DDS.Load(root + ddsFiles[i].Attributes.Path);
+                    }
+                    else
+                    {
+                        textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
+                    }
+
+                    if (textures[i] == null)
+                    {
+                        textures[i] = Texture.ProblemTexture;
+                    }
+                }
+            }
+
+            return textures;
+        }
+
+        private static Texture GetValidTexture(Texture[] textures, int index)
+        { // Ensures that a valid texture is ALWAYS returned
+            if (index == 255) return Texture.WhiteTexture;
+            if (textures.Length == 0) return Texture.MissingTexture;
+            if (textures[index] == null) return Texture.ProblemTexture;
+            return textures[index];
+        }
+
+        private static Material[] ReadMaterialData(ModFile file, Texture[] textures)
         {
             file.CheckString("LTMU", string.Empty);
             uint version = file.ReadUint(true);
@@ -298,7 +321,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 {
                     file.Seek(0x1ad, SeekOrigin.Current); // unknown mat data
                 }
-                mat.DiffuseTexture = file.ReadByte();
+
+                byte diffuseTexture = file.ReadByte();
+                mat.Diffuse = GetValidTexture(textures, diffuseTexture);
+
                 if (version == 0xf2)
                 {
                     file.Seek(0x294, SeekOrigin.Current);
@@ -318,11 +344,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 else
                 {
                     file.Seek(0x17, SeekOrigin.Current);
-                    mat.NormalTexture = file.ReadByte();
+                    byte normalTexture = file.ReadByte();
+                    mat.Normal = GetValidTexture(textures, normalTexture);
                     file.Seek(0x146, SeekOrigin.Current);
-                    int b = file.ReadByte();
-                    Console.WriteLine(b);
-                    mat.Color.B = ((float)b) / 255;
+                    mat.Color.B = ((float)file.ReadByte()) / 255;
                     mat.Color.G = ((float)file.ReadByte()) / 255;
                     mat.Color.R = ((float)file.ReadByte()) / 255;
                     mat.Color.A = 1;
@@ -353,7 +378,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             Material firstMat = new Material();
             file.Seek(0x1ad, SeekOrigin.Current);
-            firstMat.DiffuseTexture = file.ReadByte();
+            //firstMat.DiffuseTexture = file.ReadByte();
             file.Seek(0x25C, SeekOrigin.Current);
             materials[0] = firstMat;
             file.ReadPascalString();
@@ -377,7 +402,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 {
                     file.Seek(0x1fc, SeekOrigin.Current);
                 }
-                mat.DiffuseTexture = file.ReadByte();
+                //mat.DiffuseTexture = file.ReadByte();
                 file.Seek(0x25c, SeekOrigin.Current);
                 Console.WriteLine(file.ReadPascalString());
                 //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
@@ -490,11 +515,31 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
         private static void ReadBoundsCenterAndDist(ModFile file)
         {
+            OBJ obj = OBJ.Parse(@"A:\icosphere.obj");
+            Mesh mesh = obj.PhysicsMesh;
             uint count = file.ReadUint(true);
+            StringBuilder visualiser = new StringBuilder();
+            int totalVerts = 1;
             for (int id = 0; id < count; id++)
             {
                 Vector4 vec = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
+                foreach (var vert in mesh.Vertices)
+                {
+                    float result = Math.Min(vec.W * 0.0001f, 2);
+                    Vector3 scaled = result * vert;
+                    scaled += vec.Xyz;
+                    visualiser.AppendLine($"v {scaled.X} {scaled.Y} {scaled.Z}");
+                }
+
+                foreach (var face in mesh.Faces)
+                {
+                    visualiser.AppendLine($"f {face.vert1 + totalVerts} {face.vert2 + totalVerts} {face.vert3 + totalVerts}");
+                }
+
+                totalVerts += mesh.VertexCount;
             }
+
+            File.WriteAllText(@"A:\spheres.obj", visualiser.ToString());
         }
 
         private static void ReadBoundsExtentsAndRadius(ModFile file)
@@ -586,11 +631,11 @@ namespace Hologram.FileTypes.GSC.GSCReader
         public ushort Index;
     }
 
-    public class Material
-    {
-        public int DiffuseTexture;
-        public int NormalTexture;
-        public Color4 Color;
-        public string ShaderName;
-    }
+    //public class Material
+    //{
+    //    public int DiffuseTexture;
+    //    public int NormalTexture;
+    //    public Color4 Color;
+    //    public string ShaderName;
+    //}
 }

@@ -8,6 +8,7 @@ namespace Hologram.Objects
     {
         public string Name;
 
+        // Deprecated
         public Color4 Color = Color4.White;
 
         public Vertex[] Vertices;
@@ -42,9 +43,10 @@ namespace Hologram.Objects
             GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * 2, Indices, BufferUsageHint.StaticDraw);
         }
 
-        public void Draw()
+        public void Draw(Material material)
         {
-            GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(Color.R, Color.G, Color.B));
+            Color4 col = material.Color;
+            GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(col.R, col.G, col.B));
 
             GL.BindVertexArray(vertexArray);
             GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedShort, 0);

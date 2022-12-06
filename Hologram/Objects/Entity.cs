@@ -20,7 +20,7 @@ namespace Hologram.Objects
 
         public MeshX Mesh;
 
-        public Texture Texture;
+        public Material Material;
 
         public Entity(Matrix4 transformation)
         {
@@ -34,10 +34,10 @@ namespace Hologram.Objects
 
         public void Draw(int programWorldPosition)
         {
-            Texture.Use();
+            Material.Diffuse.Use();
 
             GL.UniformMatrix4(programWorldPosition, false, ref transformation);
-            Mesh.Draw();
+            Mesh.Draw(Material);
         }
     }
 }
