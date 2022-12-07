@@ -55,7 +55,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
 
             file.CheckString("ROTV", "Expected ROTV");
-            file.CheckInt(0, "Haven't encountered ROTV block > 0 yet!");
+            file.CheckInt(0, "Haven't encountered ROTV block > 0 yet!"); // Splines?
 
             file.CheckInt(1, "MESH block count > 1!");
 
@@ -188,6 +188,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             int materialId = -1;
             int meshCount = 0;
             int vertOffset = 1;
+            int dynamicCount = 0;
             Console.WriteLine("START!");
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
@@ -205,10 +206,15 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         matrixId = command.Index;
                         break;
                     case Command.DynamicGeo:
+                        dynamicCount++;
                         //Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
                         break;
                     case Command.Mesh:
                         meshCount++;
+                        if (meshCount == 349)
+                        {
+                            Console.WriteLine();
+                        }
                         Matrix4x3 local = positions[matrixId];
                         MeshX mesh = gsc.ConvertPart(gsc.parts[command.Index]);
                         Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
@@ -248,6 +254,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
                 }
             }
+            Console.WriteLine("dynamic:");
+            Console.WriteLine(dynamicCount);
             gsc.entities = entities.ToArray();
         }
 
@@ -556,7 +564,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
             uint count = file.ReadUint(true);
             for (int id = 0; id < count; id++)
-            {
+            { // Pretty sure it's just file.Seek(0x6), and then check if the ushort there is equal to 0xffff
                 file.Seek(0x20, SeekOrigin.Current);
                 byte val = file.ReadByte();
                 if (val == 1)
