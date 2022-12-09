@@ -153,7 +153,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             DisplayCommand[] commands = ReadDefunctItems(file);
 
             file.CheckString("ROTV", "Expected ROTV4");
-            ReadClipItems(file);
+            ReadClipItems(file, commands);
 
             file.CheckString("ROTV", "Expected ROTV5");
             ReadSpecialObject(file);
@@ -474,18 +474,23 @@ namespace Hologram.FileTypes.GSC.GSCReader
             return commands;
         }
 
-        private static void ReadClipItems(ModFile file)
+        private static ClipItem[] ReadClipItems(ModFile file, DisplayCommand[] commands)
         {
             uint count = file.ReadUint(true);
+            ClipItem[] items = new ClipItem[count];
+
             for (int id = 0; id < count; id++)
             {
-                ushort itemsCount = file.ReadUshort(true);
-                for (int itemId = 0; itemId < itemsCount; itemId++)
+                ushort elementsCount = file.ReadUshort(true);
+                items[id] = new ClipItem(elementsCount);
+                for (int elementId = 0; elementId < elementsCount; elementId++)
                 {
-                    uint geomIndex = file.ReadUint(true);
-                    uint matIndex = file.ReadUint(true);
+                    items[id].Elements[elementId].GeometryIndex = file.ReadUint(true);
+                    items[id].Elements[elementId].MaterialIndex = file.ReadUint(true);
                 }
             }
+
+            return items;
         }
 
         private static void ReadSpecialObject(ModFile file)
@@ -533,7 +538,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Vector4 vec = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 foreach (var vert in mesh.Vertices)
                 {
-                    float result = Math.Min(vec.W * 0.0001f, 2);
+                    float result = Math.Min(vec.W * 0.001f, 2);
                     Vector3 scaled = result * vert;
                     scaled += vec.Xyz;
                     visualiser.AppendLine($"v {scaled.X} {scaled.Y} {scaled.Z}");
@@ -563,6 +568,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
         {
             //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
             uint count = file.ReadUint(true);
+            uint trueCount = count;
             for (int id = 0; id < count; id++)
             { // Pretty sure it's just file.Seek(0x6), and then check if the ushort there is equal to 0xffff
                 file.Seek(0x20, SeekOrigin.Current);
@@ -570,12 +576,14 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 if (val == 1)
                 {
                     file.Seek(0x43, SeekOrigin.Current);
+                    trueCount++;
                 }
                 else
                 {
                     file.Seek(0x1F, SeekOrigin.Current);
                 }
             }
+            Console.WriteLine("True COUNT: " + trueCount);
             //int flags = file.ReadInt(true); // First section here is undeterminable, makes zero sense how variables are mapped.
             //Vector3 size = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
             //file.Seek(32, SeekOrigin.Current); // LODs I think??
@@ -639,11 +647,18 @@ namespace Hologram.FileTypes.GSC.GSCReader
         public ushort Index;
     }
 
-    //public class Material
-    //{
-    //    public int DiffuseTexture;
-    //    public int NormalTexture;
-    //    public Color4 Color;
-    //    public string ShaderName;
-    //}
+    public class ClipItem
+    {
+        public ClipElement[] Elements;
+        public ClipItem(uint count)
+        {
+            Elements = new ClipElement[count];
+        }
+    }
+
+    public struct ClipElement
+    {
+        public uint GeometryIndex;
+        public uint MaterialIndex;
+    }
 }
