@@ -22,6 +22,8 @@ namespace Hologram.Objects
 
         public Material Material;
 
+        public CameraBounds Bounds;
+
         public Entity(Matrix4 transformation)
         {
             this.transformation = transformation;

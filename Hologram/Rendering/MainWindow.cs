@@ -272,7 +272,10 @@ namespace Hologram.Rendering
             int worldLoc = GL.GetUniformLocation(primaryShader, "world");
             foreach (Entity entity in entities)
             {
-                entity.Draw(worldLoc);
+                if (Vector3.DistanceSquared(camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
+                {
+                    entity.Draw(worldLoc);
+                }
             }
             //activeMesh.Draw();
 

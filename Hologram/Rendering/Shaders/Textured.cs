@@ -69,9 +69,13 @@ namespace Hologram.Rendering.Shaders
 
                 //Color = vec4(result, 1);
 
-                Color = texture(texture0, outUV) * vec4(meshColor, 1) * outColor;
-                //if (Color.a < 0.1) 
-                //    discard;
+                vec4 vertColor = outColor;
+                if ((vertColor.r + vertColor.g + vertColor.b) == 0)
+                    vertColor = vec4(1, 1, 1, 1);
+
+                Color = texture(texture0, outUV) * vec4(meshColor, 1) * vertColor;
+                if (Color.a < 0.1) 
+                    discard;
             }
         ";
     }

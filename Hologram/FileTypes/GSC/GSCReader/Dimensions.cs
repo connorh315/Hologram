@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Hologram.Objects;
 using Hologram.Rendering;
 using WiiUTexturesTool;
-using Hologram.Rendering;
 
 // Needs some huge abstractions, but for now this will do.
 
@@ -48,7 +47,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 file.CheckString("ROTV", "Expected ROTV");
                 uint count2 = file.ReadUint(true);
                 file.Seek(12 * count2, SeekOrigin.Current);
-                if (ntblVersion == 0x53)
+                if (ntblVersion == 0x53 || ntblVersion == 0x50)
                 {
                     file.ReadByte(); // just a zero
                 }
@@ -153,7 +152,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             DisplayCommand[] commands = ReadDefunctItems(file);
 
             file.CheckString("ROTV", "Expected ROTV4");
-            ReadClipItems(file, commands);
+            ClipItem[] items = ReadClipItems(file, commands);
 
             file.CheckString("ROTV", "Expected ROTV5");
             ReadSpecialObject(file);
@@ -162,7 +161,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             ReadSpecialGroupNodes(file);
 
             file.CheckString("ROTV", "Expected ROTV7");
-            ReadBoundsCenterAndDist(file);
+            CameraBounds[] bounds = ReadBoundsCenterAndDistSqrd(file);
 
             file.CheckString("ROTV", "Expected ROTV8");
             ReadBoundsExtentsAndRadius(file);
@@ -190,6 +189,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             int vertOffset = 1;
             int dynamicCount = 0;
             Console.WriteLine("START!");
+            Dictionary<int, Entity> entitiesKeyed = new Dictionary<int, Entity>();
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
@@ -239,6 +239,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         //}
                         mesh.Setup();
                         entities.Add(ent);
+                        entitiesKeyed[commandId] = ent;
                         //foreach (var vertex in mesh.Vertices)
                         //{
                         //    Vector4 vec4 = new Vector4(vertex.Position, 1);
@@ -254,8 +255,16 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
                 }
             }
-            Console.WriteLine("dynamic:");
-            Console.WriteLine(dynamicCount);
+
+            for (int id = 0; id < items.Length; id++)
+            {
+                foreach (ClipElement element in items[id].Elements)
+                {
+                    entitiesKeyed[element.GeometryIndex].Bounds = bounds[id];
+                    entitiesKeyed[element.GeometryIndex].Material = materials[element.MaterialIndex];
+                }
+            }
+
             gsc.entities = entities.ToArray();
         }
 
@@ -485,8 +494,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 items[id] = new ClipItem(elementsCount);
                 for (int elementId = 0; elementId < elementsCount; elementId++)
                 {
-                    items[id].Elements[elementId].GeometryIndex = file.ReadUint(true);
-                    items[id].Elements[elementId].MaterialIndex = file.ReadUint(true);
+                    items[id].Elements[elementId].GeometryIndex = file.ReadInt(true);
+                    items[id].Elements[elementId].MaterialIndex = file.ReadInt(true);
                 }
             }
 
@@ -526,21 +535,28 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
         }
 
-        private static void ReadBoundsCenterAndDist(ModFile file)
+        private static CameraBounds[] ReadBoundsCenterAndDistSqrd(ModFile file)
         {
             OBJ obj = OBJ.Parse(@"A:\icosphere.obj");
             Mesh mesh = obj.PhysicsMesh;
             uint count = file.ReadUint(true);
+            CameraBounds[] boundsList = new CameraBounds[count];
             StringBuilder visualiser = new StringBuilder();
             int totalVerts = 1;
             for (int id = 0; id < count; id++)
             {
-                Vector4 vec = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
+                Vector3 center = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
+                float distSqrd = file.ReadFloat(true);
+                boundsList[id] = new CameraBounds()
+                {
+                    Center = center,
+                    DistSqrd = distSqrd,
+                };
                 foreach (var vert in mesh.Vertices)
                 {
-                    float result = Math.Min(vec.W * 0.001f, 2);
+                    float result = Math.Min(distSqrd * 0.001f, 2);
                     Vector3 scaled = result * vert;
-                    scaled += vec.Xyz;
+                    scaled += center;
                     visualiser.AppendLine($"v {scaled.X} {scaled.Y} {scaled.Z}");
                 }
 
@@ -553,6 +569,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
 
             File.WriteAllText(@"A:\spheres.obj", visualiser.ToString());
+
+            return boundsList;
         }
 
         private static void ReadBoundsExtentsAndRadius(ModFile file)
@@ -568,7 +586,6 @@ namespace Hologram.FileTypes.GSC.GSCReader
         {
             //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
             uint count = file.ReadUint(true);
-            uint trueCount = count;
             for (int id = 0; id < count; id++)
             { // Pretty sure it's just file.Seek(0x6), and then check if the ushort there is equal to 0xffff
                 file.Seek(0x20, SeekOrigin.Current);
@@ -576,14 +593,12 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 if (val == 1)
                 {
                     file.Seek(0x43, SeekOrigin.Current);
-                    trueCount++;
                 }
                 else
                 {
                     file.Seek(0x1F, SeekOrigin.Current);
                 }
             }
-            Console.WriteLine("True COUNT: " + trueCount);
             //int flags = file.ReadInt(true); // First section here is undeterminable, makes zero sense how variables are mapped.
             //Vector3 size = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
             //file.Seek(32, SeekOrigin.Current); // LODs I think??
@@ -658,7 +673,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
     public struct ClipElement
     {
-        public uint GeometryIndex;
-        public uint MaterialIndex;
+        public int GeometryIndex;
+        public int MaterialIndex;
     }
 }

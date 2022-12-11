@@ -19,7 +19,7 @@ namespace Hologram
             {
                 //GSC test = GSC.Parse(args[0]);
                 //GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\TARDIS\TARDIS8\TARDIS8_NXG.GSC");
-                GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
+                GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\9GHOSTBUSTERS\9GHOSTBUSTERSA\TECH\9GHOSTBUSTERSA_TECH_NXG.GSC");
 
                 StringBuilder mat = new StringBuilder();
                 StringBuilder scene = new StringBuilder();
