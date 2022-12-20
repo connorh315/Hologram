@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using Hologram.Rendering;
 
 namespace Hologram.Objects

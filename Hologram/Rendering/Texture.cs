@@ -1,5 +1,5 @@
 ﻿using ModLib;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Hologram.Rendering
 {

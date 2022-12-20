@@ -1,6 +1,6 @@
 ﻿using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -31,7 +31,10 @@ namespace Hologram.Rendering
         private Stopwatch sw = new Stopwatch();
 
         public MainWindow()
-            : base(GameWindowSettings.Default, NativeWindowSettings.Default)
+            : base(GameWindowSettings.Default, new NativeWindowSettings()
+            {
+                Flags = ContextFlags.ForwardCompatible
+            })
         {
             camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
             
