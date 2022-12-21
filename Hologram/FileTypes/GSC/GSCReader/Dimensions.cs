@@ -537,8 +537,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
         private static CameraBounds[] ReadBoundsCenterAndDistSqrd(ModFile file)
         {
-            OBJ obj = OBJ.Parse(@"A:\icosphere.obj");
-            Mesh mesh = obj.PhysicsMesh;
+            // OBJ obj = OBJ.Parse(@"A:\icosphere.obj");
+            // Mesh mesh = obj.PhysicsMesh;
             uint count = file.ReadUint(true);
             CameraBounds[] boundsList = new CameraBounds[count];
             StringBuilder visualiser = new StringBuilder();
@@ -552,23 +552,23 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     Center = center,
                     DistSqrd = distSqrd,
                 };
-                foreach (var vert in mesh.Vertices)
-                {
-                    float result = Math.Min(distSqrd * 0.001f, 2);
-                    Vector3 scaled = result * vert;
-                    scaled += center;
-                    visualiser.AppendLine($"v {scaled.X} {scaled.Y} {scaled.Z}");
-                }
-
-                foreach (var face in mesh.Faces)
-                {
-                    visualiser.AppendLine($"f {face.vert1 + totalVerts} {face.vert2 + totalVerts} {face.vert3 + totalVerts}");
-                }
-
-                totalVerts += mesh.VertexCount;
+                // foreach (var vert in mesh.Vertices)
+                // {
+                //     float result = Math.Min(distSqrd * 0.001f, 2);
+                //     Vector3 scaled = result * vert;
+                //     scaled += center;
+                //     visualiser.AppendLine($"v {scaled.X} {scaled.Y} {scaled.Z}");
+                // }
+                //
+                // foreach (var face in mesh.Faces)
+                // {
+                //     visualiser.AppendLine($"f {face.vert1 + totalVerts} {face.vert2 + totalVerts} {face.vert3 + totalVerts}");
+                // }
+                //
+                // totalVerts += mesh.VertexCount;
             }
 
-            File.WriteAllText(@"A:\spheres.obj", visualiser.ToString());
+            // File.WriteAllText(@"A:\spheres.obj", visualiser.ToString());
 
             return boundsList;
         }
