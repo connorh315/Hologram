@@ -5,15 +5,13 @@ namespace Hologram.FileTypes.XML;
 public class XMLStack
 {
     public ModFile File;
-    
-    public XMLStack Parent;
 
-    public string Title;
+    public Stack<string> Tags = new(16);
 
     internal void Open(string title, bool shouldNewline, bool selfClose, XMLAttribute[]? attributes)
     {
+        File.WritePadding(2 * Tags.Count, (byte)' ');
         File.WriteByte((byte)'<');
-        if (selfClose) File.WriteByte((byte)'/');
         File.WriteString(title);
         if (attributes != null)
         {
@@ -28,27 +26,29 @@ public class XMLStack
             }
         }
         
+        if (selfClose) File.WriteByte((byte)'/');
         File.WriteByte((byte)'>');
 
         if (shouldNewline) File.WriteByte((byte)'\n');
     }
 
-    internal void WriteClose(string title)
+    internal void WriteClose(string title, bool shouldIndent)
     {
+        if (shouldIndent) File.WritePadding(2 * Tags.Count, (byte)' ');
         File.WriteString("</");
         File.WriteString(title);
         File.WriteString(">\n");
     }
 
     /// <summary>
-    /// Closes this tag
+    /// Pops most-recent tag from stack and closes it
     /// </summary>
-    /// <returns>Parent tag</returns>
+    /// <returns>this</returns>
     public XMLStack Close()
     {
-        WriteClose(Title);
+        WriteClose(Tags.Pop(), true);
 
-        return Parent;
+        return this;
     }
 
     private void WriteChild(string title, XMLAttribute[]? attributes = null, string? content = null)
@@ -57,7 +57,7 @@ public class XMLStack
         {
             Open(title, false, false, attributes);
             File.WriteString(content);
-            WriteClose(title);
+            WriteClose(title, false);
         }
         else
         {
@@ -65,30 +65,31 @@ public class XMLStack
         }
     }
 
+    /// <summary>
+    /// Writes a child and advances the stack
+    /// </summary>
+    /// <param name="title"></param>
+    /// <param name="attributes"></param>
+    /// <returns>this</returns>
     public XMLStack CreateChild(string title, XMLAttribute[]? attributes = null)
     {
-        XMLStack stack = new XMLStack()
-        {
-            File = File,
-            Parent = this,
-            Title = title,
-        };
-
-        stack.Open(title, true, false, attributes);
+        Open(title, true, false, attributes);
         
-        return stack;
+        Tags.Push(title);
+
+        return this;
     }
 
     /// <summary>
-    /// Writes a child and then returns the parent so you can chain multiple siblings together
+    /// Writes a child without pushing to the stack
     /// </summary>
     /// <param name="title"></param>
     /// <param name="attributes"></param>
     /// <param name="content"></param>
-    /// <returns>Parent tag</returns>
+    /// <returns>this</returns>
     public XMLStack CreateSibling(string title, XMLAttribute[]? attributes = null, string? content = null)
     {
-        Parent.WriteChild(title, attributes, content);
+        WriteChild(title, attributes, content);
         return this;
     }
 }
