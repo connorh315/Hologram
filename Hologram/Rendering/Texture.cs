@@ -8,6 +8,13 @@ namespace Hologram.Rendering
         public int Handle { get; private set; }
 
         public string Name;
+
+        /// <summary>
+        /// If true, This texture is an internal texture, such as the white, problem, or the missing texture
+        /// </summary>
+        public bool Internal = false;
+
+        public ModFile File;
         
         public Texture()
         {
@@ -30,7 +37,8 @@ namespace Hologram.Rendering
         private static Texture SquareFactory(byte[] byteStream)
         {
             Texture tex = new Texture();
-
+            tex.Internal = true;
+            
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);

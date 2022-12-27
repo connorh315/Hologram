@@ -19,7 +19,7 @@ namespace Hologram
             using (MainWindow window = new MainWindow())
             {
                 GSC test = GSC.Parse(@"/users/connorharrison/Desktop/gsc/1WIZARDOFOZA_NXG.GSC");
-                DAE.Create("/users/connorharrison/Desktop/test.dae", test.entities);
+                DAE.Create("/users/connorharrison/Desktop/daetest/test.dae", test.entities);
 
                 //GSC test = GSC.Parse(args[0]);
                 //GSC test = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\TARDIS\TARDIS8\TARDIS8_NXG.GSC");

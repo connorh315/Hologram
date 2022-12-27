@@ -284,11 +284,14 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 {
                     if (ddsFiles[i].File == null)
                     {
-                        textures[i] = DDS.DDS.Load(root + ddsFiles[i].Attributes.Path);
+                        string path = root + ddsFiles[i].Attributes.Path;
+                        textures[i] = DDS.DDS.Load(path);
+                        textures[i].File = ModFile.Open(path);
                     }
                     else
                     {
                         textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
+                        textures[i].File = ddsFiles[i].File;
                     }
 
                     if (textures[i] == null)
@@ -297,7 +300,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     }
                     else
                     {
-                        textures[i].Name = ddsFiles[i].Attributes.Path;
+                        textures[i].Name = ddsFiles[i].Attributes.Name;
                     }
                 }
             }

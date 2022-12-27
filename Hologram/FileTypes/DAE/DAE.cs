@@ -30,25 +30,65 @@ public class DAE
             // Effects (colours)
             file.CreateChild("library_effects");
 
-            int matIndex = 0;
+            int matIndex = 1;
             Dictionary<Material, int> materials = new();
-            foreach (Entity ent in entities)
+            Dictionary<string, Texture> textures = new();
+            for (int i = 0; i < entities.Length; i++)
             {
+                Entity ent = entities[i];
                 if (materials.ContainsKey(ent.Material)) continue;
                 materials.Add(ent.Material, matIndex);
                 matIndex++;
+                Texture diffuse = ent.Material.Diffuse;
+                string diffuseName = GenerateCleanName(diffuse.Name != null ? diffuse.Name : "");
                 
                 file.CreateChild("effect", new XMLAttribute[] { new("id", "mat" + materials.Count + "-effect") })
-                    .CreateChild("profile_COMMON")
-                    .CreateChild("technique", new XMLAttribute[] { new("sid", "common") })
+                    .CreateChild("profile_COMMON");
+                if (!diffuse.Internal)
+                {
+                    if (textures.ContainsKey(diffuseName))
+                    {
+                        if (textures[diffuseName] != diffuse)
+                        {
+                            while (true)
+                            {
+                                diffuseName += "1";
+                                if (!textures.ContainsKey(diffuseName)) break;
+                            }
+                            textures.Add(diffuseName, diffuse);
+                        }
+                    }
+                    else
+                    {
+                        textures.Add(diffuseName, diffuse);
+                    }
+                    file.CreateChild("newparam", new XMLAttribute[] { new("sid", diffuseName + "-surface") })
+                        .CreateChild("surface", new XMLAttribute[] { new("type", "2D") })
+                        .CreateSibling("init_from", null, diffuseName)
+                        .Close(2)
+                        .CreateChild("newparam", new XMLAttribute[] { new("sid", diffuseName + "-sampler") })
+                        .CreateChild("sampler2D")
+                        .CreateSibling("source", null, diffuseName + "-surface")
+                        .Close(2);
+                }
+
+                file.CreateChild("technique", new XMLAttribute[] { new("sid", "common") })
                     .CreateChild("lambert")
                     .CreateChild("emission")
                     .CreateSibling("color", new XMLAttribute[] { new("sid", "emission") }, "0 0 0 1")
                     .Close()
-                    .CreateChild("diffuse")
-                    .CreateSibling("color", new XMLAttribute[] { new("sid", "diffuse") },
-                        ent.Material.Color.ToCleanString())
-                    .Close()
+                    .CreateChild("diffuse");
+                if (!diffuse.Internal)
+                {
+                    file.CreateSibling("texture", new XMLAttribute[] { new("texture", diffuseName + "-sampler"), new ("texcoord", $"part{i + 1}-mesh-coords") });
+                }
+                else
+                {
+                    file.CreateSibling("color", new XMLAttribute[] { new("sid", "diffuse") },
+                        ent.Material.Color.ToCleanString());
+                }
+                    
+                file.Close()
                     .CreateChild("index_of_refraction")
                     .CreateSibling("float", new XMLAttribute[] { new("sid", "ior") }, "1.45")
                     .Close()
@@ -58,7 +98,20 @@ public class DAE
             file.Close();
             
             // Images
-            file.CreateSibling("library_images");
+            file.CreateChild("library_images");
+
+            foreach (KeyValuePair<string, Texture> keyedTexture in textures)
+            {
+                Console.WriteLine(keyedTexture.Key);
+                file.CreateChild("image",
+                        new XMLAttribute[] { new("id", keyedTexture.Key), new("name", keyedTexture.Key) })
+                    .CreateSibling("init_from", null, keyedTexture.Key + ".dds")
+                    .Close();
+                keyedTexture.Value.File.Seek(0, SeekOrigin.Begin);
+                //keyedTexture.Value.File.WriteToFile(Path.Join(Path.GetDirectoryName(fileLocation), keyedTexture.Key + ".dds"));
+            }
+            
+            file.Close();
             
             // Materials
             file.CreateChild("library_materials");
@@ -171,5 +224,19 @@ public class DAE
             
             file.Close();
         }
+    }
+
+    private static string GenerateCleanName(string textureName)
+    {
+        if (textureName.Length == 0) return "UnnamedTexture";
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < textureName.Length; i++)
+        {
+            if (textureName[i] == '/') start = i + 1;
+            if (textureName[i] == '.') end = i;
+        }
+
+        return textureName.Substring(start, end - start);
     }
 }
