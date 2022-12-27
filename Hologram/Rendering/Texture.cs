@@ -7,6 +7,8 @@ namespace Hologram.Rendering
     {
         public int Handle { get; private set; }
 
+        public string Name;
+        
         public Texture()
         {
             Handle = GL.GenTexture();

@@ -51,6 +51,16 @@ public class XMLStack
         return this;
     }
 
+    public XMLStack Close(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            WriteClose(Tags.Pop(), true);
+        }
+
+        return this;
+    }
+
     private void WriteChild(string title, XMLAttribute[]? attributes = null, string? content = null)
     {
         if (content != null)

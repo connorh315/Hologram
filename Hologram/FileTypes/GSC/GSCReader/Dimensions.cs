@@ -295,6 +295,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     {
                         textures[i] = Texture.ProblemTexture;
                     }
+                    else
+                    {
+                        textures[i].Name = ddsFiles[i].Attributes.Path;
+                    }
                 }
             }
 
