@@ -102,7 +102,7 @@ public class DAE
 
             foreach (KeyValuePair<string, Texture> keyedTexture in textures)
             {
-                Console.WriteLine(keyedTexture.Key);
+                Console.WriteLine("Writing texture to file: " + keyedTexture.Key);
                 file.CreateChild("image",
                         new XMLAttribute[] { new("id", keyedTexture.Key), new("name", keyedTexture.Key) })
                     .CreateSibling("init_from", null, keyedTexture.Key + ".dds")

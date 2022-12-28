@@ -193,7 +193,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
-                Console.WriteLine(command.Command);
+                //Console.WriteLine(command.Command);
                 switch (command.Command)
                 {
                     case Command.Material:
