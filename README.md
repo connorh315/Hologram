@@ -23,3 +23,5 @@ Requires .NET 6
 Thanks to Alub and Jav for the huge help in reversing the GSC file formats.
 
 Thanks to [OpenTK](https://github.com/opentk/opentk) for their awesomeness
+
+Batteries not included
