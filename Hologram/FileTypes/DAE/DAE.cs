@@ -108,7 +108,7 @@ public class DAE
                     .CreateSibling("init_from", null, keyedTexture.Key + ".dds")
                     .Close();
                 keyedTexture.Value.File.Seek(0, SeekOrigin.Begin);
-                //keyedTexture.Value.File.WriteToFile(Path.Join(Path.GetDirectoryName(fileLocation), keyedTexture.Key + ".dds"));
+                keyedTexture.Value.File.WriteToFile(Path.Join(Path.GetDirectoryName(fileLocation), keyedTexture.Key + ".dds"));
             }
             
             file.Close();

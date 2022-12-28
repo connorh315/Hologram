@@ -260,8 +260,22 @@ namespace Hologram.FileTypes.GSC.GSCReader
             {
                 foreach (ClipElement element in items[id].Elements)
                 {
-                    entitiesKeyed[element.GeometryIndex].Bounds = bounds[id];
-                    entitiesKeyed[element.GeometryIndex].Material = materials[element.MaterialIndex];
+                    if (entitiesKeyed.ContainsKey(element.GeometryIndex))
+                    {
+                        if (id < bounds.Length)
+                        {
+                            entitiesKeyed[element.GeometryIndex].Bounds = bounds[id];
+                        }
+                        else
+                        {
+                            entitiesKeyed[element.GeometryIndex].Bounds = new CameraBounds()
+                            {
+                                Center = Vector3.Zero,
+                                DistSqrd = 100000
+                            };
+                        }
+                        entitiesKeyed[element.GeometryIndex].Material = materials[element.MaterialIndex];
+                    }
                 }
             }
 
