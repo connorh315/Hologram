@@ -16,14 +16,16 @@ namespace Hologram.FileTypes.GSC
 			tangent,
 			colorSet1,
 			uvSet01,
-			unknown6,
+			diffuse,
 			uvSet2,
-			unknown8,
+			albedo,
 			blendIndices0,
 			blendWeight0,
-			unknown11,
+			tangent2,
 			lightDirSet,
-			lightColSet
+			lightColSet,
+			blendPos2,
+			random
 		}
 
 		public enum StorageTypeEnum
