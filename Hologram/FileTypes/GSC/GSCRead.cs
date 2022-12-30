@@ -208,12 +208,12 @@ namespace Hologram.FileTypes.GSC
                         vertex.UVSet0 = ReadValue<Vector2>(definition.VariableType);
                         break;
                     case VertexDefinition.VariableEnum.tangent:
-                    case VertexDefinition.VariableEnum.unknown6:
+                    case VertexDefinition.VariableEnum.diffuse:
                     case VertexDefinition.VariableEnum.uvSet2:
-                    case VertexDefinition.VariableEnum.unknown8:
+                    case VertexDefinition.VariableEnum.albedo:
                     case VertexDefinition.VariableEnum.blendIndices0:
                     case VertexDefinition.VariableEnum.blendWeight0:
-                    case VertexDefinition.VariableEnum.unknown11:
+                    case VertexDefinition.VariableEnum.tangent2:
                     case VertexDefinition.VariableEnum.lightDirSet:
                     case VertexDefinition.VariableEnum.lightColSet:
                         ReadValue<object>(definition.VariableType);
