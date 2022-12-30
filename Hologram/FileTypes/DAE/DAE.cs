@@ -138,9 +138,9 @@ public class DAE
                 StringBuilder texList = new StringBuilder();
                 foreach (var vert in mesh.Vertices)
                 {
-                    posList.Append($"{vert.Position.X} {vert.Position.Y} {vert.Position.Z} ");
-                    colList.Append($"{vert.Color.R} {vert.Color.G} {vert.Color.B} {vert.Color.A} ");
-                    texList.Append($"{vert.UV.X} {vert.UV.Y} ");
+                    posList.Append(FormattableString.Invariant($"{vert.Position.X} {vert.Position.Y} {vert.Position.Z} "));
+                    colList.Append(FormattableString.Invariant($"{vert.Color.R} {vert.Color.G} {vert.Color.B} {vert.Color.A} "));
+                    texList.Append(FormattableString.Invariant($"{vert.UV.X} {vert.UV.Y} "));
                 }
 
                 StringBuilder indices = new StringBuilder();
