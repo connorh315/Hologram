@@ -10,6 +10,8 @@ using Hologram.FileTypes.DDS;
 using System.Text;
 using Hologram.FileTypes.DAE;
 
+using Hologram.FileTypes.GSCWrite;
+
 namespace Hologram
 {
     internal class Program
@@ -19,8 +21,9 @@ namespace Hologram
             using (MainWindow window = new MainWindow())
             {
 #if DEBUG
-                GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\11SCOOBYDOO\11SCOOBYDOOA\11SCOOBYDOOA_NXG.GSC");
-                DAE.Create("C:/users/connor/Desktop/DAE/test.dae", gscFile.entities);
+                GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
+                //GSCWriter.Write(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC", gscFile.entities);
+                //DAE.Create("C:/users/connor/Desktop/DAE/test.dae", gscFile.entities);
 #else
                 GSC gscFile;
                 if (args.Length == 0)

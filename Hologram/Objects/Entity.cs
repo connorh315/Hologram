@@ -27,6 +27,8 @@ namespace Hologram.Objects
         public Entity(Matrix4 transformation)
         {
             this.transformation = transformation;
+
+            position = new Vector3(transformation.Row3);
         }
 
         private void UpdateTransformation()

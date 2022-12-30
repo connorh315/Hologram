@@ -190,10 +190,11 @@ namespace Hologram.FileTypes.GSC.GSCReader
             int dynamicCount = 0;
             Console.WriteLine("START!");
             Dictionary<int, Entity> entitiesKeyed = new Dictionary<int, Entity>();
+            Dictionary<int, MeshX> meshesKeyed = new Dictionary<int, MeshX>();
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
-                //Console.WriteLine(command.Command);
+                Console.WriteLine(command.Command);
                 switch (command.Command)
                 {
                     case Command.Material:
@@ -211,15 +212,23 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         break;
                     case Command.Mesh:
                         meshCount++;
-                        if (meshCount == 349)
+                        if (command.Index == 0)
                         {
                             Console.WriteLine();
                         }
                         Matrix4x3 local = positions[matrixId];
-                        MeshX mesh = gsc.ConvertPart(gsc.parts[command.Index]);
+                        if (!meshesKeyed.ContainsKey(command.Index))
+                        { // This needs fixing. somehow using a dictionary uses more memory than not.
+                            meshesKeyed.Add(command.Index, gsc.ConvertPart(gsc.parts[command.Index]));
+                        }
+                        MeshX mesh = meshesKeyed[command.Index];
                         Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
                         ent.Mesh = mesh;
                         ent.Material = materials[materialId];
+                        if (ent.Material.ShaderName == "_TTShaderMaterial21")
+                        {
+                            Console.WriteLine();
+                        }
                         //if (textures.Length != 0)
                         //{
                         //    if (materials[materialId].DiffuseTexture != 255)
