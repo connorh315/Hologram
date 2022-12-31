@@ -10,6 +10,8 @@ namespace Hologram.FileTypes
     {
         public MeshX Mesh;
 
+        public static Color4 DefaultVertexColor = Color4.White;
+
         private static Vector3 ReadVertex(ModFile file)
         {
             StringBuilder builder = new StringBuilder();
@@ -197,7 +199,7 @@ namespace Hologram.FileTypes
 
             OBJ obj = new OBJ();
 
-            using (ModFile file = ModFile.Open(fileLocation))
+            using (ModFile file = ModFile.Open(fileLocation, true)) // It is ridiculously slow to read OBJ files direct from disk so it's buffered first
             {
                 while (file.Position < file.Length)
                 {
@@ -298,7 +300,7 @@ namespace Hologram.FileTypes
 
                 ushort id = (ushort)vertices.Count;
                 list.Add(new VertexID(uvIndex, id));
-                Vertex vertex = new Vertex(rawVertices[vertIndex], rawNormals[normIndex], rawUV[uvIndex], Color4.White);
+                Vertex vertex = new Vertex(rawVertices[vertIndex], rawNormals[normIndex], rawUV[uvIndex], DefaultVertexColor);
                 vertices.Add(vertex);
 
                 return id;
@@ -309,7 +311,7 @@ namespace Hologram.FileTypes
                 ushort id = (ushort)vertices.Count;
                 newList.Add(new VertexID(uvIndex, id));
                 vertDictionary.Add(vertIndex, newList);
-                Vertex vertex = new Vertex(rawVertices[vertIndex], rawNormals[normIndex], rawUV[uvIndex], Color4.White);
+                Vertex vertex = new Vertex(rawVertices[vertIndex], rawNormals[normIndex], rawUV[uvIndex], DefaultVertexColor);
                 vertices.Add(vertex);
 
                 return id;
