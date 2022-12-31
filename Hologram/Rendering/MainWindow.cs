@@ -17,15 +17,11 @@ namespace Hologram.Rendering
 {
     public class MainWindow : GameWindow
     {
-        private MeshX activeMesh;
-
         private Camera camera;
         private Shader primaryShader;
         private Shader lineShader;
 
         public static int MeshColorLocation;
-
-        private MeshX[] Meshes = new MeshX[50];
 
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
@@ -45,106 +41,20 @@ namespace Hologram.Rendering
 
             UpdateViewport(Size);
 
-            //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), -1);
-
             this.RenderFrequency = 120;
             this.UpdateFrequency = 120;
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
-            //this.activeMesh = mesh;
             sw.Start();
         }
 
-        public void AddMesh(MeshX mesh, bool isActive = false)
-        {
-            if (isActive)
-            {
-                activeMesh = mesh;
-            }
-
-            for (int i = 0; i < Meshes.Length; i++)
-            {
-                if (Meshes[i] == null)
-                {
-                    Meshes[i] = mesh;
-                    break;
-                }
-            }
-        }
-
-        private Entity[] entities;
-        public void AddEntities(Entity[] entities)
-        {
-            this.entities = entities;
-        }
+        public List<Entity> Entities;
 
         const float cameraHSpeed = 24f;
         const float cameraVSpeed = 24f;
 
         double[] frameTimeBuffer = new double[240];
         int offset = 0;
-
-        private int currentNumero = 0;
-        private void SwitchMeshes()
-        { // Chuck this whole function out the window at some point
-            var input = KeyboardState;
-
-            int numero = -1;
-            if (input.IsKeyDown(Keys.D1))
-            {
-                numero = 0;
-            }
-            else if (input.IsKeyDown(Keys.D2))
-            {
-                numero = 1;
-            }
-            else if (input.IsKeyDown(Keys.D3))
-            {
-                numero = 2;
-            }
-            else if (input.IsKeyDown(Keys.D4))
-            {
-                numero = 3;
-            }
-            else if (input.IsKeyDown(Keys.D5))
-            {
-                numero = 4;
-            }
-            else if (input.IsKeyDown(Keys.D6))
-            {
-                numero = 5;
-            }
-            else if (input.IsKeyDown(Keys.D7))
-            {
-                numero = 6;
-            }
-            else if (input.IsKeyDown(Keys.D8))
-            {
-                numero = 7;
-            }
-            else if (input.IsKeyDown(Keys.D9))
-            {
-                numero = 8;
-            }
-            else if (input.IsKeyReleased(Keys.Right))
-            {
-                numero = currentNumero + 1;
-            }
-            else if (input.IsKeyReleased(Keys.Left))
-            {
-                numero = currentNumero - 1;
-            }
-
-            if (numero != -1)
-            {
-                if (Meshes[numero] == null || numero == currentNumero) { return; }
-
-                activeMesh = Meshes[numero];
-                currentNumero = numero;
-
-                Logger.Log(new LogSeg("Active Scene: {0}", activeMesh.Name));
-            }
-        }
 
         private void UpdateViewport(Vector2i size)
         {
@@ -203,8 +113,6 @@ namespace Hologram.Rendering
                 camera.Translate(adjustedSpeed * camera.Right);
             }
 
-            SwitchMeshes();
-
             frameTimeBuffer[offset] = args.Time;
             offset++;
             if (offset == frameTimeBuffer.Length)
@@ -250,11 +158,7 @@ namespace Hologram.Rendering
 
             if (MouseState.IsButtonReleased(MouseButton.Left))
             {
-                //int raycastResult = Physics.Raycast(camera, dir, activeMesh); // Needs converting to MeshX
-                //int truePrim = ((raycastResult & 1) == 1) ? (raycastResult - 1) / 2 : raycastResult / 2;
-                //Console.WriteLine("Selected primitive: {0}", truePrim);
-                //GL.UseProgram(primaryShader);
-                //GL.Uniform1(GL.GetUniformLocation(primaryShader, "selectedPrimitive"), raycastResult);
+
             }
         }
 
@@ -264,27 +168,19 @@ namespace Hologram.Rendering
 
             GL.UseProgram(primaryShader);
 
-            //int worldLoc = GL.GetUniformLocation(primaryShader, "world");
-            //Matrix4 rotMat = Matrix4.CreateRotationY((float)TimeAlive);
-            //Matrix4 rotMat = Matrix4.Identity;
-            //GL.UniformMatrix4(worldLoc, true, ref rotMat);
-
             int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
             GL.Uniform3(cameraDir, camera.Forward);
 
             int worldLoc = GL.GetUniformLocation(primaryShader, "world");
-            foreach (Entity entity in entities)
+            foreach (Entity entity in Entities)
             {
                 if (Vector3.DistanceSquared(camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
                 {
                     entity.Draw(worldLoc);
                 }
             }
-            //activeMesh.Draw();
 
             GL.UseProgram(lineShader);
-            //activeMesh.DrawLines();
-            //debugLine.Draw();
 
             this.Context.SwapBuffers();
 
@@ -305,8 +201,6 @@ namespace Hologram.Rendering
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            //GL.UseProgram(primaryShader);
-
             base.OnLoad();
         }
 
@@ -318,9 +212,6 @@ namespace Hologram.Rendering
 
         protected override void OnUnload()
         {
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            //GL.DeleteBuffer(vertexBuffer);
-
             GL.DeleteProgram(primaryShader);
 
             base.OnUnload();
