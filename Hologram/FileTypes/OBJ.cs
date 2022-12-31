@@ -1,6 +1,7 @@
 ﻿using ModLib;
 using OpenTK.Mathematics;
 using Hologram.Objects;
+using Hologram.Rendering;
 using System.Text;
 using System.Globalization;
 
@@ -8,7 +9,7 @@ namespace Hologram.FileTypes
 {
     public class OBJ
     {
-        public MeshX Mesh;
+        public Entity Entity;
 
         public static Color4 DefaultVertexColor = Color4.White;
 
@@ -271,11 +272,28 @@ namespace Hologram.FileTypes
                     }
                 }
 
-                obj.Mesh = new MeshX();
-                obj.Mesh.Vertices = vertices.ToArray();
-                obj.Mesh.Indices = indices.ToArray();
+                obj.Entity = new Entity(Matrix4.Identity)
+                {
+                    Mesh = new MeshX()
+                    {
+                        Vertices = vertices.ToArray(),
+                        Indices = indices.ToArray()
+                    },
+                    Bounds = new CameraBounds()
+                    {
+                        Center = Vector3.Zero,
+                        DistSqrd = 10000
+                    },
+                    Material = new Material()
+                    {
+                        Color = Color4.White,
+                        Diffuse = Texture.WhiteTexture,
+                        Normal = Texture.WhiteTexture,
+                        ShaderName = "OBJFile"
+                    }
+                };
 
-                //obj.Hash = HashCode.Combine(vertices.GetHashCode(), indices.GetHashCode()); // This is so much hassle.
+                obj.Entity.Mesh.Setup();
 
                 return obj;
             }

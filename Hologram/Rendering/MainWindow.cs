@@ -48,7 +48,7 @@ namespace Hologram.Rendering
             sw.Start();
         }
 
-        public List<Entity> Entities;
+        public List<Entity> Entities = new List<Entity>();
 
         const float cameraHSpeed = 24f;
         const float cameraVSpeed = 24f;
@@ -191,12 +191,6 @@ namespace Hologram.Rendering
         {
             GL.ClearColor(Color4.Black);
 
-            for (int i = 0; i < Meshes.Length; i++)
-            {
-                if (Meshes[i] == null) break;
-                Meshes[i].Setup();
-            }
-
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -215,6 +209,19 @@ namespace Hologram.Rendering
             GL.DeleteProgram(primaryShader);
 
             base.OnUnload();
+        }
+
+        protected override void OnFileDrop(FileDropEventArgs e)
+        {
+            base.OnFileDrop(e);
+
+            foreach (string file in e.FileNames)
+            {
+                Entity[] entities = FileLoader.LoadModelFile(file);
+                if (entities == null) continue;
+                
+                Entities.AddRange(entities);
+            }
         }
     }
 }
