@@ -20,6 +20,7 @@
     <Reference Include="WiiUTexturesTool">
       <HintPath>..\..\WiiUTexturesTool\bin\Release\net6.0\WiiUTexturesTool.dll</HintPath>
     </Reference>
+    <PackageReference Include="NativeFileDialogSharp" Version="0.5.0" />
   </ItemGroup>
 
 </Project>
