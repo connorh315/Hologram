@@ -47,6 +47,7 @@ namespace Hologram.Engine
             
             if (pixel[0] == 0) return null;
 
+
             return entities[pixel[0] - 1];
         }
     }

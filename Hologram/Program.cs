@@ -10,6 +10,7 @@ using Hologram.FileTypes.DDS;
 using System.Text;
 using Hologram.FileTypes.DAE;
 using NativeFileDialogSharp;
+using Hologram.Resources;
 
 using Hologram.FileTypes.GSCWrite;
 
@@ -22,10 +23,13 @@ namespace Hologram
             using (MainWindow window = new MainWindow())
             {
 #if DEBUG
-                //OBJ arrow = OBJ.Parse(@"/users/connorharrison/Desktop/scenetest/Arrow.obj");
-                //HOB.Write(@"/users/connorharrison/Desktop/scenetest/Arrow.hob", arrow.Entity);
-                GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
-                window.Entities.AddRange(gscFile.entities);
+                Entity ent = new Arrow().LoadEntity();
+                ent.Material.Color = Color4.DarkRed;
+                window.Entities.Add(ent);
+                //OBJ arrow = OBJ.Parse(@"A:\Dimensions\Resources\Arrow.obj");
+                //HOB.Write(@"A:\Dimensions\Resources\Arrow.hob", arrow.Entity);
+                //GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
+                //window.Entities.AddRange(gscFile.entities);
                 //OBJ obj_white = OBJ.Parse(@"A:\Dimensions\scenetest\whiteside.obj");
                 //obj_white.Mesh.Setup();
                 //Entity whiteside = new Entity(Matrix4.Identity) { Mesh = obj_white.Mesh, Bounds = new CameraBounds() { Center = Vector3.Zero, DistSqrd = 10000 }, Material = gscFile.entities[0].Material };
@@ -34,8 +38,6 @@ namespace Hologram
                 //obj_black.Mesh.Setup();
                 //Entity blackside = new Entity(Matrix4.Identity) { Mesh = obj_black.Mesh, Bounds = new CameraBounds() { Center = Vector3.Zero, DistSqrd = 10000 }, Material = gscFile.entities[0].Material };
                 //Entity[] test = new Entity[] { whiteside, blackside };
-
-                Dialog.FileSave();
 
                 //GSCWriter.Write(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC", test);
                 //DAE.Create("C:/users/connor/Desktop/DAE/test.dae", gscFile.entities);
