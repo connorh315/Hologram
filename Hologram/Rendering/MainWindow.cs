@@ -23,13 +23,16 @@ namespace Hologram.Rendering
 
         public static int MeshColorLocation;
 
+        private GLFWCallbacks.FramebufferSizeCallback fbSizeCallback;
+        private int fbWidth;
+        
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
 
         public MainWindow()
             : base(GameWindowSettings.Default, new NativeWindowSettings()
             {
-                Flags = ContextFlags.ForwardCompatible
+                Flags = ContextFlags.ForwardCompatible,
             })
         {
             camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
@@ -39,13 +42,19 @@ namespace Hologram.Rendering
 
             MeshColorLocation = GL.GetUniformLocation(primaryShader, "meshColor");
 
-            UpdateViewport(Size);
-
             this.RenderFrequency = 120;
             this.UpdateFrequency = 120;
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
             sw.Start();
+            
+            unsafe
+            {
+                fbSizeCallback = SizeCallback;
+                GLFW.SetFramebufferSizeCallback(this.WindowPtr, fbSizeCallback);
+                GLFW.GetFramebufferSize(this.WindowPtr, out fbWidth, out int height);
+                UpdateViewport(new Vector2i(fbWidth, height));
+            }
         }
 
         public List<Entity> Entities = new List<Entity>();
@@ -56,6 +65,12 @@ namespace Hologram.Rendering
         double[] frameTimeBuffer = new double[240];
         int offset = 0;
 
+        private unsafe void SizeCallback(Window* window, int width, int height)
+        {
+            fbWidth = width;
+            UpdateViewport(new Vector2i(width, height));
+        }
+        
         private void UpdateViewport(Vector2i size)
         {
             GL.Viewport(0, 0, size.X, size.Y);
@@ -71,7 +86,7 @@ namespace Hologram.Rendering
             int projectionLocLine = GL.GetUniformLocation(lineShader, "projection");
             GL.UniformMatrix4(projectionLocLine, false, ref projectionMat);
         }
-
+        
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
@@ -155,10 +170,17 @@ namespace Hologram.Rendering
             }
 
             Vector3 dir = camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
-
+            int[] viewport = new int[4];
+            
             if (MouseState.IsButtonReleased(MouseButton.Left))
             {
-
+                TryGetCurrentMonitorScale(out float horizontal, out _);
+                Vector2 corrected = new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y);
+                Entity result = Physics.Pick(Entities.ToArray(), camera, corrected * horizontal);
+                if (result != null)
+                {
+                    Logger.Log(result.Name);
+                }
             }
         }
 
@@ -193,14 +215,14 @@ namespace Hologram.Rendering
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             base.OnLoad();
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
-            UpdateViewport(e.Size);
+            // UpdateViewport(e.Size);
             base.OnResize(e);
         }
 

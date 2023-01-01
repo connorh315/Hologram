@@ -6,8 +6,6 @@ namespace Hologram.Objects
 {
     public class MeshX
     {
-        public string Name;
-
         // Deprecated
         public Color4 Color = Color4.White;
 
@@ -43,13 +41,18 @@ namespace Hologram.Objects
             GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * 2, Indices, BufferUsageHint.StaticDraw);
         }
 
+        public void Draw()
+        {
+            GL.BindVertexArray(vertexArray);
+            GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedShort, 0);
+        }
+        
         public void Draw(Material material)
         {
             Color4 col = material.Color;
             GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(col.R, col.G, col.B));
 
-            GL.BindVertexArray(vertexArray);
-            GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedShort, 0);
+            Draw();
         }
     }
 

@@ -290,7 +290,8 @@ namespace Hologram.FileTypes
                         Diffuse = Texture.WhiteTexture,
                         Normal = Texture.WhiteTexture,
                         ShaderName = "OBJFile"
-                    }
+                    },
+                    Name = Path.GetFileNameWithoutExtension(fileLocation)
                 };
 
                 obj.Entity.Mesh.Setup();

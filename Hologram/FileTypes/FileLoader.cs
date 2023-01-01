@@ -17,6 +17,13 @@ namespace Hologram.FileTypes
                 case ".gsc":
                     GSC.GSC gsc = GSC.GSC.Parse(fileLocation);
                     return gsc.entities;
+                case ".hob":
+                    Entity hob;
+                    using (ModFile file = ModFile.Open(fileLocation))
+                    {
+                        hob = HOB.Parse(file);
+                    }
+                    return new Entity[] { hob };
                 default:
                     Logger.Error($"Not sure what to do with file extension: {extension}");
                     return null;

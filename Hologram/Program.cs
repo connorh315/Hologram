@@ -21,6 +21,8 @@ namespace Hologram
             using (MainWindow window = new MainWindow())
             {
 #if DEBUG
+                OBJ arrow = OBJ.Parse(@"/users/connorharrison/Desktop/scenetest/Arrow.obj");
+                HOB.Write(@"/users/connorharrison/Desktop/scenetest/Arrow.hob", arrow.Entity);
                 //GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
                 //OBJ obj_white = OBJ.Parse(@"A:\Dimensions\scenetest\whiteside.obj");
                 //obj_white.Mesh.Setup();

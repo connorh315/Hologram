@@ -2,6 +2,7 @@
 using ModLib;
 
 using Hologram.FileTypes.GSC;
+using Hologram.Settings;
 
 namespace Hologram.FileTypes.GSCWrite;
 
@@ -27,20 +28,15 @@ public class GSCWriter
             file.WriteString("OFNI");
             file.WriteInt(3, true);
 
-            file.WritePascalString("ukrrobinso", 1);
-            file.WritePascalString("CONVDATE[Sat Jun 20 17:31:37 2015]", 1);
+            file.WritePascalString(HoloSettings.Author, 1);
+            file.WritePascalString($"CONVDATE[{DateTime.Now.ToString("F")}]", 1);
             file.WritePascalString("", 1);
 
             file.WriteString("LBTN");
             file.WriteInt(0x4f, true);
 
-            file.WriteInt(0x44, true);
-            file.WriteString("default_string", 1);
-            file.WriteString("CUT_Tree", 1);
-            file.WriteString("GAME_clouds08", 1);
-            file.WriteString("CUT_Floor", 1);
-            file.WriteString("CUT_Tree1", 1);
-            file.WriteString("CUT_Studs", 1);
+            file.WriteShort(0);
+            file.WritePascalString("default_string", 1);
 
             file.WritePadding(4);
 
@@ -164,7 +160,7 @@ public class GSCWriter
             file.WriteFloat(1, true);
             file.WriteFloat(1, true);
             file.WriteInt(1, true);
-            file.WriteString("SPUC");
+            file.WriteString("SUPC");
             file.WriteInt(4, true);
             file.WriteString("ROTV");
             file.WriteInt(0);
@@ -205,19 +201,6 @@ public class GSCWriter
                 file.WriteInt(1, true);
             }
 
-            string[] testStrings = new string[]
-            {
-                "LollyPops",
-                "ChocolateBars",
-                "CandyCorn",
-                "Licorice1",
-                "Licorice2",
-                "Cake",
-                "IceCreamSandwich",
-                "IceCream",
-                "IceCreamCone"
-            };
-
             // Instances
             file.WriteString("ROTV");
             file.WriteInt(entities.Length, true);
@@ -225,7 +208,7 @@ public class GSCWriter
             {
                 Entity ent = entities[i];
                 var pos = ent.Position;
-                file.WritePascalString(testStrings[i], 1);
+                file.WritePascalString(ent.Name, 1);
 
                 // Matrix
                 file.WriteFloat(1, true);
@@ -334,14 +317,14 @@ public class GSCWriter
                 file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
-                file.WriteFloat(1, true);
-                file.WriteFloat(0, true);
-                file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
                 file.WriteFloat(1, true);
+                file.WriteFloat(0, true);
+                file.WriteFloat(0, true);
                 file.WriteFloat(pos.X, true);
                 file.WriteFloat(pos.Y, true);
                 file.WriteFloat(pos.Z, true);
+                file.WriteFloat(1, true);
             }
 
             file.WriteString("ROTV");

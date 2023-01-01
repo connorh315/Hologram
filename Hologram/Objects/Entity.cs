@@ -16,6 +16,8 @@ namespace Hologram.Objects
         public Vector3 Rotation { get { return rotation; } set { rotation = value; UpdateTransformation(); } }
         public Vector3 Scale { get { return scale; } set { scale = value; UpdateTransformation(); } }
 
+        public string Name;
+        
         public Matrix4 Transformation => transformation;
 
         public MeshX Mesh;
