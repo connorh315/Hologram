@@ -174,9 +174,9 @@ namespace Hologram.Rendering
             
             if (MouseState.IsButtonReleased(MouseButton.Left))
             {
-                float horizontalScale = Size.X / (float)fbWidth;
+                float horizontalScale = fbWidth / (float)Size.X;
                 Vector2 corrected = new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y);
-                Entity result = Physics.Pick(Entities.ToArray(), camera, corrected);
+                Entity result = Physics.Pick(Entities.ToArray(), camera, corrected * horizontalScale);
                 if (result != null)
                 {
                     Logger.Log(result.Name);
