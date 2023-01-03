@@ -42,6 +42,8 @@ namespace Hologram.Engine
                 EntityManager.OnMouseReleased(mouseState);
             }
 
+            EntityManager.Update();
+
             previousMousePosition = Window.CorrectedMouse;
         }
     }

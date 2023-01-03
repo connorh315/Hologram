@@ -65,5 +65,12 @@ namespace Hologram.Objects.Entities
             Color4 current = Material.Color;
             Material.Color = new Color4(current.R / 0.8f, current.G / 0.8f, current.B / 0.8f, 255);
         }
+
+        public override void Update()
+        { // Looks ridiculous
+            //Vector3 dist = Manager.Window.Camera.Position - Position;
+            //float scale = Math.Clamp(dist.LengthFast / 100, 0.1f, 1f);
+            //Scale = new Vector3(scale, scale, scale);
+        }
     }
 }

@@ -68,6 +68,8 @@ namespace Hologram.Rendering
 
         public List<Entity> Entities = new List<Entity>();
 
+        public List<Entity> EngineEntities = new List<Entity>();
+
         const float cameraHSpeed = 24f;
         const float cameraVSpeed = 24f;
 
@@ -211,6 +213,13 @@ namespace Hologram.Rendering
                 {
                     entity.Draw(worldLoc);
                 }
+            }
+
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            foreach (Entity engineEntity in EngineEntities)
+            {
+                engineEntity.Draw(worldLoc);
             }
 
             GL.UseProgram(lineShader);

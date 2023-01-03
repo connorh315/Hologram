@@ -21,5 +21,7 @@ namespace Hologram.Objects.Entities
         public abstract void OnMouseDown(HologramMouse mouseState);
 
         public abstract void OnMouseReleased(HologramMouse mouseState);
+
+        public abstract void Update();
     }
 }

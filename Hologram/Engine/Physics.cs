@@ -13,7 +13,7 @@ namespace Hologram.Engine
     {
         private static Shader colorPicker = new Shader(Colored.VertexCode, Colored.FragmentCode);
         
-        public static Entity? Pick(Entity[] entities, Camera camera, Vector2 point)
+        public static Entity? Pick(Entity[] entities, Entity[] engineEntities, Camera camera, Vector2 point)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -29,11 +29,13 @@ namespace Hologram.Engine
 
             int color = GL.GetUniformLocation(colorPicker, "PickingColor");
             int worldLoc = GL.GetUniformLocation(colorPicker, "world");
-            for (int i = 0; i < entities.Length; i++)
+            for (int i = 0; i < entities.Length + engineEntities.Length; i++)
             {
+                Entity ent = (i < entities.Length) ? entities[i] : engineEntities[i - entities.Length];
+                if (i == entities.Length) GL.Clear(ClearBufferMask.DepthBufferBit);
                 int id = i + 1;
-                MeshX mesh = entities[i].Mesh;
-                Matrix4 transformation = entities[i].Transformation;
+                MeshX mesh = ent.Mesh;
+                Matrix4 transformation = ent.Transformation;
                 GL.UniformMatrix4(worldLoc, false, ref transformation);
                 GL.Uniform3(color, new Vector3((((id) & 0xff0000) >> 16) / 255f, (((id) & 0xff00) >> 8) / 255f, ((id) & 0xff) / 255f));
                 mesh.Draw();
@@ -49,8 +51,9 @@ namespace Hologram.Engine
             
             if ((pixel[2] == 0) && (pixel[1] == 0) && (pixel[0] == 0)) return null;
 
+            int entityId = ((pixel[0] * 65536) + (pixel[1] * 256) + pixel[2]) - 1;
 
-            return entities[((pixel[0] * 65536) + (pixel[1] * 256) + pixel[2]) - 1];
+            return (entityId < entities.Length) ? entities[entityId] : engineEntities[entityId - entities.Length];
         }
     }
 }

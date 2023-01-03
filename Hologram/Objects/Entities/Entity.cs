@@ -14,14 +14,14 @@ namespace Hologram.Objects.Entities
 
         public List<Entity> Children = new List<Entity>();
 
-        public Entity Parent;
+        public Entity? Parent;
 
-        public void SetParent(Entity parent)
+        public void SetParent(Entity? parent)
         {
             Parent?.Children.Remove(this);
 
             Parent = parent;
-            Parent.Children.Add(this);
+            Parent?.Children.Add(this);
         }
 
         public void AddChild(Entity child)
