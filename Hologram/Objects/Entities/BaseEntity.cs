@@ -21,19 +21,9 @@ namespace Hologram.Objects.Entities
 
         private void ApplyRotation()
         {
-            //transformation = Matrix4.Identity;
-            //if (rotation.X != 0)
-            //{
-                transformation *= Matrix4.CreateRotationZ(rotation.Z.Deg2Rad());
-                transformation *= Matrix4.CreateRotationY(rotation.Y.Deg2Rad());
-                transformation *= Matrix4.CreateRotationX(rotation.X.Deg2Rad());
-            //}
-            //if (rotation.Y != 0)
-            //{
-            //}
-            //if (rotation.Z != 0)
-            //{
-            //}
+            transformation *= Matrix4.CreateRotationZ(rotation.Z.Deg2Rad());
+            transformation *= Matrix4.CreateRotationY(rotation.Y.Deg2Rad());
+            transformation *= Matrix4.CreateRotationX(rotation.X.Deg2Rad());
         }
 
         private void UpdateTransformation()
