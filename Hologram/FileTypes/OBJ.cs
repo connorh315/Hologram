@@ -4,6 +4,7 @@ using Hologram.Objects;
 using Hologram.Rendering;
 using System.Text;
 using System.Globalization;
+using Hologram.Objects.Entities;
 
 namespace Hologram.FileTypes
 {

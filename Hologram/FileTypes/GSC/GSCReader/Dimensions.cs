@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Hologram.Objects;
 using Hologram.Rendering;
 using WiiUTexturesTool;
+using Hologram.Objects.Entities;
 
 // Needs some huge abstractions, but for now this will do.
 

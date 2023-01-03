@@ -2,6 +2,7 @@ using System.Text;
 using Hologram.Extensions;
 using Hologram.FileTypes.XML;
 using Hologram.Objects;
+using Hologram.Objects.Entities;
 using Hologram.Rendering;
 using Hologram.Settings;
 

@@ -71,7 +71,7 @@ namespace Hologram.Rendering
             viewportSize = size;
         }
 
-        public Vector3 ScreenToWorldPoint(int posX, int posY)
+        public Vector3 ScreenToWorldRay(int posX, int posY)
         {
             Vector2 normalized = GetNormalizedDeviceCoords(posX, posY);
             Vector4 clipCoords = new Vector4(normalized.X, normalized.Y, -1, 1);

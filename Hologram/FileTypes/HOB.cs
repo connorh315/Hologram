@@ -1,4 +1,5 @@
 using Hologram.Objects;
+using Hologram.Objects.Entities;
 using Hologram.Rendering;
 using ModLib;
 using OpenTK.Mathematics;
@@ -37,7 +38,7 @@ public class HOB
         }
     }
 
-    public static Entity Parse(ModFile file)
+    public static MeshX ParseMesh(ModFile file)
     {
         string name = file.ReadPascalString(true);
         int verticesCount = file.ReadInt(true);
@@ -59,6 +60,16 @@ public class HOB
         {
             mesh.Indices[i] = file.ReadUshort(true);
         }
+
+        return mesh;
+    }
+
+    public static Entity Parse(ModFile file)
+    {
+        MeshX mesh = ParseMesh(file);
+
+        file.Seek(0, SeekOrigin.Begin);
+        string name = file.ReadPascalString(true); // This is so tacky, move the name to the end of the file instead.
 
         Entity ent = new Entity(Matrix4.Identity)
         {

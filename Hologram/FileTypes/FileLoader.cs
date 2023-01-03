@@ -1,6 +1,6 @@
-﻿using Hologram.Objects;
-using Hologram.FileTypes.GSC;
+﻿using Hologram.FileTypes.GSC;
 using ModLib;
+using Hologram.Objects.Entities;
 
 namespace Hologram.FileTypes
 {

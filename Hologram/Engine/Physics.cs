@@ -5,6 +5,7 @@ using Hologram.Rendering.Shaders;
 using ModLib;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Hologram.Objects.Entities;
 
 namespace Hologram.Engine
 {
@@ -30,10 +31,11 @@ namespace Hologram.Engine
             int worldLoc = GL.GetUniformLocation(colorPicker, "world");
             for (int i = 0; i < entities.Length; i++)
             {
+                int id = i + 1;
                 MeshX mesh = entities[i].Mesh;
                 Matrix4 transformation = entities[i].Transformation;
                 GL.UniformMatrix4(worldLoc, false, ref transformation);
-                GL.Uniform3(color, new Vector3((i + 1)/255f, 255, 255));
+                GL.Uniform3(color, new Vector3((((id) & 0xff0000) >> 16) / 255f, (((id) & 0xff00) >> 8) / 255f, ((id) & 0xff) / 255f));
                 mesh.Draw();
             }
             GL.UseProgram(0);
@@ -45,10 +47,10 @@ namespace Hologram.Engine
             byte[] pixel = new byte[4];
             GL.ReadPixels((int)Math.Floor(point.X), (int)Math.Floor(point.Y), 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, pixel);
             
-            if (pixel[0] == 0) return null;
+            if ((pixel[2] == 0) && (pixel[1] == 0) && (pixel[0] == 0)) return null;
 
 
-            return entities[pixel[0] - 1];
+            return entities[((pixel[0] * 65536) + (pixel[1] * 256) + pixel[2]) - 1];
         }
     }
 }

@@ -23,9 +23,6 @@ namespace Hologram
             using (MainWindow window = new MainWindow())
             {
 #if DEBUG
-                Entity ent = new Arrow().LoadEntity();
-                ent.Material.Color = Color4.DarkRed;
-                window.Entities.Add(ent);
                 //OBJ arrow = OBJ.Parse(@"A:\Dimensions\Resources\Arrow.obj");
                 //HOB.Write(@"A:\Dimensions\Resources\Arrow.hob", arrow.Entity);
                 //GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Hologram.Resources
 {
-    public class Arrow : BakedEntity
+    public class ArrowModel : BakedMesh
     {
+        protected override string Name => "Arrow";
+
         public override byte[] ModelData
         {
             get => new byte[] {

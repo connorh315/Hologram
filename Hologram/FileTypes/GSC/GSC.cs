@@ -1,6 +1,7 @@
 ﻿using ModLib;
 using Hologram.Objects;
 using System.Collections.Generic;
+using Hologram.Objects.Entities;
 
 namespace Hologram.FileTypes.GSC
 {

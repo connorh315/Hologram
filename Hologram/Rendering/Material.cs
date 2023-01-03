@@ -6,10 +6,21 @@ namespace Hologram.Rendering
     {
         public Color4 Color = Color4.White;
 
-        public Texture Diffuse;
+        public Texture Diffuse = Texture.WhiteTexture;
 
-        public Texture Normal;
+        public Texture Normal = Texture.WhiteTexture;
 
-        public string ShaderName;
+        public string ShaderName = "Unnamed";
+
+        public Material Duplicate()
+        {
+            return new Material()
+            {
+                Color = Color,
+                Diffuse = Diffuse,
+                Normal = Normal,
+                ShaderName = ShaderName
+            };
+        }
     }
 }

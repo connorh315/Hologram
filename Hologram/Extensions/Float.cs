@@ -12,5 +12,10 @@ namespace Hologram.Extensions
         {
             return (float)((Math.PI / 180) * deg);
         }
+
+        public static float Rad2Deg(this float rad)
+        {
+            return (float)((180/Math.PI) * rad);
+        }
     }
 }

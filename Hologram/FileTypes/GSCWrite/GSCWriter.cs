@@ -3,6 +3,7 @@ using ModLib;
 
 using Hologram.FileTypes.GSC;
 using Hologram.Settings;
+using Hologram.Objects.Entities;
 
 namespace Hologram.FileTypes.GSCWrite;
 

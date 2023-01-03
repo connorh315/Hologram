@@ -3,8 +3,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-
-using Hologram.Objects;
 using Hologram.Extensions;
 using Hologram.Engine;
 using Hologram.FileTypes;
@@ -12,12 +10,13 @@ using Hologram.FileTypes;
 using System.Diagnostics;
 using ModLib;
 using ImGuiNET;
+using Hologram.Objects.Entities;
 
 namespace Hologram.Rendering
 {
     public class MainWindow : GameWindow
     {
-        private Camera camera;
+        public Camera Camera;
         private Shader primaryShader;
         private Shader lineShader;
 
@@ -29,13 +28,23 @@ namespace Hologram.Rendering
         public double TimeAlive => sw.Elapsed.TotalSeconds;
         private Stopwatch sw = new Stopwatch();
 
+        /// <summary>
+        /// Mouse position from bottom-left of window, corrected with framebuffer scaling
+        /// </summary>
+        public Vector2 CorrectedFlippedMouse => (fbWidth / (float)Size.X) * (new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y));
+
+        /// <summary>
+        /// Mouse position from top-left of window, corrected with framebuffer scaling
+        /// </summary>
+        public Vector2 CorrectedMouse => (fbWidth / (float)Size.X) * (new Vector2(MouseState.Position.X, MouseState.Position.Y));
+
         public MainWindow()
             : base(GameWindowSettings.Default, new NativeWindowSettings()
             {
                 Flags = ContextFlags.ForwardCompatible,
             })
         {
-            camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
+            Camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
             
             primaryShader = new Shader(Shaders.Textured.VertexCode, Shaders.Textured.FragmentCode);
             lineShader = new Shader(Shaders.LineS.VertexCode, Shaders.LineS.FragmentCode);
@@ -74,9 +83,9 @@ namespace Hologram.Rendering
         private void UpdateViewport(Vector2i size)
         {
             GL.Viewport(0, 0, size.X, size.Y);
-            camera.ResizeViewport(size);
+            Camera.ResizeViewport(size);
 
-            Matrix4 projectionMat = camera.ProjectionMatrix;
+            Matrix4 projectionMat = Camera.ProjectionMatrix;
 
             GL.UseProgram(primaryShader);
             int projectionLoc = GL.GetUniformLocation(primaryShader, "projection");
@@ -97,7 +106,7 @@ namespace Hologram.Rendering
 
             if (input.IsKeyDown(Keys.Space))
             {
-                camera.Translate(Vector3.UnitY * cameraVSpeed * (float)args.Time);
+                Camera.Translate(Vector3.UnitY * cameraVSpeed * (float)args.Time);
             }
             else if (input.IsKeyDown(Keys.LeftControl))
             {
@@ -113,19 +122,19 @@ namespace Hologram.Rendering
 
             if (input.IsKeyDown(Keys.W))
             {
-                camera.Translate(adjustedSpeed * camera.Forward);
+                Camera.Translate(adjustedSpeed * Camera.Forward);
             }
             if (input.IsKeyDown(Keys.S))
             {
-                camera.Translate(-adjustedSpeed * camera.Forward);
+                Camera.Translate(-adjustedSpeed * Camera.Forward);
             }
             if (input.IsKeyDown(Keys.A))
             {
-                camera.Translate(-adjustedSpeed * camera.Right);
+                Camera.Translate(-adjustedSpeed * Camera.Right);
             }
             if (input.IsKeyDown(Keys.D))
             {
-                camera.Translate(adjustedSpeed * camera.Right);
+                Camera.Translate(adjustedSpeed * Camera.Right);
             }
 
             frameTimeBuffer[offset] = args.Time;
@@ -148,7 +157,7 @@ namespace Hologram.Rendering
                 CursorState = CursorState.Grabbed;
                 if (MouseState.Delta.X != 0 || MouseState.Delta.Y != 0)
                 {
-                    camera.RotateCamera(MouseState.Delta.X.Deg2Rad() * 0.1f, MouseState.Delta.Y.Deg2Rad() * 0.1f);
+                    Camera.RotateCamera(MouseState.Delta.X.Deg2Rad() * 0.1f, MouseState.Delta.Y.Deg2Rad() * 0.1f);
                 }
             }
             else
@@ -156,9 +165,9 @@ namespace Hologram.Rendering
                 CursorState = CursorState.Normal;
             }
 
-            if (camera.CalculateViewMatrix())
+            if (Camera.CalculateViewMatrix())
             {
-                Matrix4 viewMat = camera.ViewMatrix;
+                Matrix4 viewMat = Camera.ViewMatrix;
 
                 GL.UseProgram(primaryShader);
                 int viewLoc = GL.GetUniformLocation(primaryShader, "view");
@@ -169,19 +178,21 @@ namespace Hologram.Rendering
                 GL.UniformMatrix4(viewLocLine, false, ref viewMat);
             }
 
-            Vector3 dir = camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
-            int[] viewport = new int[4];
-            
-            if (MouseState.IsButtonReleased(MouseButton.Left))
-            {
-                float horizontalScale = fbWidth / (float)Size.X;
-                Vector2 corrected = new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y);
-                Entity result = Physics.Pick(Entities.ToArray(), camera, corrected * horizontalScale);
-                if (result != null)
-                {
-                    Logger.Log(result.Name);
-                }
-            }
+            //Vector3 dir = Camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
+            //int[] viewport = new int[4];
+
+            Manager.Update();
+
+            //if (MouseState.IsButtonReleased(MouseButton.Left))
+            //{
+            //    float horizontalScale = fbWidth / (float)Size.X;
+            //    Vector2 corrected = new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y);
+            //    Entity result = Physics.Pick(Entities.ToArray(), Camera, corrected * horizontalScale);
+            //    if (result != null)
+            //    {
+            //        Logger.Log(result.Name);
+            //    }
+            //}
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -191,12 +202,12 @@ namespace Hologram.Rendering
             GL.UseProgram(primaryShader);
 
             int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
-            GL.Uniform3(cameraDir, camera.Forward);
+            GL.Uniform3(cameraDir, Camera.Forward);
 
             int worldLoc = GL.GetUniformLocation(primaryShader, "world");
             foreach (Entity entity in Entities)
             {
-                if (Vector3.DistanceSquared(camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
+                if (Vector3.DistanceSquared(Camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
                 {
                     entity.Draw(worldLoc);
                 }
@@ -216,6 +227,8 @@ namespace Hologram.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            Manager.Initialize(this);
 
             base.OnLoad();
         }
