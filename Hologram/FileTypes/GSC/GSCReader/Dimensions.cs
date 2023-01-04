@@ -183,33 +183,26 @@ namespace Hologram.FileTypes.GSC.GSCReader
             Matrix4x3[] positions = ReadMatrices(file);
 
             List<Entity> entities = new List<Entity>();
-            StringBuilder builder = new StringBuilder();
             int matrixId = -1;
             int materialId = -1;
             int meshCount = 0;
             int vertOffset = 1;
-            int dynamicCount = 0;
-            Console.WriteLine("START!");
             Dictionary<int, Entity> entitiesKeyed = new Dictionary<int, Entity>();
             Dictionary<int, MeshX> meshesKeyed = new Dictionary<int, MeshX>();
             for (int commandId = 0; commandId < commands.Length; commandId++)
             {
                 DisplayCommand command = commands[commandId];
-                Console.WriteLine(command.Command);
                 switch (command.Command)
                 {
                     case Command.Material:
                         materialId = command.Index;
                         break;
                     case Command.MaterialClip:
-                        //Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
                         break;
                     case Command.Matrix:
                         matrixId = command.Index;
                         break;
                     case Command.DynamicGeo:
-                        dynamicCount++;
-                        //Logger.Log(new LogSeg(command.Index.ToString(), ConsoleColor.Red));
                         break;
                     case Command.Mesh:
                         meshCount++;
@@ -230,36 +223,9 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         {
                             Console.WriteLine();
                         }
-                        //if (textures.Length != 0)
-                        //{
-                        //    if (materials[materialId].DiffuseTexture != 255)
-                        //    {
-                        //        ent.Texture = textures[materials[materialId].DiffuseTexture];
-                        //    }
-                        //    else
-                        //    {
-                        //        ent.Texture = Texture.WhiteTexture;
-                        //        ent.Mesh.Color = materials[materialId].Color; // Debatable
-                        //    }
-
-                        //}
-                        //else
-                        //{
-                        //    ent.Texture = Texture.MissingTexture;
-                        //}
                         mesh.Setup();
                         entities.Add(ent);
                         entitiesKeyed[commandId] = ent;
-                        //foreach (var vertex in mesh.Vertices)
-                        //{
-                        //    Vector4 vec4 = new Vector4(vertex.Position, 1);
-                        //    Vector3 global = new Vector3(Vector4.Dot(local.Column0, vec4), Vector4.Dot(local.Column1, vec4), Vector4.Dot(local.Column2, vec4));
-                        //    builder.AppendLine($"v {global.X} {global.Y} {global.Z}");
-                        //}
-                        //for (int indiceId = 0; indiceId < mesh.IndicesCount; indiceId += 3)
-                        //{
-                        //    builder.AppendLine($"f {mesh.Indices[indiceId] + vertOffset} {mesh.Indices[indiceId + 1] + vertOffset} {mesh.Indices[indiceId + 2] + vertOffset}");
-                        //}
                         vertOffset += mesh.VertexCount;
                         break;
 

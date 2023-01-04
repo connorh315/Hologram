@@ -25,7 +25,6 @@ namespace Hologram
 #if DEBUG
                 //OBJ arrow = OBJ.Parse(@"A:\Dimensions\Resources\Arrow.obj");
                 //HOB.Write(@"A:\Dimensions\Resources\Arrow.hob", arrow.Entity);
-                //GSC gscFile = GSC.Parse(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC");
                 //window.Entities.AddRange(gscFile.entities);
                 //OBJ obj_white = OBJ.Parse(@"A:\Dimensions\scenetest\whiteside.obj");
                 //obj_white.Mesh.Setup();

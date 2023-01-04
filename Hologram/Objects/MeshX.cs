@@ -19,8 +19,12 @@ namespace Hologram.Objects
         private int vertexArray;
         private int indexBuffer;
 
+        private bool setup = false;
+
         public void Setup()
         {
+            if (setup) return;
+
             vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Length * Vertex.Size, Vertices, BufferUsageHint.StaticDraw);
@@ -39,6 +43,8 @@ namespace Hologram.Objects
             indexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer);
             GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * 2, Indices, BufferUsageHint.StaticDraw);
+
+            setup = true;
         }
 
         public void Draw()
