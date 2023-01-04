@@ -42,6 +42,7 @@ namespace Hologram.Rendering
             : base(GameWindowSettings.Default, new NativeWindowSettings()
             {
                 Flags = ContextFlags.ForwardCompatible,
+                Size = new Vector2i(1280, 720)
             })
         {
             Camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
