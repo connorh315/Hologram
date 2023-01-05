@@ -281,7 +281,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     else
                     {
                         textures[i] = DDS.DDS.Load(ddsFiles[i].File, false);
-                        textures[i].File = ddsFiles[i].File;
+                        if (textures[i] != null)
+                            textures[i].File = ddsFiles[i].File;
                     }
 
                     if (textures[i] == null)
@@ -304,6 +305,206 @@ namespace Hologram.FileTypes.GSC.GSCReader
             if (textures.Length == 0) return Texture.MissingTexture;
             if (textures[index] == null) return Texture.ProblemTexture;
             return textures[index];
+        }
+
+        private static void ReadShaderDesc(ModFile file, Material currentMaterial)
+        {
+            uint version = file.ReadUint(true);
+            uint shaderType = file.ReadUint(true);
+            uint lightingModel = file.ReadUint(true);
+            uint substanceMode = file.ReadUint(true);
+            uint roughnessMode = file.ReadUint(true);
+            uint fresnelAlphaMode = file.ReadUint(true); // 6
+
+            // Maybe:
+            uint blendMode = file.ReadUint(true);
+            uint alphaTest = file.ReadUint(true);
+            uint alphaFadeSource = file.ReadUint(true); // 3
+            
+            uint surfaceMapMethod = file.ReadUint(true);
+            uint surfaceMapFormat0 = file.ReadUint(true);
+            uint surfaceMapFormat1 = file.ReadUint(true);
+            uint surfaceMapFormat2 = file.ReadUint(true);
+            uint surfaceMapFormat3 = file.ReadUint(true);
+            uint surfaceMapFormatVTFN = file.ReadUint(true);
+            uint occlusion = file.ReadUint(true);
+            uint refraction = file.ReadUint(true);
+            uint reflection = file.ReadUint(true);
+            uint baseDiffuseUsage = file.ReadUint(true);
+            uint layerBlendDiffuse = file.ReadUint(true);
+            uint usesDiffuseLayerColour = file.ReadUint(true); // 12
+
+            uint layerBlendSpecular0 = file.ReadUint(true);
+            uint layerBlendSpecular1 = file.ReadUint(true);
+            uint layerBlendSpecular2 = file.ReadUint(true);
+            uint layerBlendNormal0 = file.ReadUint(true);
+            uint layerBlendNormal1 = file.ReadUint(true);
+            uint layerBlendNormal2 = file.ReadUint(true); // 6
+
+            uint dummy = file.ReadUint(true);
+
+            uint numUVSets = file.ReadUint(true);
+            uint lightmapUVSet = file.ReadUint(true);
+            uint motionBlurVertexType = file.ReadUint(true);
+            uint motionBlurPixelType = file.ReadUint(true);
+
+            uint dummy1 = file.ReadUint(true);
+            uint dummy2 = file.ReadUint(true);
+            uint dummy3 = file.ReadUint(true);
+            uint dummy4 = file.ReadUint(true);
+            uint dummy5 = file.ReadUint(true);
+            uint dummy6 = file.ReadUint(true);
+            uint dummy7 = file.ReadUint(true);
+
+            byte motionBlurSamples = file.ReadByte();
+            byte numBones = file.ReadByte();
+
+            for (int i = 0; i < 17; i++)
+            {
+                uint state = file.ReadUint(true);
+                uint UVSet = file.ReadUint(true);
+            }
+
+            byte materialFlags_tangentSwap = file.ReadByte();
+            byte materialFlags_water = file.ReadByte();
+            byte materialFlags_glow = file.ReadByte();
+            byte materialFlags_carpaint = file.ReadByte();
+            byte materialFlags_fog = file.ReadByte();
+            byte materialFlags_unlitNonSRGB = file.ReadByte();
+            byte materialFlags_hdralpha_diffuse = file.ReadByte();
+            byte materialFlags_hdralpha_envmap = file.ReadByte();
+            byte materialFlags_derivHeightMap = file.ReadByte();
+            byte materialFlags_smoothSpec = file.ReadByte();
+            byte materialFlags_disable_varying_specular = file.ReadByte();
+            byte materialFlags_disable_fresnel = file.ReadByte();
+            byte materialFlags_two_sided_lighting = file.ReadByte();
+            byte materialFlags_smoothlightmap = file.ReadByte();
+            byte materialFlags_rimlight = file.ReadByte();
+            byte materialFlags_ignore_exposure = file.ReadByte();
+            byte materialFlags_baked_specular = file.ReadByte();
+            byte materialFlags_semi_lit = file.ReadByte();
+            byte materialFlags_refractionNearFix = file.ReadByte();
+            byte materialFlags_metallic_specular = file.ReadByte();
+            byte materialFlags_dontreceiveshadow = file.ReadByte();
+            byte materialFlags_lateshader = file.ReadByte();
+            byte materialFlags_diffreflmaps = file.ReadByte();
+            byte materialFlags_per_layer_uvscale = file.ReadByte();
+            byte materialFlags_tintable = file.ReadByte();
+            byte materialFlags_generateCubeMap = file.ReadByte();
+            byte materialFlags_outputToonShaderData = file.ReadByte();
+            byte materialFlags_disablePerPixelFade = file.ReadByte();
+            byte materialFlags_cel_shading = file.ReadByte(); // 29
+
+            byte miscFlags_conditional_cel_shading = file.ReadByte();
+            byte miscFlags_useRoomProjection = file.ReadByte();
+            byte miscFlags_useCustomPixelClipPlane = file.ReadByte();
+            byte miscFlags_layer2Refraction = file.ReadByte();
+            byte miscFlags_layer3Refraction = file.ReadByte();
+            byte miscFlags_layer4Refraction = file.ReadByte();
+            byte miscFlags_allLayerVertAlbedo = file.ReadByte(); // 7
+
+            byte vertexFlags_skinned = file.ReadByte();
+            byte vertexFlags_fastBlend = file.ReadByte();
+            byte vertexFlags_blendShape = file.ReadByte();
+            byte vertexFlags_doPerspDivInVS = file.ReadByte();
+            byte vertexFlags_numAlphaLayers = file.ReadByte();
+            byte vertexFlags_use2DW = file.ReadByte();
+            byte vertexFlags_untransformed = file.ReadByte();
+            byte vertexFlags_effectAmplitude = file.ReadByte();
+            byte vertexFlags_ignoreVertexOpacity = file.ReadByte();
+            byte vertexFlags_unused1 = file.ReadByte();
+            byte vertexFlags_instancedLightmapping = file.ReadByte();
+            byte vertexFlags_positionAccuracy = file.ReadByte();
+            byte vertexFlags_uvAccuracy = file.ReadByte();
+            byte vertexFlags_tangent2 = file.ReadByte();
+            byte vertexFlags_vertexControlledTint = file.ReadByte();
+            byte vertexFlags_ZBias = file.ReadByte();
+            byte vertexFlags_layer1VertAlbedo = file.ReadByte();
+            byte vertexFlags_layer2VertAlbedo = file.ReadByte();
+            byte vertexFlags_layer3VertAlbedo = file.ReadByte();
+            byte vertexFlags_disableSeparatePositionStream = file.ReadByte();
+            byte vertexFlags_legoTerrain = file.ReadByte();
+            byte vertexFlags_legoTerrainMeshType = file.ReadByte();
+            byte vertexFlags_largeWorldAwareCamera = file.ReadByte();
+            byte vertexFlags_wind = file.ReadByte();
+            byte vertexFlags_forceColourVertexStream = file.ReadByte(); // 25
+
+            file.ReadLong(); // 8 bytes of zero
+
+            byte miscFlags_greyAlbedo = file.ReadByte();
+            byte miscFlags_motionBlur = file.ReadByte();
+            byte miscFlags_UVAnimation = file.ReadByte();
+            byte miscFlags_canAlphaBlend = file.ReadByte();
+            byte miscFlags_defunctOpaque = file.ReadByte();
+            byte miscFlags_isDecal = file.ReadByte();
+            byte miscFlags_creaseMeshMaterial = file.ReadByte();
+            byte miscFlags_ttAnimationMode = file.ReadByte();
+            byte miscFlags_culled = file.ReadByte();
+            byte miscFlags_isDeferredDecal = file.ReadByte();
+            byte miscFlags_defunct_IsGPAA = file.ReadByte();
+            byte miscFlags_requiresDiffuseAlphaMultiply = file.ReadByte();
+            byte miscFlags_isTPaged = file.ReadByte();
+            byte miscFlags_disableDynamicLighting = file.ReadByte();
+            byte miscFlags_useLayers234OnWii = file.ReadByte();
+            byte miscFlags_useWiiTintColours = file.ReadByte();
+            byte miscFlags_sRGBSupport = file.ReadByte();
+            byte miscFlags_useNormalEncodingTexture = file.ReadByte();
+            byte miscFlags_refractionIgnoreVertexNormal = file.ReadByte();
+            byte miscFlags_shadedGlow = file.ReadByte();
+            byte miscFlags_project_to_far_plane = file.ReadByte();
+            byte miscFlags_sortAfterPostEffects = file.ReadByte(); // 22
+            
+            byte output_colourRT = file.ReadByte();
+            byte output_normalRT = file.ReadByte();
+            byte output_albedoRT = file.ReadByte();
+            byte output_depthAsColourRT = file.ReadByte(); // 4
+
+            uint displayMode = file.ReadUint(true);
+            uint grassLayers = file.ReadUint(true);
+            uint shaderVersion = file.ReadUint(true);
+            uint gpuVendor = file.ReadUint(true);
+            uint colourSpace = file.ReadUint(true);
+            uint bakedLighting = file.ReadUint(true);
+
+            byte discreteLightType = file.ReadByte();
+            byte discreteLightShadingModel = file.ReadByte();
+            byte discreteLightSoftShadows = file.ReadByte();
+            byte blank = file.ReadByte();
+            byte sceneZAccess = file.ReadByte();
+            byte shadowZAccess = file.ReadByte();
+            byte pcfMethod = file.ReadByte();
+            byte rainSplashSurfaceType = file.ReadByte();
+
+            uint unknown = file.ReadUint(true);
+        }
+
+        private static void ReadShaderParams(ModFile file, Material currentMaterial)
+        {
+            int diffuse0 = file.ReadInt(true);
+            int diffuse1 = file.ReadInt(true);
+            int diffuse2 = file.ReadInt(true);
+            int diffuse3 = file.ReadInt(true);
+
+            int specular0 = file.ReadInt(true);
+            int specular1 = file.ReadInt(true);
+            
+            int normal0 = file.ReadInt(true);
+            int normal1 = file.ReadInt(true);
+
+            int envMap = file.ReadInt(true);
+
+            int VTFH = file.ReadInt(true);
+            int VTFN = file.ReadInt(true);
+            int diffEnv = file.ReadInt(true);
+            int texAnimMapTID = file.ReadInt(true);
+            int texAnimCurvesTID = file.ReadInt(true);
+            
+            int normal2 = file.ReadInt(true);
+            int specular2 = file.ReadInt(true);
+
+            int normal3 = file.ReadInt(true);
+            int specular3 = file.ReadInt(true);
+
         }
 
         private static Material[] ReadMaterialData(ModFile file, Texture[] textures)
@@ -333,7 +534,9 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 }
                 else
                 {
-                    file.Seek(0x1ad, SeekOrigin.Current); // unknown mat data
+                    file.Seek(0x1ad, SeekOrigin.Current);
+
+                    //ReadShaderDesc(file, mat);
                 }
 
                 byte diffuseTexture = file.ReadByte();
