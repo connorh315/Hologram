@@ -476,6 +476,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte rainSplashSurfaceType = file.ReadByte();
 
             uint unknown = file.ReadUint(true);
+            byte unknown1 = file.ReadByte();
         }
 
         private static void ReadShaderParams(ModFile file, Material currentMaterial)
@@ -504,6 +505,81 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             int normal3 = file.ReadInt(true);
             int specular3 = file.ReadInt(true);
+
+            int numTexAuxEntries = file.ReadInt(true); // I think
+
+            for (int i = 0; i < 0x11; i++) // if (version > 0xb1) numTexAuxEntries = 11 else numTexAuxEntries = 0xd
+            {
+                file.ReadByte();
+            }
+
+            int maxAnisotropy = file.ReadInt(true);
+            int mipmapBias = file.ReadInt(true);
+
+            for (int i = 0; i < 4; i++)
+            {
+                byte modeU = file.ReadByte();
+                byte modeV = file.ReadByte();
+
+                int dU = file.ReadInt(true);
+                int dV = file.ReadInt(true);
+                int speedU = file.ReadInt(true);
+                int speedV = file.ReadInt(true);
+
+                byte ssNumColumns = file.ReadByte();
+                byte ssNumRows = file.ReadByte();
+                byte ssRowIndex = file.ReadByte();
+                byte ssNumImages = file.ReadByte();
+
+                int ssDuration = file.ReadInt(true);
+                byte ssOffset = file.ReadByte();
+            }
+
+            int colour1 = file.ReadInt(true);
+            int colour2 = file.ReadInt(true);
+            int colour3 = file.ReadInt(true);
+            int colour4 = file.ReadInt(true); // Doesn't seem to line up after this
+
+            int bitangentFlip = file.ReadInt(true);
+
+            int kNormal0 = file.ReadInt(true);
+            int kNormal1 = file.ReadInt(true);
+            int kNormal2 = file.ReadInt(true);
+            int kNormal3 = file.ReadInt(true);
+
+            int kParallax = file.ReadInt(true);
+            int kParallaxBias = file.ReadInt(true);
+
+            int colour5 = file.ReadInt(true);
+            int colour6 = file.ReadInt(true);
+            int colour7 = file.ReadInt(true);
+            int colour8 = file.ReadInt(true);
+            int colour9 = file.ReadInt(true);
+            int colour10 = file.ReadInt(true);
+            int colour11 = file.ReadInt(true);
+            int colour12 = file.ReadInt(true);
+
+            int kRefractiveIndex = file.ReadInt(true);
+            int kRefractiveThicknessFactor = file.ReadInt(true);
+            int kGlow = file.ReadInt(true);
+
+            int colour13 = file.ReadInt(true);
+
+            int kBaseReflectivity = file.ReadInt(true);
+            int kBaseSpecularCosPower = file.ReadInt(true);
+            int kEnvironment = file.ReadInt(true);
+            int kEnvLighting = file.ReadInt(true);
+            int kEnvAlphaHDR = file.ReadInt(true);
+            int kFresnel = file.ReadInt(true);
+            int kFresnelPower = file.ReadInt(true);
+            int kVTFHeight = file.ReadInt(true);
+            int kVTFNormal = file.ReadInt(true);
+            int kVTFOffset = file.ReadInt(true);
+
+            int kVTFDirection = file.ReadInt(true);
+            int kVTFDirection1 = file.ReadInt(true);
+            int kVTFDirection2 = file.ReadInt(true);
+
 
         }
 
@@ -534,9 +610,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 }
                 else
                 {
-                    file.Seek(0x1ad, SeekOrigin.Current);
+                    //file.Seek(0x1ad, SeekOrigin.Current);
 
-                    //ReadShaderDesc(file, mat);
+                    ReadShaderDesc(file, mat);
+                    ReadShaderParams(file, mat);
                 }
 
                 byte diffuseTexture = file.ReadByte();
