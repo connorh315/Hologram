@@ -219,7 +219,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
                         Entity ent = new Entity(new Matrix4(new Vector4(local.Row0, 0), new Vector4(local.Row1, 0), new Vector4(local.Row2, 0), new Vector4(local.Row3, 1)));
                         ent.Mesh = mesh;
                         ent.Material = materials[materialId];
-                        if (ent.Material.ShaderName == "_TTShaderMaterial21")
+                        if (ent.Material.MaterialName == "_TTShaderMaterial21")
                         {
                             Console.WriteLine();
                         }
@@ -301,19 +301,37 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
         private static Texture GetValidTexture(Texture[] textures, int index)
         { // Ensures that a valid texture is ALWAYS returned
-            if (index == 255) return Texture.WhiteTexture;
+            if (index == -1) return Texture.WhiteTexture;
             if (textures.Length == 0) return Texture.MissingTexture;
             if (textures[index] == null) return Texture.ProblemTexture;
             return textures[index];
         }
 
-        private static void ReadShaderDesc(ModFile file, Material currentMaterial)
+        private static Color4 GetColor(ModFile file)
         {
-            uint version = file.ReadUint(true);
+            return new Color4()
+            {
+                A = 1 + (file.ReadByte() * 0),
+                B = (file.ReadByte() / 255f),
+                G = (file.ReadByte() / 255f),
+                R = (file.ReadByte() / 255f),
+            };
+        }
+
+        private static void ReadShaderDesc(ModFile file, uint version, Material currentMaterial)
+        {
+            uint shader_version = file.ReadUint(true);
+            if (version > 0xe9)
+            {
+                short legoVersion = file.ReadShort(true);
+            }
             uint shaderType = file.ReadUint(true);
             uint lightingModel = file.ReadUint(true);
             uint substanceMode = file.ReadUint(true);
-            uint roughnessMode = file.ReadUint(true);
+            if (version != 0xe7)
+            {
+                uint roughnessMode = file.ReadUint(true);
+            }
             uint fresnelAlphaMode = file.ReadUint(true); // 6
 
             // Maybe:
@@ -337,18 +355,17 @@ namespace Hologram.FileTypes.GSC.GSCReader
             uint layerBlendSpecular0 = file.ReadUint(true);
             uint layerBlendSpecular1 = file.ReadUint(true);
             uint layerBlendSpecular2 = file.ReadUint(true);
+            uint dummy = file.ReadUint(true); // It's actually called this, I haven't just tried to re-sync the parser
             uint layerBlendNormal0 = file.ReadUint(true);
             uint layerBlendNormal1 = file.ReadUint(true);
             uint layerBlendNormal2 = file.ReadUint(true); // 6
-
-            uint dummy = file.ReadUint(true);
+            uint dummyX = file.ReadUint(true); // It's actually called this, I haven't just tried to re-sync the parser
 
             uint numUVSets = file.ReadUint(true);
             uint lightmapUVSet = file.ReadUint(true);
             uint motionBlurVertexType = file.ReadUint(true);
             uint motionBlurPixelType = file.ReadUint(true);
 
-            uint dummy1 = file.ReadUint(true);
             uint dummy2 = file.ReadUint(true);
             uint dummy3 = file.ReadUint(true);
             uint dummy4 = file.ReadUint(true);
@@ -359,7 +376,12 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte motionBlurSamples = file.ReadByte();
             byte numBones = file.ReadByte();
 
-            for (int i = 0; i < 17; i++)
+            int uvBlocksToRead = 17;
+            if (version > 0xef)
+            {
+                uvBlocksToRead = 21;
+            }
+            for (int i = 0; i < uvBlocksToRead; i++)
             {
                 uint state = file.ReadUint(true);
                 uint UVSet = file.ReadUint(true);
@@ -367,6 +389,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             byte materialFlags_tangentSwap = file.ReadByte();
             byte materialFlags_water = file.ReadByte();
+            if (version > 0xec)
+            {
+                byte materialFlags_parallaxBlendFix = file.ReadByte();
+            }
             byte materialFlags_glow = file.ReadByte();
             byte materialFlags_carpaint = file.ReadByte();
             byte materialFlags_fog = file.ReadByte();
@@ -374,7 +400,16 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte materialFlags_hdralpha_diffuse = file.ReadByte();
             byte materialFlags_hdralpha_envmap = file.ReadByte();
             byte materialFlags_derivHeightMap = file.ReadByte();
-            byte materialFlags_smoothSpec = file.ReadByte();
+            if (version < 0xe6)
+            {
+                byte materialFlags_smoothSpec = file.ReadByte();
+            }
+
+            if (version >= 0xec)
+            {
+                byte materialFlags_zeusCompatMode = file.ReadByte();
+            }
+
             byte materialFlags_disable_varying_specular = file.ReadByte();
             byte materialFlags_disable_fresnel = file.ReadByte();
             byte materialFlags_two_sided_lighting = file.ReadByte();
@@ -396,11 +431,21 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte materialFlags_cel_shading = file.ReadByte(); // 29
 
             byte miscFlags_conditional_cel_shading = file.ReadByte();
+            if (version > 0xee)
+            {
+                byte materialFlags_receiveShadowDespiteCelShading = file.ReadByte();
+            }
             byte miscFlags_useRoomProjection = file.ReadByte();
             byte miscFlags_useCustomPixelClipPlane = file.ReadByte();
             byte miscFlags_layer2Refraction = file.ReadByte();
             byte miscFlags_layer3Refraction = file.ReadByte();
             byte miscFlags_layer4Refraction = file.ReadByte();
+            if (version > 0xf0)
+            {
+                byte miscFlags_layer2DX11Only = file.ReadByte();
+                byte miscFlags_layer3DX11Only = file.ReadByte();
+                byte miscFlags_layer4DX11Only = file.ReadByte();
+            }
             byte miscFlags_allLayerVertAlbedo = file.ReadByte(); // 7
 
             byte vertexFlags_skinned = file.ReadByte();
@@ -428,20 +473,27 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte vertexFlags_largeWorldAwareCamera = file.ReadByte();
             byte vertexFlags_wind = file.ReadByte();
             byte vertexFlags_forceColourVertexStream = file.ReadByte(); // 25
+            if (version > 0xed)
+            {
+                byte vertexFlags_vertexRoughnessMod = file.ReadByte();
+            }
 
-            file.ReadLong(); // 8 bytes of zero
+            file.ReadLong(); // 8 bytes of zero (It's actually called this, I haven't just tried to re-sync the parser)
 
             byte miscFlags_greyAlbedo = file.ReadByte();
             byte miscFlags_motionBlur = file.ReadByte();
             byte miscFlags_UVAnimation = file.ReadByte();
-            byte miscFlags_canAlphaBlend = file.ReadByte();
+            if (version < 0xf2)
+            {
+                byte miscFlags_canAlphaBlend = file.ReadByte();
+            }
             byte miscFlags_defunctOpaque = file.ReadByte();
             byte miscFlags_isDecal = file.ReadByte();
             byte miscFlags_creaseMeshMaterial = file.ReadByte();
             byte miscFlags_ttAnimationMode = file.ReadByte();
             byte miscFlags_culled = file.ReadByte();
             byte miscFlags_isDeferredDecal = file.ReadByte();
-            byte miscFlags_defunct_IsGPAA = file.ReadByte();
+            byte miscFlags_isPBRSourced = file.ReadByte();
             byte miscFlags_requiresDiffuseAlphaMultiply = file.ReadByte();
             byte miscFlags_isTPaged = file.ReadByte();
             byte miscFlags_disableDynamicLighting = file.ReadByte();
@@ -475,13 +527,13 @@ namespace Hologram.FileTypes.GSC.GSCReader
             byte pcfMethod = file.ReadByte();
             byte rainSplashSurfaceType = file.ReadByte();
 
-            uint unknown = file.ReadUint(true);
+            uint unknown = file.ReadUint(true); // This might be engine hash
             byte unknown1 = file.ReadByte();
         }
 
-        private static void ReadShaderParams(ModFile file, Material currentMaterial)
+        private static void ReadShaderParams(ModFile file, uint version, Material currentMaterial, Texture[] textures)
         {
-            int diffuse0 = file.ReadInt(true);
+            currentMaterial.Diffuse = GetValidTexture(textures, file.ReadInt(true));
             int diffuse1 = file.ReadInt(true);
             int diffuse2 = file.ReadInt(true);
             int diffuse3 = file.ReadInt(true);
@@ -506,6 +558,19 @@ namespace Hologram.FileTypes.GSC.GSCReader
             int normal3 = file.ReadInt(true);
             int specular3 = file.ReadInt(true);
 
+            if (version > 0xef)
+            {
+                int detail0 = file.ReadInt(true);
+                int detail1 = file.ReadInt(true);
+                int detail2 = file.ReadInt(true);
+                int detail3 = file.ReadInt(true);
+
+                float detailRepeat0 = file.ReadFloat(true);
+                float detailRepeat1 = file.ReadFloat(true);
+                float detailRepeat2 = file.ReadFloat(true);
+                float detailRepeat3 = file.ReadFloat(true);
+            }
+
             int numTexAuxEntries = file.ReadInt(true); // I think
 
             for (int i = 0; i < 0x11; i++) // if (version > 0xb1) numTexAuxEntries = 11 else numTexAuxEntries = 0xd
@@ -513,8 +578,11 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 file.ReadByte();
             }
 
-            int maxAnisotropy = file.ReadInt(true);
-            int mipmapBias = file.ReadInt(true);
+            file.Seek(0x88, SeekOrigin.Current); // Not sure what this section does, seems to be related to texAuxData - Always 0x00
+            file.Seek(0x10, SeekOrigin.Current); // Not sure what this section does either - Always 0xff
+
+            //int maxAnisotropy = file.ReadInt(true);
+            //int mipmapBias = file.ReadInt(true);
 
             for (int i = 0; i < 4; i++)
             {
@@ -531,23 +599,23 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 byte ssRowIndex = file.ReadByte();
                 byte ssNumImages = file.ReadByte();
 
-                int ssDuration = file.ReadInt(true);
+                float ssDuration = file.ReadFloat(true);
                 byte ssOffset = file.ReadByte();
             }
 
-            int colour1 = file.ReadInt(true);
+            currentMaterial.Color = GetColor(file);
             int colour2 = file.ReadInt(true);
             int colour3 = file.ReadInt(true);
-            int colour4 = file.ReadInt(true); // Doesn't seem to line up after this
+            int colour4 = file.ReadInt(true);
 
-            int bitangentFlip = file.ReadInt(true);
+            byte bitangentFlip = file.ReadByte();
 
-            int kNormal0 = file.ReadInt(true);
-            int kNormal1 = file.ReadInt(true);
-            int kNormal2 = file.ReadInt(true);
-            int kNormal3 = file.ReadInt(true);
+            float kNormal0 = file.ReadFloat(true);
+            float kNormal1 = file.ReadFloat(true);
+            float kNormal2 = file.ReadFloat(true);
+            float kNormal3 = file.ReadFloat(true);
 
-            int kParallax = file.ReadInt(true);
+            float kParallax = file.ReadFloat(true);
             int kParallaxBias = file.ReadInt(true);
 
             int colour5 = file.ReadInt(true);
@@ -565,22 +633,69 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             int colour13 = file.ReadInt(true);
 
-            int kBaseReflectivity = file.ReadInt(true);
-            int kBaseSpecularCosPower = file.ReadInt(true);
-            int kEnvironment = file.ReadInt(true);
-            int kEnvLighting = file.ReadInt(true);
+            float kBaseReflectivity = file.ReadFloat(true);
+            float kBaseSpecularCosPower = file.ReadFloat(true);
+            float kCustomEnvMapStrength = file.ReadFloat(true);
+            if (version < 0xe7)
+            {
+                float kEnvLighting = file.ReadFloat(true);
+            }
             int kEnvAlphaHDR = file.ReadInt(true);
-            int kFresnel = file.ReadInt(true);
-            int kFresnelPower = file.ReadInt(true);
-            int kVTFHeight = file.ReadInt(true);
-            int kVTFNormal = file.ReadInt(true);
+            float kAlphaFresnelConst = file.ReadFloat(true);
+            float kAlphaFresnelPower = file.ReadFloat(true);
+            float kVTFHeight = file.ReadFloat(true);
+            float kVTFNormal = file.ReadFloat(true);
             int kVTFOffset = file.ReadInt(true);
 
             int kVTFDirection = file.ReadInt(true);
             int kVTFDirection1 = file.ReadInt(true);
             int kVTFDirection2 = file.ReadInt(true);
+            int kUseVTFDirection = file.ReadInt(true);
 
+            int colour14 = file.ReadInt(true);
+            int colour15 = file.ReadInt(true);
 
+            int kCarPaintViewFactor = file.ReadInt(true);
+            float kCarPaintLightFactor = file.ReadFloat(true);
+            float kBaseRoughness = file.ReadFloat(true);
+
+            float kEnvLightIntensity = file.ReadFloat(true);
+            float kEnvLightSpecular = file.ReadFloat(true);
+            float kEnvFresnel = file.ReadFloat(true);
+            float kEnvFresnelPower = file.ReadFloat(true);
+            if (version < 0xe6)
+            {
+                float kSpecularBump = file.ReadFloat(true);
+                float kSkinSpread = file.ReadFloat(true);
+            }
+            float kBaseSubstance = file.ReadFloat(true);
+            float extra = file.ReadFloat(true);
+
+            byte kDepthBias = file.ReadByte();
+
+            float kDepthBiasScale = file.ReadFloat(true);
+            float kShadowBias = file.ReadFloat(true);
+            float kRoomWidth = file.ReadFloat(true);
+            float kRoomHeight = file.ReadFloat(true);
+            float kRoomDepth = file.ReadFloat(true);
+            float kWiiMaxAlphaBias = file.ReadFloat(true);
+
+            int colour16 = file.ReadInt(true);
+            int colour17 = file.ReadInt(true);
+
+            short kTPageID = file.ReadShort(true);
+
+            float kStiffness = file.ReadFloat(true);
+
+            float perLayerUVScale1 = file.ReadFloat(true);
+            float perLayerUVScale2 = file.ReadFloat(true);
+
+            float kLightmapTranslucency = file.ReadFloat(true);
+            float kLightmapEmission = file.ReadFloat(true);
+            if (version > 0xe3)
+            {
+                byte bForceDefaultCubeMap = file.ReadByte();
+            }
         }
 
         private static Material[] ReadMaterialData(ModFile file, Texture[] textures)
@@ -596,13 +711,18 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Material mat = new Material();
                 materials[matId] = mat;
 
+                if (version != 0xe2 && version != 0xe3 && version != 0xe4 && version != 0xe5 && version != 0xf0) throw new Exception("Version " + string.Format("{0:X}", version) + " not supported");
+
                 if (version == 0xf2)
                 {
                     file.Seek(0x1d4, SeekOrigin.Current); // unknown mat data
                 }
                 else if (version == 0xf0)
                 {
-                    file.Seek(0x1cf, SeekOrigin.Current);
+                    //file.Seek(0x1cf, SeekOrigin.Current);
+
+                    ReadShaderDesc(file, version, mat);
+                    ReadShaderParams(file, version, mat, textures);
                 }
                 else if (version == 0xde)
                 {
@@ -612,12 +732,12 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 {
                     //file.Seek(0x1ad, SeekOrigin.Current);
 
-                    ReadShaderDesc(file, mat);
-                    ReadShaderParams(file, mat);
+                    ReadShaderDesc(file, version, mat);
+                    ReadShaderParams(file, version, mat, textures);
                 }
 
-                byte diffuseTexture = file.ReadByte();
-                mat.Diffuse = GetValidTexture(textures, diffuseTexture);
+                //byte diffuseTexture = file.ReadByte();
+                //mat.Diffuse = GetValidTexture(textures, diffuseTexture);
 
                 if (version == 0xf2)
                 {
@@ -625,31 +745,32 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 }
                 else if (version == 0xf0)
                 {
-                    file.Seek(0x297, SeekOrigin.Current);
+                    //file.Seek(0x297, SeekOrigin.Current);
                 }
-                else if (version == 0xe2)
-                {
-                    file.Seek(0x25b, SeekOrigin.Current);
-                }
+                //else if (version == 0xe2)
+                //{
+                //    file.Seek(0x25b, SeekOrigin.Current);
+                //}
                 else if (version == 0xde)
                 {
                     file.Seek(0x26b, SeekOrigin.Current);
                 }
                 else
                 {
-                    file.Seek(0x17, SeekOrigin.Current);
-                    byte normalTexture = file.ReadByte();
-                    mat.Normal = GetValidTexture(textures, normalTexture);
-                    file.Seek(0x146, SeekOrigin.Current);
-                    mat.Color.B = ((float)file.ReadByte()) / 255;
-                    mat.Color.G = ((float)file.ReadByte()) / 255;
-                    mat.Color.R = ((float)file.ReadByte()) / 255;
-                    mat.Color.A = 1;
-                    file.Seek(0x25c - 0x18 - 3 - 0x146, SeekOrigin.Current);
+                    file.Seek(2, SeekOrigin.Current);
+                    //file.Seek(0x17, SeekOrigin.Current);
+                    //byte normalTexture = file.ReadByte();
+                    //mat.Normal = GetValidTexture(textures, normalTexture);
+                    //file.Seek(0x146, SeekOrigin.Current);
+                    //mat.Color.B = ((float)file.ReadByte()) / 255;
+                    //mat.Color.G = ((float)file.ReadByte()) / 255;
+                    //mat.Color.R = ((float)file.ReadByte()) / 255;
+                    //mat.Color.A = 1;
+                    //file.Seek(0x25c - 0x18 - 3 - 0x146, SeekOrigin.Current);
                 }
                 
-                mat.ShaderName = file.ReadPascalString();
-                file.Seek(0x49c, SeekOrigin.Current);
+                mat.MaterialName = file.ReadPascalString();
+                file.Seek(0x49c, SeekOrigin.Current); // Seemingly defunct shader hashes
                 file.CheckString("DXTV", "Expected DXTV");
                 file.CheckInt(0xA9, "Expected DXTV version A9");
                 uint defCount = file.ReadUint(true);
@@ -658,6 +779,28 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 if (version >= 0xe5)
                 {
                     file.Seek(0x50, SeekOrigin.Current);
+
+                    //int firstVariantIndex = file.ReadInt(true);
+                    //int nextVariantIndex = file.ReadInt(true);
+
+                    //byte isCreaseMeshMaterial = file.ReadByte();
+                    //byte hasVariants = file.ReadByte();
+                    //byte legoStudMaterial = file.ReadByte();
+                    //byte maskShadows = file.ReadByte();
+                    //byte sortAfterRefraction = file.ReadByte();
+                    //byte skipValidation = file.ReadByte();
+                    //byte specialDepthSorting = file.ReadByte();
+                    //byte forceAlphaLightingSupport = file.ReadByte();
+                    //byte noAutoScreenDoor = file.ReadByte();
+                    //byte compileLiveCubemapGenShader = file.ReadByte();
+                    //byte compileToonShader = file.ReadByte();
+                    //byte shadowImpostor = file.ReadByte();
+                    //byte shadowsFromFrontFaces = file.ReadByte();
+                    //byte doUntexturedTPage = file.ReadByte();
+                    //byte forceTPageRemap = file.ReadByte();
+                    //byte forceTPageSurfType = file.ReadByte();
+                    //byte forceTPageAlphaFade = file.ReadByte();
+                    //int defaultRenderStage = file.ReadInt(true);
                 }
                 else if (version == 0xe4 || version == 0xe2 || version == 0xe3 || version == 0xde) // assumed for 0xe3
                 {
@@ -667,58 +810,6 @@ namespace Hologram.FileTypes.GSC.GSCReader
             }
 
             return materials;
-
-
-
-            Material firstMat = new Material();
-            file.Seek(0x1ad, SeekOrigin.Current);
-            //firstMat.DiffuseTexture = file.ReadByte();
-            file.Seek(0x25C, SeekOrigin.Current);
-            materials[0] = firstMat;
-            file.ReadPascalString();
-            //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
-            file.Seek(0x49C, SeekOrigin.Current);
-
-            for (int id = 0; id < count - 1; id++) // We already handled 1 prior to the loop, so we remove 1
-            {
-                Material mat = new Material();
-                materials[1 + id] = mat;
-
-                file.CheckString("DXTV", "Expected DXTV");
-                file.CheckInt(0xA9, "Expected DXTV version A9");
-                uint defCount = file.ReadUint(true);
-                file.Seek(defCount * 3, SeekOrigin.Current);
-                if (version == 0xe5)
-                {
-                    file.Seek(0x1fd, SeekOrigin.Current);
-                }
-                else if (version == 0xe4)
-                {
-                    file.Seek(0x1fc, SeekOrigin.Current);
-                }
-                //mat.DiffuseTexture = file.ReadByte();
-                file.Seek(0x25c, SeekOrigin.Current);
-                Console.WriteLine(file.ReadPascalString());
-                //Logger.Log(new LogSeg(file.ReadPascalString(), ConsoleColor.Gray));
-                file.Seek(0x49C, SeekOrigin.Current);
-            }
-
-            file.CheckString("DXTV", "Expected DXTV");
-            file.CheckInt(0xA9, "Expected DXTV version A9");
-            uint finalDefCount = file.ReadUint(true);
-            file.Seek(finalDefCount * 3, SeekOrigin.Current);
-            file.Seek(0x1a, SeekOrigin.Current);
-            if (file.ReadByte() != 0x0) // so far it has been when it's 8 and 1
-            {
-                file.Seek(0x35, SeekOrigin.Current);
-            }
-            else
-            {
-                file.Seek(0x34, SeekOrigin.Current);
-            }
-
-            return materials;
-            //Console.WriteLine(file.Position);
         }
 
         private static void ReadLightmapData(ModFile file)

@@ -264,7 +264,9 @@ namespace Hologram.Rendering
             {
                 Entity[] entities = FileLoader.LoadModelFile(file);
                 if (entities == null) continue;
-                
+
+                Entities.Clear();
+
                 Entities.AddRange(entities);
             }
         }

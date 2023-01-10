@@ -10,7 +10,7 @@ namespace Hologram.Rendering
 
         public Texture Normal = Texture.WhiteTexture;
 
-        public string ShaderName = "Unnamed";
+        public string MaterialName = "Unnamed";
 
         public Material Duplicate()
         {
@@ -19,7 +19,7 @@ namespace Hologram.Rendering
                 Color = Color,
                 Diffuse = Diffuse,
                 Normal = Normal,
-                ShaderName = ShaderName
+                MaterialName = MaterialName
             };
         }
     }

@@ -83,7 +83,7 @@ public class HOB
                 Color = Color4.White,
                 Diffuse = Texture.WhiteTexture,
                 Normal = Texture.WhiteTexture,
-                ShaderName = "HOB"
+                MaterialName = "HOB"
             },
             Mesh = mesh,
             Name = name,

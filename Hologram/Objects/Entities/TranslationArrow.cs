@@ -26,19 +26,19 @@ namespace Hologram.Objects.Entities
             if (axis == new Vector3(1, 0, 0))
             {
                 Material.Color = Color4.Red;
-                Material.ShaderName = "XArrow";
+                Material.MaterialName = "XArrow";
                 Rotate(0, 0, -90);
             }
             else if (axis == new Vector3(0, 1, 0))
             {
                 Material.Color = Color4.Blue;
-                Material.ShaderName = "YArrow";
+                Material.MaterialName = "YArrow";
                 Rotate(0, 0, 0);
             }
             else if (axis == new Vector3(0, 0, 1))
             {
                 Material.Color = Color4.Green;
-                Material.ShaderName = "ZArrow";
+                Material.MaterialName = "ZArrow";
                 Rotate(90, 0, 0);
             }
         }
