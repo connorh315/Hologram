@@ -147,7 +147,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
             file.CheckInt(0, "ROTV is not zero!!"); // This is where the implementation should handle
 
             file.CheckString("PSID", "Expected DISP");
-            file.CheckInt(0x20, "Expected DISP version 20");
+            int dispVersion = file.ReadInt(true);
+            if (dispVersion != 0x20 && dispVersion != 0x21) throw new Exception("DISP Version " + dispVersion + " not supported!");
 
             file.CheckString("ROTV", "Expected ROTV3");
             DisplayCommand[] commands = ReadDefunctItems(file);
@@ -156,7 +157,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             ClipItem[] items = ReadClipItems(file, commands);
 
             file.CheckString("ROTV", "Expected ROTV5");
-            ReadSpecialObject(file);
+            ReadSpecialObject(file, dispVersion);
 
             file.CheckString("ROTV", "Expected ROTV6");
             ReadSpecialGroupNodes(file);
@@ -276,7 +277,8 @@ namespace Hologram.FileTypes.GSC.GSCReader
                     {
                         string path = root + ddsFiles[i].Attributes.Path;
                         textures[i] = DDS.DDS.Load(path);
-                        textures[i].File = ModFile.Open(path);
+                        if (textures[i] != null)
+                            textures[i].File = ModFile.Open(path);
                     }
                     else
                     {
@@ -573,12 +575,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
             int numTexAuxEntries = file.ReadInt(true); // I think
 
-            for (int i = 0; i < 0x11; i++) // if (version > 0xb1) numTexAuxEntries = 11 else numTexAuxEntries = 0xd
-            {
-                file.ReadByte();
-            }
-
-            file.Seek(0x88, SeekOrigin.Current); // Not sure what this section does, seems to be related to texAuxData - Always 0x00
+            file.Seek(numTexAuxEntries * 9, SeekOrigin.Current);
             file.Seek(0x10, SeekOrigin.Current); // Not sure what this section does either - Always 0xff
 
             //int maxAnisotropy = file.ReadInt(true);
@@ -711,11 +708,14 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Material mat = new Material();
                 materials[matId] = mat;
 
-                if (version != 0xe2 && version != 0xe3 && version != 0xe4 && version != 0xe5 && version != 0xf0) throw new Exception("Version " + string.Format("{0:X}", version) + " not supported");
+                //if (version != 0xe2 && version != 0xe3 && version != 0xe4 && version != 0xe5 && version != 0xf0) throw new Exception("Version " + string.Format("{0:X}", version) + " not supported");
 
                 if (version == 0xf2)
                 {
-                    file.Seek(0x1d4, SeekOrigin.Current); // unknown mat data
+                    //file.Seek(0x1d4, SeekOrigin.Current); // unknown mat data
+
+                    ReadShaderDesc(file, version, mat);
+                    ReadShaderParams(file, version, mat, textures);
                 }
                 else if (version == 0xf0)
                 {
@@ -741,10 +741,12 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
                 if (version == 0xf2)
                 {
-                    file.Seek(0x294, SeekOrigin.Current);
+                    file.Seek(2, SeekOrigin.Current);
+                    //file.Seek(0x294, SeekOrigin.Current);
                 }
                 else if (version == 0xf0)
                 {
+                    file.Seek(2, SeekOrigin.Current);
                     //file.Seek(0x297, SeekOrigin.Current);
                 }
                 //else if (version == 0xe2)
@@ -870,7 +872,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             return items;
         }
 
-        private static void ReadSpecialObject(ModFile file)
+        private static void ReadSpecialObject(ModFile file, int dispVersion)
         {
             uint count = file.ReadUint(true);
             for (int id = 0; id < count; id++)
@@ -880,6 +882,10 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Vector4 min = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 Vector4 max = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 file.Seek(0x18, SeekOrigin.Current); // Supposedly "m_Sphere"
+                if (dispVersion == 0x21)
+                {
+                    file.CheckString("ROTV");
+                }
                 uint aCount = file.ReadUint(true); // not sure on what this counts
                 for (int i = 0; i < aCount; i++)
                 {

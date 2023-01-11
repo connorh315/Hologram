@@ -8,7 +8,7 @@ namespace Hologram.FileTypes.DDS
     {
         public static Texture Load(ModFile file, bool isCubemap)
         {
-            if (!file.CheckString("DDS ", string.Empty)) return null;
+            if (file.Status != ModFileStatus.Success || !file.CheckString("DDS ", string.Empty)) return null;
             file.Seek(8, SeekOrigin.Current);
             int height = file.ReadInt();
             int width = file.ReadInt();
@@ -19,7 +19,8 @@ namespace Hologram.FileTypes.DDS
             string comSign = file.ReadString(4);
             file.Seek(40, SeekOrigin.Current);
             InternalFormat compressionFormat;
-            int blockSize;
+            int blockSize = 0;
+            int maxSize = 0;
             switch(comSign)
             {
                 case "DXT1":
@@ -29,6 +30,10 @@ namespace Hologram.FileTypes.DDS
                 case "DXT5":
                     compressionFormat = InternalFormat.CompressedRgbaS3tcDxt5Ext;
                     blockSize = 16;
+                    break;
+                case "t\0\0":
+                    compressionFormat = InternalFormat.Rgba32f;
+                    maxSize = width * height * 16;
                     break;
                 default:
                     return null;
@@ -43,7 +48,7 @@ namespace Hologram.FileTypes.DDS
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
-            byte[] buffer = new byte[CalculateSize(width, height, blockSize)]; // Build an array that is the size of the first mipmap, every subsequent mipmap will be smaller than this and as such can just re-use this.
+            byte[] buffer = new byte[maxSize != 0 ? maxSize : CalculateSize(width, height, blockSize)]; // Build an array that is the size of the first mipmap, every subsequent mipmap will be smaller than this and as such can just re-use this.
 
             for (int i = 0; i < mipmapCount; i++)
             {
@@ -53,9 +58,18 @@ namespace Hologram.FileTypes.DDS
                     break;
                 }
 
-                int mipmapSize = CalculateSize(width, height, blockSize);
-                file.fileStream.Read(buffer, 0, mipmapSize);
-                GL.CompressedTexImage2D(TextureTarget.Texture2D, i, compressionFormat, width, height, 0, mipmapSize, buffer);
+                if (blockSize != 0)
+                {
+                    int mipmapSize = CalculateSize(width, height, blockSize);
+                    file.fileStream.Read(buffer, 0, mipmapSize);
+                    GL.CompressedTexImage2D(TextureTarget.Texture2D, i, compressionFormat, width, height, 0, mipmapSize, buffer);
+                }
+                else
+                {
+                    int mipmapSize = width * height * 16;
+                    file.fileStream.Read(buffer, 0, mipmapSize);
+                    GL.TexImage2D(TextureTarget.Texture2D, i, (PixelInternalFormat)compressionFormat, width, height, 0, PixelFormat.Rgba, PixelType.Float, buffer);
+                }
                 width /= 2;
                 height /= 2;
             }
