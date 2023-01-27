@@ -958,28 +958,39 @@ namespace Hologram.FileTypes.GSC.GSCReader
 
         private static void ReadInstances(ModFile file)
         {
-            //Logger.Log(new LogSeg(file.Position.ToString(), ConsoleColor.DarkYellow));
             uint count = file.ReadUint(true);
             for (int id = 0; id < count; id++)
-            { // Pretty sure it's just file.Seek(0x6), and then check if the ushort there is equal to 0xffff
-                file.Seek(0x20, SeekOrigin.Current);
-                byte val = file.ReadByte();
-                if (val == 1)
+            {
+                int hash = file.ReadInt(true);
+                short flags = file.ReadShort(true);
+                short clipObjectIndex = file.ReadShort(true);
+                float clipDistance = file.ReadFloat(true);
+
+                float fadeDistancesCo = file.ReadFloat(true);
+                Vector3 fadeDistances = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
+                float approxSize = file.ReadFloat(true);
+
+                if ((flags & 2) == 0)
                 {
-                    file.Seek(0x43, SeekOrigin.Current);
-                }
+                    float fadeAlphaCo = file.ReadFloat(true);
+                    Vector3 fadeAlpha = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
+                } 
                 else
                 {
-                    file.Seek(0x1F, SeekOrigin.Current);
+                    for (int lodId = 0; lodId < 4; lodId++)
+                    {
+                        byte lodHeirarchical = file.ReadByte();
+                        int highResSceneFixupId = file.ReadInt(true);
+                        int firstInstance = file.ReadInt(true);
+                        int numInstances = file.ReadInt(true);
+                    }
                 }
+
+                int vertexControlledTint0 = file.ReadInt(true);
+                int vertexControlledTint1 = file.ReadInt(true);
+                int vertexControlledTint2 = file.ReadInt(true);
+                int vertexControlledTint3 = file.ReadInt(true);
             }
-            //int flags = file.ReadInt(true); // First section here is undeterminable, makes zero sense how variables are mapped.
-            //Vector3 size = new Vector3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
-            //file.Seek(32, SeekOrigin.Current); // LODs I think??
-            //int vertexControlledTint0 = file.ReadInt(true);
-            //int vertexControlledTint1 = file.ReadInt(true);
-            //int vertexControlledTint2 = file.ReadInt(true);
-            //int vertexControlledTint3 = file.ReadInt(true);
         }
 
         private static void ReadInstancesLODFixups(ModFile file)
@@ -1005,7 +1016,7 @@ namespace Hologram.FileTypes.GSC.GSCReader
             uint count = file.ReadUint(true);
             Matrix4x3[] matrices = new Matrix4x3[count];
             for (int id = 0; id < count; id++)
-            { // Careful, this seems wrong bc it's only 4x3 mtx so I just stuck zeroes on the end which might be wrong
+            {
                 Matrix4x3 matrix = new Matrix4x3(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 matrices[id] = matrix;
             }

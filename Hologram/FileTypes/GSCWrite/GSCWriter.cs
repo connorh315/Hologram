@@ -202,10 +202,10 @@ public class GSCWriter
                 file.WriteInt(1, true);
             }
 
-            // Instances
+            // Special Objects
             file.WriteString("ROTV");
-            file.WriteInt(entities.Length, true);
-            for (int i = 0; i < entities.Length; i++)
+            file.WriteInt(0, true);
+            for (int i = 0; i < 0; i++)
             {
                 Entity ent = entities[i];
                 var pos = ent.Position;
@@ -271,10 +271,10 @@ public class GSCWriter
             file.WriteInt(entities.Length, true);
             for (int i = 0; i < entities.Length; i++)
             {
-                file.WriteFloat(0.13f, true);
-                file.WriteFloat(0.2f, true);
-                file.WriteFloat(0.145f, true);
-                file.WriteFloat(0.22f, true);
+                file.WriteFloat(0.9f, true);
+                file.WriteFloat(2f, true);
+                file.WriteFloat(7f, true);
+                file.WriteFloat(7f, true);
             }
 
             // Instances
@@ -283,7 +283,7 @@ public class GSCWriter
             for (int i = 0; i < entities.Length; i++)
             {
                 file.WriteInt(0);
-                file.WriteInt(0x40300000 + i, true);
+                file.WriteInt(0x40410000 + i, true);
                 file.WriteFloat(25, true);
                 file.WriteFloat(22.5f, true);
                 file.WriteFloat(25, true);
@@ -318,14 +318,14 @@ public class GSCWriter
                 file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
-                file.WriteFloat(0, true);
                 file.WriteFloat(1, true);
                 file.WriteFloat(0, true);
                 file.WriteFloat(0, true);
+                file.WriteFloat(0, true);
+                file.WriteFloat(1, true);
                 file.WriteFloat(pos.X, true);
                 file.WriteFloat(pos.Y, true);
                 file.WriteFloat(pos.Z, true);
-                file.WriteFloat(1, true);
             }
 
             file.WriteString("ROTV");

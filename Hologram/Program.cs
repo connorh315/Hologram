@@ -13,6 +13,7 @@ using NativeFileDialogSharp;
 using Hologram.Resources;
 
 using Hologram.FileTypes.GSCWrite;
+using Hologram.Objects.Entities;
 
 namespace Hologram
 {
@@ -27,14 +28,10 @@ namespace Hologram
                 //HOB.Write(@"A:\Dimensions\Resources\Arrow.hob", arrow.Entity);
                 //window.Entities.AddRange(gscFile.entities);
                 //OBJ obj_white = OBJ.Parse(@"A:\Dimensions\scenetest\whiteside.obj");
-                //obj_white.Mesh.Setup();
-                //Entity whiteside = new Entity(Matrix4.Identity) { Mesh = obj_white.Mesh, Bounds = new CameraBounds() { Center = Vector3.Zero, DistSqrd = 10000 }, Material = gscFile.entities[0].Material };
                 //OBJ.DefaultVertexColor = new Color4(40, 40, 40, 255);
                 //OBJ obj_black = OBJ.Parse(@"A:\Dimensions\scenetest\blackside.obj");
-                //obj_black.Mesh.Setup();
-                //Entity blackside = new Entity(Matrix4.Identity) { Mesh = obj_black.Mesh, Bounds = new CameraBounds() { Center = Vector3.Zero, DistSqrd = 10000 }, Material = gscFile.entities[0].Material };
-                //Entity[] test = new Entity[] { whiteside, blackside };
-
+                //Entity[] test = new Entity[] { obj_white.Entity, obj_black.Entity };
+                //window.Entities.AddRange(test);
                 //GSCWriter.Write(@"A:\Dimensions\EXTRACT\LEVELS\STORY\1WIZARDOFOZ\1WIZARDOFOZA\1WIZARDOFOZA_NXG.GSC", test);
                 //DAE.Create("C:/users/connor/Desktop/DAE/test.dae", gscFile.entities);
 #else
