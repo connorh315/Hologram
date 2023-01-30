@@ -881,18 +881,29 @@ namespace Hologram.FileTypes.GSC.GSCReader
                 Matrix4 matrix = new Matrix4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 Vector4 min = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
                 Vector4 max = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true));
-                file.Seek(0x18, SeekOrigin.Current); // Supposedly "m_Sphere"
+                Vector4 sphere = new Vector4(file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true), file.ReadFloat(true)); // Not sure on the purpose of this.
+
+                uint clipObjectIndex = file.ReadUint(true);
+                uint flags = file.ReadUint(true);
                 if (dispVersion == 0x21)
                 {
                     file.CheckString("ROTV");
                 }
-                uint aCount = file.ReadUint(true); // not sure on what this counts
-                for (int i = 0; i < aCount; i++)
+
+                int clipRange = file.ReadInt(true);
+
+                for (int i = 0; i < clipRange; i++)
                 {
                     file.ReadUint(true);
                 }
-                uint clipObjectIndex = file.ReadUint(true);
-                file.Seek(8, SeekOrigin.Current); // Undeterminable, too many variables: "m_clipObjectIdx", "m_Flags", "m_instanceIdx", "m_AnimIdx", "m_WindSpeed", "m_WindScale"
+
+                int instanceIndex = file.ReadInt(true);
+                int animIndex = file.ReadInt(true);
+
+                byte windSpeed = file.ReadByte();
+                byte windScale = file.ReadByte();
+
+                short nameIndex = file.ReadShort(true);
             }
         }
         
