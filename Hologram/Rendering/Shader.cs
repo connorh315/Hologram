@@ -4,7 +4,7 @@ using ModLib;
 namespace Hologram.Rendering
 {
     // TODO: DeleteProgram on application closing.
-    internal class Shader
+    public class Shader
     {
         int Handle;
 
@@ -50,11 +50,6 @@ namespace Hologram.Rendering
             GL.DetachShader(Handle, fragmentShader);
             GL.DeleteShader(vertexShader);
             GL.DeleteShader(fragmentShader);
-        }
-
-        public void Use()
-        {
-            GL.UseProgram(Handle);
         }
 
         public static implicit operator int(Shader shader) => shader.Handle;

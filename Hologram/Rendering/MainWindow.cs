@@ -11,6 +11,7 @@ using System.Diagnostics;
 using ModLib;
 using ImGuiNET;
 using Hologram.Objects.Entities;
+using Hologram.Engine.UI;
 
 namespace Hologram.Rendering
 {
@@ -66,6 +67,8 @@ namespace Hologram.Rendering
                 UpdateViewport(new Vector2i(fbWidth, height));
             }
         }
+
+        public UIRenderer ui;
 
         public List<Entity> Entities = new List<Entity>();
 
@@ -202,28 +205,28 @@ namespace Hologram.Rendering
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.UseProgram(primaryShader);
+            //GL.UseProgram(primaryShader);
 
-            int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
-            GL.Uniform3(cameraDir, Camera.Forward);
+            //int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
+            //GL.Uniform3(cameraDir, Camera.Forward);
 
-            int worldLoc = GL.GetUniformLocation(primaryShader, "world");
-            foreach (Entity entity in Entities)
-            {
-                if (Vector3.DistanceSquared(Camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
-                {
-                    entity.Draw(worldLoc);
-                }
-            }
+            //int worldLoc = GL.GetUniformLocation(primaryShader, "world");
+            //foreach (Entity entity in Entities)
+            //{
+            //    if (Vector3.DistanceSquared(Camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
+            //    {
+            //        entity.Draw(worldLoc);
+            //    }
+            //}
 
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            foreach (Entity engineEntity in EngineEntities)
-            {
-                engineEntity.Draw(worldLoc);
-            }
+            //foreach (Entity engineEntity in EngineEntities)
+            //{
+            //    engineEntity.Draw(worldLoc);
+            //}
 
-            GL.UseProgram(lineShader);
+            ui.Draw();
 
             this.Context.SwapBuffers();
 
@@ -239,6 +242,8 @@ namespace Hologram.Rendering
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             Manager.Initialize(this);
+
+            ui = new UIRenderer(Size.X, Size.Y);
 
             base.OnLoad();
         }
