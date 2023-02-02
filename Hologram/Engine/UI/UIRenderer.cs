@@ -12,7 +12,7 @@ namespace Hologram.Engine.UI
 
         protected override void RebuildMatrix()
         {
-            projection = Matrix4.CreateOrthographic(Width, Height, -1, 1);
+            projection = Matrix4.CreateOrthographicOffCenter(0, Width, 0, Height, -1f, 1f);
         }
 
         public override void Draw()
@@ -29,7 +29,7 @@ namespace Hologram.Engine.UI
         {
             Elements = new List<Button>();
 
-            Button test = new Button("");
+            Button test = new Button(100, 0, 300, 150, "");
             Elements.Add(test);
         }
     }

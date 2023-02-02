@@ -53,8 +53,8 @@ namespace Hologram.Rendering
 
             MeshColorLocation = GL.GetUniformLocation(primaryShader, "meshColor");
 
-            this.RenderFrequency = 120;
-            this.UpdateFrequency = 120;
+            //this.RenderFrequency = 120;
+            //this.UpdateFrequency = 120;
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
             sw.Start();
@@ -90,6 +90,11 @@ namespace Hologram.Rendering
         {
             GL.Viewport(0, 0, size.X, size.Y);
             Camera.ResizeViewport(size);
+
+            //Logger.Log(new LogSeg(Size.X.ToString(), ConsoleColor.Red), new LogSeg(" - "), new LogSeg(size.X.ToString(), ConsoleColor.Blue));
+
+            if (ui != null)
+                ui.SetSize(size.X, size.Y);
 
             Matrix4 projectionMat = Camera.ProjectionMatrix;
 
@@ -205,26 +210,26 @@ namespace Hologram.Rendering
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //GL.UseProgram(primaryShader);
+            GL.UseProgram(primaryShader);
 
-            //int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
-            //GL.Uniform3(cameraDir, Camera.Forward);
+            int cameraDir = GL.GetUniformLocation(primaryShader, "cameraDir");
+            GL.Uniform3(cameraDir, Camera.Forward);
 
-            //int worldLoc = GL.GetUniformLocation(primaryShader, "world");
-            //foreach (Entity entity in Entities)
-            //{
-            //    if (Vector3.DistanceSquared(Camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
-            //    {
-            //        entity.Draw(worldLoc);
-            //    }
-            //}
+            int worldLoc = GL.GetUniformLocation(primaryShader, "world");
+            foreach (Entity entity in Entities)
+            {
+                if (Vector3.DistanceSquared(Camera.Position, entity.Bounds.Center) <= entity.Bounds.DistSqrd)
+                {
+                    entity.Draw(worldLoc);
+                }
+            }
 
-            //GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            //foreach (Entity engineEntity in EngineEntities)
-            //{
-            //    engineEntity.Draw(worldLoc);
-            //}
+            foreach (Entity engineEntity in EngineEntities)
+            {
+                engineEntity.Draw(worldLoc);
+            }
 
             ui.Draw();
 
@@ -237,13 +242,13 @@ namespace Hologram.Rendering
         {
             GL.ClearColor(Color4.Black);
 
+            ui = new UIRenderer(Size.X, Size.Y);
+
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             Manager.Initialize(this);
-
-            ui = new UIRenderer(Size.X, Size.Y);
 
             base.OnLoad();
         }
@@ -251,6 +256,7 @@ namespace Hologram.Rendering
         protected override void OnResize(ResizeEventArgs e)
         {
             // UpdateViewport(e.Size);
+
             base.OnResize(e);
         }
 
