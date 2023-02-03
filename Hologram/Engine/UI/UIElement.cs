@@ -3,11 +3,11 @@ using OpenTK.Mathematics;
 
 namespace Hologram.Engine.UI
 {
-    public abstract class BaseUI
+    public abstract class UIElement
     {
         private static bool BuiltQuad = false;
 
-        protected static int vertexArray;
+        public static int QuadArray;
 
         private static void BuildQuad()
         {
@@ -21,12 +21,12 @@ namespace Hologram.Engine.UI
                 0f, 0f
             };
 
-            vertexArray = GL.GenVertexArray();
+            QuadArray = GL.GenVertexArray();
             int vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, 4 * quadUVs.Length, quadUVs, BufferUsageHint.StaticDraw);
 
-            GL.BindVertexArray(vertexArray);
+            GL.BindVertexArray(QuadArray);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 8, 0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -37,7 +37,9 @@ namespace Hologram.Engine.UI
 
         protected Matrix4 modelMatrix = Matrix4.Identity;
 
-        public BaseUI(int x, int y, int width, int height)
+        public Matrix4 GetModelMatrix() => modelMatrix;
+
+        public UIElement(int x, int y, int width, int height)
         {
             if (!BuiltQuad)
                 BuildQuad();
@@ -49,5 +51,15 @@ namespace Hologram.Engine.UI
         }
 
         public abstract void Draw();
+
+        public virtual void OnMouseEnter()
+        {
+            
+        }
+
+        public virtual void OnMouseLeave()
+        {
+
+        }
     }
 }

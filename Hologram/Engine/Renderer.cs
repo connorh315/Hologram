@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,8 @@ namespace Hologram.Engine
         protected abstract void RebuildMatrix();
 
         public abstract void Draw();
+
+        public abstract void OnMouseOver(Vector2 mouse);
 
         public Renderer(int width, int height)
         {

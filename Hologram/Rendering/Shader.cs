@@ -8,6 +8,17 @@ namespace Hologram.Rendering
     {
         int Handle;
 
+        private Dictionary<string, int> shaderLocations = new Dictionary<string, int>(4);
+
+        public int GetUniformLocation(string uniformName)
+        {
+            if (shaderLocations.ContainsKey(uniformName))
+                return shaderLocations[uniformName];
+
+            shaderLocations[uniformName] = GL.GetUniformLocation(Handle, uniformName);
+            return shaderLocations[uniformName];
+        }
+
         private void Throw(int componentId, bool isProgram = false)
         {
             string message = "Shader compilation failed:\n" + (isProgram ? GL.GetProgramInfoLog(componentId) : GL.GetShaderInfoLog(componentId));

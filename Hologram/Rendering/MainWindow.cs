@@ -46,6 +46,7 @@ namespace Hologram.Rendering
                 Size = new Vector2i(1280, 720)
             })
         {
+            profile.Start();
             Camera = new Camera(new Vector3(30, 30, 30), Vector3.Zero, Size);
             
             primaryShader = new Shader(Shaders.Textured.VertexCode, Shaders.Textured.FragmentCode);
@@ -106,7 +107,11 @@ namespace Hologram.Rendering
             int projectionLocLine = GL.GetUniformLocation(lineShader, "projection");
             GL.UniformMatrix4(projectionLocLine, false, ref projectionMat);
         }
-        
+
+        private double average = 0;
+        private int total = 0;
+        private Stopwatch profile = new Stopwatch();
+
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
@@ -193,6 +198,8 @@ namespace Hologram.Rendering
             //int[] viewport = new int[4];
 
             Manager.Update();
+
+            ui.OnMouseOver(CorrectedFlippedMouse);
 
             //if (MouseState.IsButtonReleased(MouseButton.Left))
             //{

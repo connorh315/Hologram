@@ -4,7 +4,7 @@ using Hologram.Rendering;
 
 namespace Hologram.Engine.UI
 {
-    public class Button : BaseUI
+    public class Button : UIElement
     {
         public string Text;
         public Color4 BackgroundColor = Color4.White;
@@ -23,9 +23,19 @@ namespace Hologram.Engine.UI
             GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), BackgroundColor);
             GL.Uniform1(GL.GetUniformLocation(UIDefaults.ButtonShader, "radius"), 16f);
 
-            GL.BindVertexArray(vertexArray);
+            GL.BindVertexArray(QuadArray);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
             GL.BindVertexArray(0);
+        }
+
+        public override void OnMouseEnter()
+        {
+            BackgroundColor = new Color4(255, 0, 0, 255);
+        }
+
+        public override void OnMouseLeave()
+        {
+            BackgroundColor = new Color4(0, 255, 0, 255);
         }
     }
 }
