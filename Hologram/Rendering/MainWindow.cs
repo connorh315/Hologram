@@ -54,8 +54,8 @@ namespace Hologram.Rendering
 
             MeshColorLocation = GL.GetUniformLocation(primaryShader, "meshColor");
 
-            //this.RenderFrequency = 120;
-            //this.UpdateFrequency = 120;
+            this.RenderFrequency = 120;
+            this.UpdateFrequency = 120;
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
             sw.Start();
