@@ -99,11 +99,16 @@ namespace Hologram.Engine.UI
             
             if (hovered != previousHovered)
             {
-                hovered?.OnMouseEnter();
-                previousHovered?.OnMouseLeave();
+                previousHovered?.OnMouseLeave(Parent);
+                hovered?.OnMouseEnter(Parent);
             }
 
             previousHovered = hovered;
+        }
+
+        public override void OnClick()
+        {
+            previousHovered?.OnClick(Parent);
         }
 
         public UIRenderer(int width, int height) : base(width, height) 
@@ -111,7 +116,13 @@ namespace Hologram.Engine.UI
             Elements = new List<Button>();
 
             Button test = new Button(100, 0, 300, 150, "");
+            test.Click += () =>
+            {
+                Console.WriteLine("Button Clicked!");
+            };
             Elements.Add(test);
+
+            //Cursor.Setup();
         }
     }
 }

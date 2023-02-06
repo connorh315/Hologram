@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Hologram.Rendering;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Hologram.Engine.UI
@@ -52,12 +53,17 @@ namespace Hologram.Engine.UI
 
         public abstract void Draw();
 
-        public virtual void OnMouseEnter()
+        public virtual void OnMouseEnter(MainWindow window)
         {
             
         }
 
-        public virtual void OnMouseLeave()
+        public virtual void OnMouseLeave(MainWindow window)
+        {
+
+        }
+
+        public virtual void OnClick(MainWindow window)
         {
 
         }

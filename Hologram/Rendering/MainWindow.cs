@@ -59,7 +59,9 @@ namespace Hologram.Rendering
             this.VSync = VSyncMode.Off;
             this.Title = "Hologram";
             sw.Start();
-            
+
+            SetupCursors();
+
             unsafe
             {
                 fbSizeCallback = SizeCallback;
@@ -80,6 +82,29 @@ namespace Hologram.Rendering
 
         double[] frameTimeBuffer = new double[240];
         int offset = 0;
+
+        private unsafe Cursor* handCursor;
+        private unsafe Cursor* arrowCursor;
+
+        public unsafe void SetCursor(CursorShape shape)
+        {
+            switch (shape)
+            {
+                case CursorShape.Hand:
+                    GLFW.SetCursor(WindowPtr, handCursor);
+                    break;
+                default:
+                    GLFW.SetCursor(WindowPtr, arrowCursor);
+                    break;
+
+            }
+        }
+
+        private unsafe void SetupCursors()
+        {
+            handCursor = GLFW.CreateStandardCursor(CursorShape.Hand);
+            arrowCursor = GLFW.CreateStandardCursor(CursorShape.Arrow);
+        }
 
         private unsafe void SizeCallback(Window* window, int width, int height)
         {
@@ -181,6 +206,10 @@ namespace Hologram.Rendering
                 CursorState = CursorState.Normal;
             }
 
+            Manager.Update();
+
+            ui.OnMouseOver(CorrectedFlippedMouse);
+
             if (Camera.CalculateViewMatrix())
             {
                 Matrix4 viewMat = Camera.ViewMatrix;
@@ -193,24 +222,6 @@ namespace Hologram.Rendering
                 int viewLocLine = GL.GetUniformLocation(lineShader, "view");
                 GL.UniformMatrix4(viewLocLine, false, ref viewMat);
             }
-
-            //Vector3 dir = Camera.ScreenToWorldPoint((int)MouseState.Position.X, (int)MouseState.Position.Y);
-            //int[] viewport = new int[4];
-
-            Manager.Update();
-
-            ui.OnMouseOver(CorrectedFlippedMouse);
-
-            //if (MouseState.IsButtonReleased(MouseButton.Left))
-            //{
-            //    float horizontalScale = fbWidth / (float)Size.X;
-            //    Vector2 corrected = new Vector2(MouseState.Position.X, Size.Y - MouseState.Position.Y);
-            //    Entity result = Physics.Pick(Entities.ToArray(), Camera, corrected * horizontalScale);
-            //    if (result != null)
-            //    {
-            //        Logger.Log(result.Name);
-            //    }
-            //}
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -250,6 +261,7 @@ namespace Hologram.Rendering
             GL.ClearColor(Color4.Black);
 
             ui = new UIRenderer(Size.X, Size.Y);
+            ui.SetParent(this);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);

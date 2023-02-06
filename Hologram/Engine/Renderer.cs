@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using Hologram.Rendering;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,19 @@ namespace Hologram.Engine
             RebuildMatrix();
         }
 
+        public MainWindow Parent { get; private set; }
+        public void SetParent(MainWindow window)
+        {
+            Parent = window;
+        }
+
         protected abstract void RebuildMatrix();
 
         public abstract void Draw();
 
         public abstract void OnMouseOver(Vector2 mouse);
+
+        public abstract void OnClick();
 
         public Renderer(int width, int height)
         {

@@ -14,15 +14,18 @@ using Hologram.Resources;
 
 using Hologram.FileTypes.GSCWrite;
 using Hologram.Objects.Entities;
+using Hologram.Engine.UI;
 
 namespace Hologram
 {
     internal class Program
     {
+        public static Texture test;
         static void Main(string[] args)
         {
             using (MainWindow window = new MainWindow())
             {
+                test = DDS.Load(@"A:\Dimensions\EXTRACT\LEVELS\STORY\2THESIMPSONS\2THESIMPSONSD\2THESIMPSONSD_NXG_correct\LEGO_Zeus\LEGO_Zeus_Images_Nut\simpsons\nd_simpclouds_diff.nut.dds");
 #if DEBUG
                 //OBJ arrow = OBJ.Parse(@"A:\Dimensions\Resources\Arrow.obj");
                 //HOB.Write(@"A:\Dimensions\Resources\Arrow.hob", arrow.Entity);

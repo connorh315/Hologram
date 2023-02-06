@@ -35,6 +35,7 @@ namespace Hologram.Rendering.Shaders
             uniform vec4 buttonColor;
             uniform float radius;
             
+            uniform sampler2D texture0;
             
             void main()
             {
@@ -52,7 +53,9 @@ namespace Hologram.Rendering.Shaders
                     discard;
                 }
 
-                color = buttonColor;
+                vec4 result = texture(texture0, vec2(outUV.x, -outUV.y));
+
+                color = vec4(result.r, result.r, result.r, result.r);
             }
         ";
     }
