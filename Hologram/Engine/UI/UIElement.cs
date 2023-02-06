@@ -6,6 +6,8 @@ namespace Hologram.Engine.UI
 {
     public abstract class UIElement
     {
+        protected virtual Shader Shader { get { return null; } }
+
         private static bool BuiltQuad = false;
 
         public static int QuadArray;
@@ -40,7 +42,7 @@ namespace Hologram.Engine.UI
 
         public Matrix4 GetModelMatrix() => modelMatrix;
 
-        public UIElement(int x, int y, int width, int height)
+        public UIElement(int x, int y, int z, int width, int height)
         {
             if (!BuiltQuad)
                 BuildQuad();
@@ -49,6 +51,7 @@ namespace Hologram.Engine.UI
             modelMatrix.M22 = height;
             modelMatrix.M41 = x;
             modelMatrix.M42 = y;
+            modelMatrix.M43 = z;
         }
 
         public abstract void Draw();

@@ -6,7 +6,13 @@ namespace Hologram.Engine.UI
 {
     public class UIRenderer : Renderer
     {
+        private Dictionary<Shader, List<UIElement>> managedElements;
+
         public List<Button> Elements;
+
+        public Font Font;
+
+        public RenderableString TestString;
 
         private Matrix4 projection;
 
@@ -21,8 +27,22 @@ namespace Hologram.Engine.UI
             GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "projection"), false, ref projection);
             foreach (Button button in Elements)
             {
-                button.Draw();
+                //button.Draw();
             }
+
+
+            ShaderManager.Use(UIDefaults.TextShader);
+            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
+            Matrix4 test = Matrix4.CreateTranslation(100, 360, 0);
+            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("model"), false, ref test);
+            Texture.WhiteTexture.Use();
+            TestString.Color = Color4.Black;
+            TestString.Draw();
+            Matrix4 test2 = Matrix4.CreateTranslation(100, 360, 1);
+            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("model"), false, ref test2);
+            Font.Texture.Use();
+            TestString.Color = Color4.White;
+            TestString.Draw();
         }
 
         private UIElement? GetHovered(Vector2i mouse)
@@ -113,9 +133,15 @@ namespace Hologram.Engine.UI
 
         public UIRenderer(int width, int height) : base(width, height) 
         {
+
+
             Elements = new List<Button>();
 
-            Button test = new Button(100, 0, 300, 150, "");
+            Font = new Font("Poppins");
+
+            TestString = new RenderableString("Penis - Penis - Penis", Font, 1);
+
+            Button test = new Button(100, 0, 0, 300, 150, "");
             test.Click += () =>
             {
                 Console.WriteLine("Button Clicked!");

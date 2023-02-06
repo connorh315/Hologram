@@ -7,17 +7,17 @@ namespace Hologram.Engine.UI
     public class Font
     {
         private byte size;
-        private byte paddingLeft;
-        private byte paddingTop;
-        private byte paddingRight;
-        private byte paddingBottom;
+        public byte PaddingLeft;
+        public byte PaddingTop;
+        public byte PaddingRight;
+        public byte PaddingBottom;
         private short spacingX;
         private short spacingY;
         private byte stretchHeight;
         private short lineHeight;
         private byte baseNum;
-        private short scaleWidth;
-        private short scaleHeight;
+        public short ScaleWidth;
+        public short ScaleHeight;
 
         public Dictionary<byte, FontChar> Chars = new Dictionary<byte, FontChar>(256);
 
@@ -38,17 +38,17 @@ namespace Hologram.Engine.UI
             using (ModFile file = ModFile.Open(fileLocation))
             {
                 size = file.ReadByte();
-                paddingLeft = file.ReadByte();
-                paddingTop = file.ReadByte();
-                paddingRight = file.ReadByte();
-                paddingBottom = file.ReadByte();
+                PaddingLeft = file.ReadByte();
+                PaddingTop = file.ReadByte();
+                PaddingRight = file.ReadByte();
+                PaddingBottom = file.ReadByte();
                 spacingX = file.ReadShort(true);
                 spacingY = file.ReadShort(true);
                 stretchHeight = file.ReadByte();
                 lineHeight = file.ReadShort(true);
                 baseNum = file.ReadByte();
-                scaleWidth = file.ReadShort(true);
-                scaleHeight = file.ReadShort(true);
+                ScaleWidth = file.ReadShort(true);
+                ScaleHeight = file.ReadShort(true);
 
                 ushort charCount = file.ReadUshort(true);
 

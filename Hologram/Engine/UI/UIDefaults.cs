@@ -15,5 +15,6 @@ namespace Hologram.Engine.UI
         public static readonly Color4 FG = Color4.White;
 
         public static Shader ButtonShader = new Shader(ButtonS.VertexCode, ButtonS.FragmentCode);
+        public static Shader TextShader = new Shader(TextS.VertexCode, TextS.FragmentCode);
     }
 }

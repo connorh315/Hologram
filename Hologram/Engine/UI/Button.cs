@@ -7,25 +7,22 @@ namespace Hologram.Engine.UI
 {
     public class Button : UIElement
     {
+        protected override Shader Shader => UIDefaults.ButtonShader;
+
         public string Text;
         public Color4 BackgroundColor = UIDefaults.ButtonBG;
         public Color4 ForegroundColor = UIDefaults.FG;
 
         public event Action Click;
 
-        public Font Font;
-
-        public Button(int x, int y, int width, int height, string text) : base(x, y, width, height)
+        public Button(int x, int y, int z, int width, int height, string text) : base(x, y, z, width, height)
         {
             Text = text;
-            Font = new Font("Poppins");
         }
 
         public override void Draw()
         {
             //ShaderManager.Use(UIDefaults.ButtonShader); // needs the projection matrix so probably can't do it this way
-
-            Font.Texture.Use();
 
             GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "model"), false, ref modelMatrix);
             GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), BackgroundColor);
