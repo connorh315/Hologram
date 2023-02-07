@@ -10,7 +10,7 @@ using OpenTK.Mathematics;
 
 namespace Hologram.Engine.UI
 {
-    public class RenderableString
+    public class RenderableString : UIElement
     {
         public static Shader textShader = new Shader(TextS.VertexCode, TextS.FragmentCode);
 
@@ -20,7 +20,7 @@ namespace Hologram.Engine.UI
         private int indicesBuffer;
         private ushort indicesCount;
 
-        public RenderableString(string text, Font font, float scale)
+        public RenderableString(string text, Font font, int x, int y, int z, int width, int height) : base(x, y, z, width, height)
         {
             float[] vertices = new float[4 * 4 * text.Length];
 
@@ -93,7 +93,7 @@ namespace Hologram.Engine.UI
             indicesCount = (ushort)indices.Length;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             GL.Uniform4(UIDefaults.TextShader.GetUniformLocation("textColor"), Color);
             GL.BindVertexArray(vertexArray);

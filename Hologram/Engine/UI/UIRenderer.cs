@@ -6,13 +6,11 @@ namespace Hologram.Engine.UI
 {
     public class UIRenderer : Renderer
     {
-        private Dictionary<Shader, List<UIElement>> managedElements;
+        private Dictionary<Shader, List<UIElement>> interactableElements;
 
-        public List<Button> Elements;
+        private List<RenderableString> textElements;
 
         public Font Font;
-
-        public RenderableString TestString;
 
         private Matrix4 projection;
 
@@ -23,51 +21,50 @@ namespace Hologram.Engine.UI
 
         public override void Draw()
         {
-            ShaderManager.Use(UIDefaults.ButtonShader);
-            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "projection"), false, ref projection);
-            foreach (Button button in Elements)
+            foreach ((Shader shader, List<UIElement> elements) in interactableElements)
             {
-                //button.Draw();
-            }
+                ShaderManager.Use(shader);
 
+                GL.UniformMatrix4(shader.GetUniformLocation("projection"), false, ref projection);
+
+                foreach (UIElement element in elements)
+                {
+                    element.Draw();
+                }
+            }
 
             ShaderManager.Use(UIDefaults.TextShader);
             GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
-            Matrix4 test = Matrix4.CreateTranslation(100, 360, 0);
-            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("model"), false, ref test);
-            Texture.WhiteTexture.Use();
-            TestString.Color = Color4.Black;
-            TestString.Draw();
-            Matrix4 test2 = Matrix4.CreateTranslation(100, 360, 1);
-            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("model"), false, ref test2);
-            Font.Texture.Use();
-            TestString.Color = Color4.White;
-            TestString.Draw();
+            
+            foreach (RenderableString element in textElements)
+            {
+                element.Draw();
+            }
         }
+
+        //private UIElement? GetHovered(Vector2i mouse)
+        //{
+        //    Vector4 BL = new Vector4(0, 0, 0, 1);
+        //    Vector4 TR = new Vector4(1, 1, 0, 1);
+
+        //    UIElement bestFit = null;
+
+        //    for (int i = 0; i < Elements.Count; i++)
+        //    {
+        //        UIElement thisElement = Elements[i];
+
+        //        Vector4 result = thisElement.GetModelMatrix() * BL;
+        //        if (mouse.X < result.X || mouse.Y < result.Y) continue;
+        //        result = thisElement.GetModelMatrix() * TR;
+        //        if (mouse.X > result.X || mouse.Y > result.Y) continue;
+
+        //        bestFit = thisElement;
+        //    }
+
+        //    return bestFit;
+        //}
 
         private UIElement? GetHovered(Vector2i mouse)
-        {
-            Vector4 BL = new Vector4(0, 0, 0, 1);
-            Vector4 TR = new Vector4(1, 1, 0, 1);
-
-            UIElement bestFit = null;
-
-            for (int i = 0; i < Elements.Count; i++)
-            {
-                UIElement thisElement = Elements[i];
-
-                Vector4 result = thisElement.GetModelMatrix() * BL;
-                if (mouse.X < result.X || mouse.Y < result.Y) continue;
-                result = thisElement.GetModelMatrix() * TR;
-                if (mouse.X > result.X || mouse.Y > result.Y) continue;
-
-                bestFit = thisElement;
-            }
-
-            return bestFit;
-        }
-
-        private UIElement? GetHovered2(Vector2i mouse)
         {
             Shader shader = UIDefaults.ButtonShader;
 
@@ -80,10 +77,10 @@ namespace Hologram.Engine.UI
 
             int color = shader.GetUniformLocation("buttonColor");
 
-            for (int i = 0; i < Elements.Count; i++)
+            for (int i = 0; i < interactableElements.Count; i++)
             {
                 int id = i + 1;
-                Matrix4 modelMatrix = Elements[i].GetModelMatrix();
+                Matrix4 modelMatrix = interactableElements[i].GetModelMatrix();
                 GL.UniformMatrix4(shader.GetUniformLocation("model"), false, ref modelMatrix);
                 GL.Uniform4(color, new Vector4((((id) & 0xff0000) >> 16) / 255f, (((id) & 0xff00) >> 8) / 255f, ((id) & 0xff) / 255f, 255f));
                 GL.Uniform1(shader.GetUniformLocation("radius"), 16f);
@@ -115,7 +112,7 @@ namespace Hologram.Engine.UI
             if (clean == previousMousePos) return; // Need a dirty flag for when UI has been rebuilt. Something for later though
             previousMousePos = clean;
 
-            UIElement? hovered = GetHovered2(clean);
+            UIElement? hovered = GetHovered(clean);
             
             if (hovered != previousHovered)
             {
@@ -139,7 +136,7 @@ namespace Hologram.Engine.UI
 
             Font = new Font("Poppins");
 
-            TestString = new RenderableString("Penis - Penis - Penis", Font, 1);
+            TestString = new RenderableString("Hologram - Render Test", Font, 100, 500, 10, 1, 1);
 
             Button test = new Button(100, 0, 0, 300, 150, "");
             test.Click += () =>
