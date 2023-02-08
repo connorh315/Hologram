@@ -53,9 +53,7 @@ namespace Hologram.Rendering.Shaders
                     discard;
                 }
 
-                vec4 result = texture(texture0, vec2(outUV.x, -outUV.y));
-
-                color = vec4(result.r, result.r, result.r, result.r);
+                color = buttonColor;
             }
         ";
     }

@@ -6,7 +6,8 @@ namespace Hologram.Engine.UI
 {
     public abstract class UIElement
     {
-        protected virtual Shader Shader { get { return null; } }
+        public virtual Shader Shader { get { return null; } }
+        public virtual Shader HoverShader { get { return null; } }
 
         private static bool BuiltQuad = false;
 
@@ -54,18 +55,39 @@ namespace Hologram.Engine.UI
             modelMatrix.M43 = z;
         }
 
+        /// <summary>
+        /// Default draw method.
+        /// </summary>
         public abstract void Draw();
 
+        /// <summary>
+        /// Method for drawing to the framebuffer when trying to find the currently hovered element.
+        /// </summary>
+        /// <param name="col">The id color</param>
+        public abstract void DrawForHover(Color4 col);
+
+        /// <summary>
+        /// When the mouse enters this elements bounds.
+        /// </summary>
+        /// <param name="window"></param>
         public virtual void OnMouseEnter(MainWindow window)
         {
             
         }
 
+        /// <summary>
+        /// When the mouse leaves this elements on bounds.
+        /// </summary>
+        /// <param name="window"></param>
         public virtual void OnMouseLeave(MainWindow window)
         {
 
         }
 
+        /// <summary>
+        /// When the mouse is inside this elements bounds and is clicked.
+        /// </summary>
+        /// <param name="window"></param>
         public virtual void OnClick(MainWindow window)
         {
 

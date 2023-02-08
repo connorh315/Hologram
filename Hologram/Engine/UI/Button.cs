@@ -7,11 +7,14 @@ namespace Hologram.Engine.UI
 {
     public class Button : UIElement
     {
-        protected override Shader Shader => UIDefaults.ButtonShader;
+        public override Shader Shader => UIDefaults.ButtonShader;
+        public override Shader HoverShader => UIDefaults.ButtonShader;
 
         public string Text;
         public Color4 BackgroundColor = UIDefaults.ButtonBG;
         public Color4 ForegroundColor = UIDefaults.FG;
+
+        public float Radius = 16f;
 
         public event Action Click;
 
@@ -20,17 +23,24 @@ namespace Hologram.Engine.UI
             Text = text;
         }
 
-        public override void Draw()
+        private void DrawColor(Color4 col)
         {
-            //ShaderManager.Use(UIDefaults.ButtonShader); // needs the projection matrix so probably can't do it this way
-
             GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "model"), false, ref modelMatrix);
-            GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), BackgroundColor);
-            GL.Uniform1(GL.GetUniformLocation(UIDefaults.ButtonShader, "radius"), 16f);
+            GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), col);
+            GL.Uniform1(GL.GetUniformLocation(UIDefaults.ButtonShader, "radius"), Radius);
 
             GL.BindVertexArray(QuadArray);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-            GL.BindVertexArray(0);
+        }
+
+        public override void Draw()
+        {
+            DrawColor(BackgroundColor);
+        }
+
+        public override void DrawForHover(Color4 col)
+        {
+            DrawColor(col);
         }
 
         public override void OnMouseEnter(MainWindow window)

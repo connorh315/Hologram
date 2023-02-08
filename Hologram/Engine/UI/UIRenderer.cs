@@ -6,9 +6,9 @@ namespace Hologram.Engine.UI
 {
     public class UIRenderer : Renderer
     {
-        private Dictionary<Shader, List<UIElement>> interactableElements;
+        private Dictionary<Shader, List<UIElement>> interactableElements = new Dictionary<Shader, List<UIElement>>();
 
-        private List<RenderableString> textElements;
+        private List<RenderableString> textElements = new List<RenderableString>();
 
         public Font Font;
 
@@ -16,7 +16,7 @@ namespace Hologram.Engine.UI
 
         protected override void RebuildMatrix()
         {
-            projection = Matrix4.CreateOrthographicOffCenter(0, Width, 0, Height, -1f, 1f);
+            projection = Matrix4.CreateOrthographicOffCenter(0, Width, 0, Height, -10f, 10f);
         }
 
         public override void Draw()
@@ -34,6 +34,7 @@ namespace Hologram.Engine.UI
             }
 
             ShaderManager.Use(UIDefaults.TextShader);
+            Font.Texture.Use();
             GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
             
             foreach (RenderableString element in textElements)
@@ -66,26 +67,32 @@ namespace Hologram.Engine.UI
 
         private UIElement? GetHovered(Vector2i mouse)
         {
-            Shader shader = UIDefaults.ButtonShader;
-
-            ShaderManager.Use(shader);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.UniformMatrix4(shader.GetUniformLocation("projection"), false, ref projection);
+            Shader[] shaders = interactableElements.Keys.ToArray();
 
-            GL.BindVertexArray(UIElement.QuadArray);
+            if (shaders.Length > 255) throw new Exception("Too many active shaders!");
 
-            int color = shader.GetUniformLocation("buttonColor");
-
-            for (int i = 0; i < interactableElements.Count; i++)
+            for (int index = 0; index < shaders.Length; index++)
             {
-                int id = i + 1;
-                Matrix4 modelMatrix = interactableElements[i].GetModelMatrix();
-                GL.UniformMatrix4(shader.GetUniformLocation("model"), false, ref modelMatrix);
-                GL.Uniform4(color, new Vector4((((id) & 0xff0000) >> 16) / 255f, (((id) & 0xff00) >> 8) / 255f, ((id) & 0xff) / 255f, 255f));
-                GL.Uniform1(shader.GetUniformLocation("radius"), 16f);
+                List<UIElement> elements = interactableElements[shaders[index]];
 
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+                if (elements.Count == 0) continue;
+
+                Shader hoverShader = elements[0].HoverShader;
+
+                ShaderManager.Use(hoverShader);
+                GL.UniformMatrix4(hoverShader.GetUniformLocation("projection"), false, ref projection);
+
+                int id = 0;
+                float red = (index + 1) / 255f;
+                foreach (UIElement element in elements)
+                {
+                    Color4 col = new Color4(red, (((id) & 0xff00) >> 8) / 255f, ((id) & 0xff) / 255f, 255f);
+                    element.DrawForHover(col);
+
+                    id++;
+                }
             }
 
             GL.UseProgram(0);
@@ -97,11 +104,13 @@ namespace Hologram.Engine.UI
             byte[] pixel = new byte[4];
             GL.ReadPixels(mouse.X, mouse.Y, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, pixel);
 
-            if ((pixel[2] == 0) && (pixel[1] == 0) && (pixel[0] == 0)) return null;
+            if (pixel[0] == 0) return null;
 
-            int elementId = ((pixel[0] * 65536) + (pixel[1] * 256) + pixel[2]) - 1;
+            int elementId = (pixel[1] * 256) + pixel[2];
 
-            return Elements[elementId];
+            int shaderIndex = (pixel[0]) - 1;
+
+            return interactableElements[shaders[shaderIndex]][elementId];
         }
 
         private Vector2i previousMousePos = new Vector2i(-1, -1);
@@ -128,22 +137,32 @@ namespace Hologram.Engine.UI
             previousHovered?.OnClick(Parent);
         }
 
+        public void AddElement(UIElement element)
+        {
+            if (element.Shader == UIDefaults.TextShader)
+            {
+                textElements.Add((RenderableString)element);
+            }
+            else
+            {
+                if (!interactableElements.ContainsKey(element.Shader)) interactableElements[element.Shader] = new List<UIElement>();
+
+                interactableElements[element.Shader].Add(element);
+            }
+        }
+
         public UIRenderer(int width, int height) : base(width, height) 
         {
-
-
-            Elements = new List<Button>();
-
             Font = new Font("Poppins");
 
-            TestString = new RenderableString("Hologram - Render Test", Font, 100, 500, 10, 1, 1);
+            AddElement(new RenderableString("Hologram - Render Test", Font, 500, 360, 10, 1, 1));
 
             Button test = new Button(100, 0, 0, 300, 150, "");
             test.Click += () =>
             {
                 Console.WriteLine("Button Clicked!");
             };
-            Elements.Add(test);
+            AddElement(test);
 
             //Cursor.Setup();
         }

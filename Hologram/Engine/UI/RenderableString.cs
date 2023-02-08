@@ -12,9 +12,9 @@ namespace Hologram.Engine.UI
 {
     public class RenderableString : UIElement
     {
-        public static Shader textShader = new Shader(TextS.VertexCode, TextS.FragmentCode);
+        public override Shader Shader => UIDefaults.TextShader;
 
-        public Color4 Color = Color4.Black;
+        public Color4 Color = Color4.White;
 
         private int vertexArray;
         private int indicesBuffer;
@@ -95,9 +95,15 @@ namespace Hologram.Engine.UI
 
         public override void Draw()
         {
+            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.TextShader, "model"), false, ref modelMatrix);
             GL.Uniform4(UIDefaults.TextShader.GetUniformLocation("textColor"), Color);
             GL.BindVertexArray(vertexArray);
             GL.DrawElements(PrimitiveType.Triangles, indicesCount, DrawElementsType.UnsignedShort, 0);
+        }
+
+        public override void DrawForHover(Color4 col)
+        {
+            throw new NotImplementedException();
         }
     }
 }
