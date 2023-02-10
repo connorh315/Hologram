@@ -32,8 +32,18 @@ namespace Hologram.Engine
 
         public abstract void OnMouseOver(Vector2 mouse);
 
-        public abstract void OnClick();
+        public abstract void OnMouseEntered(Vector2 mouse);
 
+        public abstract void OnMouseExited(Vector2 mouse);
+
+        public abstract void OnMousePressed(HologramMouse mouse);
+
+        public abstract void OnMouseDown(HologramMouse mouse);
+        
+        public abstract void OnMouseReleased(HologramMouse mouse);
+        
+        
+        
         public Manager(int width, int height)
         {
             Width = width;

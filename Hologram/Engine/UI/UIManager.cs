@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Hologram.Engine.UI
 {
-    public class UIRenderer : Manager
+    public class UIManager : Manager
     {
         private Dictionary<Shader, List<UIElement>> interactableElements = new Dictionary<Shader, List<UIElement>>();
 
@@ -132,9 +132,29 @@ namespace Hologram.Engine.UI
             previousHovered = hovered;
         }
 
-        public override void OnClick()
+        public override void OnMouseReleased(HologramMouse mouse)
         {
             previousHovered?.OnClick(Parent);
+        }
+
+        public override void OnMouseDown(HologramMouse mouse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void OnMouseEntered(Vector2 mouse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void OnMouseExited(Vector2 mouse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void OnMousePressed(HologramMouse mouse)
+        {
+            throw new NotImplementedException();
         }
 
         public void AddElement(UIElement element)
@@ -151,7 +171,7 @@ namespace Hologram.Engine.UI
             }
         }
 
-        public UIRenderer(int width, int height) : base(width, height) 
+        public UIManager(int width, int height) : base(width, height) 
         {
             Font = new Font("Poppins");
 

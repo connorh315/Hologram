@@ -71,7 +71,7 @@ namespace Hologram.Rendering
             }
         }
 
-        public UIRenderer ui;
+        public UIManager ui;
 
         public List<Entity> Entities = new List<Entity>();
 
@@ -260,7 +260,7 @@ namespace Hologram.Rendering
         {
             GL.ClearColor(Color4.Black);
 
-            ui = new UIRenderer(Size.X, Size.Y);
+            ui = new UIManager(Size.X, Size.Y);
             ui.SetParent(this);
 
             GL.Enable(EnableCap.DepthTest);
