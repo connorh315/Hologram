@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Hologram.Engine.UI
 {
-    public class UIRenderer : Renderer
+    public class UIRenderer : Manager
     {
         private Dictionary<Shader, List<UIElement>> interactableElements = new Dictionary<Shader, List<UIElement>>();
 

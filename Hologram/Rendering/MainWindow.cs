@@ -206,7 +206,7 @@ namespace Hologram.Rendering
                 CursorState = CursorState.Normal;
             }
 
-            Manager.Update();
+            ManagerOld.Update();
 
             ui.OnMouseOver(CorrectedFlippedMouse);
 
@@ -267,7 +267,7 @@ namespace Hologram.Rendering
             GL.Enable(EnableCap.Blend);
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            Manager.Initialize(this);
+            ManagerOld.Initialize(this);
 
             base.OnLoad();
         }

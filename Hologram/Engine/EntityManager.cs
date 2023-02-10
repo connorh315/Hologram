@@ -34,7 +34,7 @@ namespace Hologram.Engine
 
         public static void OnMousePressed(HologramMouse mouseState)
         {
-            MainWindow window = Manager.Window;
+            MainWindow window = ManagerOld.Window;
             Entity? result = Physics.Pick(window.Entities.ToArray(), window.EngineEntities.ToArray(), window.Camera, window.CorrectedFlippedMouse);
             if (result is EngineEntity)
             {

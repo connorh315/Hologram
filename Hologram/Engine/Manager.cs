@@ -1,58 +1,45 @@
 ﻿using Hologram.Rendering;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Hologram.Engine
 {
-    public static class Manager
+    public abstract class Manager
     {
-        public static MainWindow Window;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
-        private static Vector2 previousMousePosition;
-
-        /// <summary>
-        /// Initializes all managers
-        /// </summary>
-        public static void Initialize(MainWindow window)
+        public void SetSize(int width, int height)
         {
-            Window = window;
-
-            EntityManager.Initialize();
+            Width = width;
+            Height = height;
+            RebuildMatrix();
         }
 
-        public static void Update()
+        public MainWindow Parent { get; private set; }
+        public void SetParent(MainWindow window)
         {
-            HologramMouse mouseState = new HologramMouse()
-            {
-                PreviousPosition = previousMousePosition,
-                CurrentPosition = Window.CorrectedMouse,
-                State = Window.MouseState
-            };
-
-            if (Window.IsMouseButtonPressed(MouseButton.Left))
-            {
-                EntityManager.OnMousePressed(mouseState);
-            }
-            else if (Window.IsMouseButtonDown(MouseButton.Left))
-            {
-                EntityManager.OnMouseDown(mouseState);
-            }
-            else if (Window.IsMouseButtonReleased(MouseButton.Left))
-            {
-                EntityManager.OnMouseReleased(mouseState);
-            }
-
-            EntityManager.Update();
-
-            previousMousePosition = Window.CorrectedMouse;
+            Parent = window;
         }
-    }
 
-    public struct HologramMouse
-    {
-        public Vector2 PreviousPosition;
-        public Vector2 CurrentPosition;
-        public Vector2 Delta => CurrentPosition - PreviousPosition;
-        public MouseState State;
+        protected abstract void RebuildMatrix();
+
+        public abstract void Draw();
+
+        public abstract void OnMouseOver(Vector2 mouse);
+
+        public abstract void OnClick();
+
+        public Manager(int width, int height)
+        {
+            Width = width;
+            Height = height;
+
+            RebuildMatrix();
+        }
     }
 }
