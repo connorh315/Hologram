@@ -56,7 +56,7 @@ namespace Hologram.Objects
         public void Draw(Material material)
         {
             Color4 col = material.Color;
-            GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(col.R, col.G, col.B));
+            //GL.Uniform3(MainWindow.MeshColorLocation, new Vector3(col.R, col.G, col.B));
 
             Draw();
         }

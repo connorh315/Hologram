@@ -51,13 +51,13 @@ namespace Hologram.Objects.Entities
 
         public override void OnMouseDown(HologramMouse mouseState)
         {
-            var camera = ManagerOld.Window.Camera;
-            Vector3 previousRay = camera.ScreenToWorldRay((int)mouseState.PreviousPosition.X, (int)mouseState.PreviousPosition.Y);
-            Vector3 currentRay = camera.ScreenToWorldRay((int)mouseState.CurrentPosition.X, (int)mouseState.CurrentPosition.Y);
-            Vector3 cameraToThis = position - camera.Position;
-            Vector3 direction = (currentRay - previousRay) * cameraToThis.Length;
+            //var camera = ManagerOld.Window.Camera;
+            //Vector3 previousRay = camera.ScreenToWorldRay((int)mouseState.PreviousPosition.X, (int)mouseState.PreviousPosition.Y);
+            //Vector3 currentRay = camera.ScreenToWorldRay((int)mouseState.CurrentPosition.X, (int)mouseState.CurrentPosition.Y);
+            //Vector3 cameraToThis = position - camera.Position;
+            //Vector3 direction = (currentRay - previousRay) * cameraToThis.Length;
 
-            Parent?.Translate(Vector3.Dot(direction, Axis) * Axis);
+            //Parent?.Translate(Vector3.Dot(direction, Axis) * Axis);
         }
 
         public override void OnMouseReleased(HologramMouse mouseState)

@@ -35,52 +35,52 @@ namespace Hologram.Engine
         public static void OnMousePressed(HologramMouse mouseState)
         {
             MainWindow window = ManagerOld.Window;
-            Entity? result = Physics.Pick(window.Entities.ToArray(), window.EngineEntities.ToArray(), window.Camera, window.CorrectedFlippedMouse);
-            if (result is EngineEntity)
-            {
-                SelectedEngineEntity = (EngineEntity)result;
-                SelectedEngineEntity.OnMousePressed(mouseState);
-                return;
-            }
+            //Entity? result = Physics.Pick(window.Entities.ToArray(), window.EngineEntities.ToArray(), window.Camera, window.CorrectedFlippedMouse);
+            //if (result is EngineEntity)
+            //{
+            //    SelectedEngineEntity = (EngineEntity)result;
+            //    SelectedEngineEntity.OnMousePressed(mouseState);
+            //    return;
+            //}
 
-            if (result == null || SelectedUserEntity == result)
-            {
-                SelectedEngineEntity = null;
+            //if (result == null || SelectedUserEntity == result)
+            //{
+            //    SelectedEngineEntity = null;
 
-                if (SelectedUserEntity == null) return;
+            //    if (SelectedUserEntity == null) return;
 
-                window.EngineEntities.Remove(XArrow);
-                window.EngineEntities.Remove(YArrow);
-                window.EngineEntities.Remove(ZArrow);
+            //    window.EngineEntities.Remove(XArrow);
+            //    window.EngineEntities.Remove(YArrow);
+            //    window.EngineEntities.Remove(ZArrow);
 
-                XArrow.SetParent(null);
-                YArrow.SetParent(null);
-                ZArrow.SetParent(null);
+            //    XArrow.SetParent(null);
+            //    YArrow.SetParent(null);
+            //    ZArrow.SetParent(null);
 
-                SelectedUserEntity = null;
-                Console.WriteLine("cleared");
-                return;
-            }
+            //    SelectedUserEntity = null;
+            //    Console.WriteLine("cleared");
+            //    return;
+            //}
 
-            SelectedUserEntity = result;
-            SelectedEngineEntity = null;
+            //SelectedUserEntity = result;
+            //SelectedEngineEntity = null;
 
-            int offset = 5;
+            //int offset = 5;
 
-            XArrow.Position = result.Position + new Vector3(offset, 0, 0);
-            YArrow.Position = result.Position + new Vector3(0, offset, 0);
-            ZArrow.Position = result.Position + new Vector3(0, 0, offset);
+            //XArrow.Position = result.Position + new Vector3(offset, 0, 0);
+            //YArrow.Position = result.Position + new Vector3(0, offset, 0);
+            //ZArrow.Position = result.Position + new Vector3(0, 0, offset);
 
-            if (!window.EngineEntities.Contains(XArrow))
-            {
-                window.EngineEntities.Add(XArrow);
-                window.EngineEntities.Add(YArrow);
-                window.EngineEntities.Add(ZArrow);
-            }
+            //if (!window.EngineEntities.Contains(XArrow))
+            //{
+            //    window.EngineEntities.Add(XArrow);
+            //    window.EngineEntities.Add(YArrow);
+            //    window.EngineEntities.Add(ZArrow);
+            //}
 
-            result.AddChild(XArrow);
-            result.AddChild(YArrow);
-            result.AddChild(ZArrow);
+            //result.AddChild(XArrow);
+            //result.AddChild(YArrow);
+            //result.AddChild(ZArrow);
         }
 
         public static void OnMouseDown(HologramMouse mouseState)

@@ -43,6 +43,11 @@ namespace Hologram.Engine.UI
             }
         }
 
+        public override void Update(double deltaTime)
+        {
+            throw new NotImplementedException();
+        }
+
         //private UIElement? GetHovered(Vector2i mouse)
         //{
         //    Vector4 BL = new Vector4(0, 0, 0, 1);
@@ -147,12 +152,13 @@ namespace Hologram.Engine.UI
             throw new NotImplementedException();
         }
 
-        public override void OnMouseExited(Vector2 mouse)
+        public override void OnMouseLeave(Vector2 mouse)
         {
-            throw new NotImplementedException();
+            previousHovered?.OnMouseLeave(Parent);
+            previousHovered = null;
         }
 
-        public override void OnMousePressed(HologramMouse mouse)
+        public override void OnMousePress(HologramMouse mouse)
         {
             throw new NotImplementedException();
         }
@@ -171,11 +177,11 @@ namespace Hologram.Engine.UI
             }
         }
 
-        public UIManager(int width, int height) : base(width, height) 
+        public UIManager(MainWindow parent, int width, int height) : base(parent, width, height) 
         {
             Font = new Font("Poppins");
 
-            AddElement(new RenderableString("Hologram - Render Test", Font, 500, 360, 10, 1, 1));
+            AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, 1, 1));
 
             Button test = new Button(100, 0, 0, 300, 150, "");
             test.Click += () =>
