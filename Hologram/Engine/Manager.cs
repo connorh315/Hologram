@@ -27,6 +27,8 @@ namespace Hologram.Engine
             RebuildMatrix();
         }
 
+        public Vector2 Center => new Vector2(X + Width / 2, Y + Height / 2);
+
         public bool Focused { get; private set; }
         public void SetFocus(bool focused)
         {

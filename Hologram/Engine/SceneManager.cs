@@ -77,19 +77,21 @@ namespace Hologram.Engine
 
             if (Parent.MouseState.IsButtonDown(MouseButton.Right))
             {
-                Parent.SetCursorDisabled(true);
-
-                float deltaX = Parent.MouseState.X - (Parent.Size.X / 2);
-                float deltaY = Parent.MouseState.Y - (Parent.Size.Y / 2);
-
-                if (deltaX != 0 || deltaY != 0)
+                if (!Parent.LockCursor(Center))
                 {
-                    Camera.RotateCamera(deltaX.Deg2Rad() * 0.1f, deltaY.Deg2Rad() * 0.1f);
+                    float deltaX = Parent.MouseState.X - Parent.LockPos.X;
+                    float deltaY = Parent.MouseState.Y - Parent.LockPos.Y;
+
+                    if (deltaX != 0 || deltaY != 0)
+                    {
+                        Camera.RotateCamera(deltaX.Deg2Rad() * 0.1f, deltaY.Deg2Rad() * 0.1f);
+                    }
                 }
+
             }
             else
             {
-                Parent.SetCursorDisabled(false);
+                Parent.UnlockCursor();
             }
 
             if (Camera.CalculateViewMatrix())

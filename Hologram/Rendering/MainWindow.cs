@@ -73,12 +73,36 @@ namespace Hologram.Rendering
         int offset = 0;
 
         private bool cursorDisabled = false;
-        public unsafe void SetCursorDisabled(bool disabled)
-        {
-            GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor,
-                disabled ? CursorModeValue.CursorHidden : CursorModeValue.CursorNormal);
 
-            cursorDisabled = disabled;
+        private Vector2 unlockPos;
+        public Vector2 LockPos { get; private set; }
+        /// <summary>
+        /// Locks the cursor to given the position.
+        /// </summary>
+        /// <param name="pos">The position to lock the cursor (in pixels)</param>
+        /// <returns>Whether the cursor was just locked.</returns>
+        public unsafe bool LockCursor(Vector2 pos)
+        {
+            if (!cursorDisabled)
+            {
+                unlockPos = CorrectedMouse;
+                LockPos = pos;
+                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
+                GLFW.SetCursorPos(WindowPtr, LockPos.X, LockPos.Y);
+                cursorDisabled = true;
+                return true;
+            }
+            return false;
+        }
+
+        public unsafe void UnlockCursor()
+        {
+            if (cursorDisabled)
+            {
+                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorNormal);
+                GLFW.SetCursorPos(WindowPtr, unlockPos.X, unlockPos.Y);
+                cursorDisabled = false;
+            }
         }
 
         private unsafe Cursor* handCursor;
@@ -197,7 +221,7 @@ namespace Hologram.Rendering
 
             if (cursorDisabled)
             {
-                MousePosition = new Vector2(Size.X / 2, Size.Y / 2);
+                MousePosition = LockPos;
             }
         }
 
