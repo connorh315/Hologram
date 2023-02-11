@@ -77,7 +77,7 @@ namespace Hologram.Engine
 
             if (Parent.MouseState.IsButtonDown(MouseButton.Right))
             {
-                if (!Parent.LockCursor(Center))
+                if (!Parent.LockCursor(Parent.ScaleFBToPixels(Center)))
                 {
                     float deltaX = Parent.MouseState.X - Parent.LockPos.X;
                     float deltaY = Parent.MouseState.Y - Parent.LockPos.Y;

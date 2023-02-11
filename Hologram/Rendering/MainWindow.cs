@@ -77,7 +77,7 @@ namespace Hologram.Rendering
         private Vector2 unlockPos;
         public Vector2 LockPos { get; private set; }
         /// <summary>
-        /// Locks the cursor to given the position.
+        /// Locks the cursor to the given position.
         /// </summary>
         /// <param name="pos">The position to lock the cursor (in pixels)</param>
         /// <returns>Whether the cursor was just locked.</returns>
@@ -85,9 +85,9 @@ namespace Hologram.Rendering
         {
             if (!cursorDisabled)
             {
-                unlockPos = CorrectedMouse;
+                unlockPos = MousePosition;
                 LockPos = pos;
-                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
+                // GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
                 GLFW.SetCursorPos(WindowPtr, LockPos.X, LockPos.Y);
                 cursorDisabled = true;
                 return true;
@@ -95,6 +95,13 @@ namespace Hologram.Rendering
             return false;
         }
 
+        /// <summary>
+        /// Converts raw framebuffer coordinates to window coordinates.
+        /// </summary>
+        /// <param name="pos">Framebuffer coordinates</param>
+        /// <returns>Window coordinates</returns>
+        public Vector2 ScaleFBToPixels(Vector2 pos) => pos / (fbWidth / (float)Size.X);
+        
         public unsafe void UnlockCursor()
         {
             if (cursorDisabled)
