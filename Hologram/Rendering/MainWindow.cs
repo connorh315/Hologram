@@ -87,7 +87,7 @@ namespace Hologram.Rendering
             {
                 unlockPos = MousePosition;
                 LockPos = pos;
-                // GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
+                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
                 GLFW.SetCursorPos(WindowPtr, LockPos.X, LockPos.Y);
                 cursorDisabled = true;
                 return true;
