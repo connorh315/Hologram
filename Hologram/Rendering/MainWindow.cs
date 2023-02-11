@@ -75,10 +75,8 @@ namespace Hologram.Rendering
         private bool cursorDisabled = false;
         public unsafe void SetCursorDisabled(bool disabled)
         {
-            if (disabled)
-                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorHidden);
-            else
-                GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor, CursorModeValue.CursorNormal);
+            GLFW.SetInputMode(WindowPtr, CursorStateAttribute.Cursor,
+                disabled ? CursorModeValue.CursorHidden : CursorModeValue.CursorNormal);
 
             cursorDisabled = disabled;
         }
@@ -140,8 +138,8 @@ namespace Hologram.Rendering
 
         private bool IsManagerHovered(Manager manager)
         {
-            int x = (int)MouseState.X;
-            int y = (int)MouseState.Y;
+            int x = (int)CorrectedFlippedMouse.X;
+            int y = (int)CorrectedFlippedMouse.Y;
             return (x > manager.X && x < (manager.X + manager.Width))
                 && (y > manager.Y && y < (manager.Y + manager.Height));
         }
