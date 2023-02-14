@@ -14,6 +14,11 @@ namespace Hologram.Engine.UI
 
         private Matrix4 projection;
 
+        public Matrix4 GetProjectionMatrix()
+        {
+            return projection;
+        }
+
         protected override void RebuildMatrix()
         {
             projection = Matrix4.CreateOrthographicOffCenter(0, Width, 0, Height, -10f, 10f);
@@ -73,6 +78,7 @@ namespace Hologram.Engine.UI
         private UIElement? GetHovered(Vector2i mouse)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(X, Y, Width, Height);
 
             Shader[] shaders = interactableElements.Keys.ToArray();
 
@@ -133,23 +139,27 @@ namespace Hologram.Engine.UI
                 previousHovered?.OnMouseLeave(Parent);
                 hovered?.OnMouseEnter(Parent);
             }
+            else
+            {
+                hovered?.OnMouseOver(Parent);
+            }
 
             previousHovered = hovered;
         }
 
-        public override void OnMouseReleased(HologramMouse mouse)
+        public override void OnMouseRelease(HologramMouse mouse)
         {
-            previousHovered?.OnClick(Parent);
+            previousHovered?.OnMouseRelease(Parent);
         }
 
         public override void OnMouseDown(HologramMouse mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
-        public override void OnMouseEntered(Vector2 mouse)
+        public override void OnMouseEnter(Vector2 mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void OnMouseLeave(Vector2 mouse)
@@ -160,7 +170,7 @@ namespace Hologram.Engine.UI
 
         public override void OnMousePress(HologramMouse mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void AddElement(UIElement element)
@@ -181,18 +191,19 @@ namespace Hologram.Engine.UI
         {
             Font = UIDefaults.Poppins;
 
-            AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, 1));
+            //AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, Font.Size / 2));
 
-            Button test = new Button(100, 0, 0, 300, 150, "");
-            test.Click += () =>
-            {
-                Console.WriteLine("Button Clicked!");
-            };
-            AddElement(test);
+            //Button test = new Button(100, 0, 0, 300, 150, "");
+            //test.Click += () =>
+            //{
+            //    Console.WriteLine("Button Clicked!");
+            //};
+            //AddElement(test);
 
-            Toolbar testToolbar = new Toolbar(20, 20, 5, 600, 100);
-            testToolbar.AddOption(this, "File");
-            AddElement(testToolbar);
+            //Toolbar testToolbar = new Toolbar(0, 0, 5, width, height);
+            //testToolbar.AddOption(this, "File");
+            //testToolbar.AddOption(this, "Edit");
+            //AddElement(testToolbar);
 
             //Cursor.Setup();
         }

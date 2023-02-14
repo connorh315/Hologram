@@ -12,6 +12,7 @@ using ModLib;
 using ImGuiNET;
 using Hologram.Objects.Entities;
 using Hologram.Engine.UI;
+using Hologram.Engine.UI.Panels;
 
 namespace Hologram.Rendering
 {
@@ -46,7 +47,8 @@ namespace Hologram.Rendering
                 Size = new Vector2i(1280, 720)
             })
         {
-            UI = new UIManager(this, Size.X, Size.Y);
+            Toolbar = new MainToolbar(this, Size.X, 100);
+            UI = new Inspector(this, Size.X, Size.Y);
             Scene = new SceneManager(this, Size.X, Size.Y);
 
             this.RenderFrequency = 120;
@@ -60,6 +62,7 @@ namespace Hologram.Rendering
             SetupSizeCallback();
         }
 
+        public UIManager Toolbar;
         public UIManager UI;
         public SceneManager Scene;
 
@@ -145,17 +148,24 @@ namespace Hologram.Rendering
 
         private void ScaleComponents(Vector2i size)
         {
+            const int toolbarHeight = 30; // todo: scale with dpi
             int uiWidth = (int)(0.3 * size.X);
+            if (Toolbar != null)
+            {
+                Toolbar.SetPos(0, size.Y - toolbarHeight);
+                Toolbar.SetSize(size.X, toolbarHeight);
+            }
+
             if (UI != null)
             {
                 UI.SetPos(0, 0);
-                UI.SetSize(uiWidth, size.Y);
+                UI.SetSize(uiWidth, size.Y - toolbarHeight);
             }
 
             if (Scene != null)
             {
                 Scene.SetPos(uiWidth, 0);
-                Scene.SetSize(size.X - uiWidth, size.Y);
+                Scene.SetSize(size.X - uiWidth, size.Y - toolbarHeight);
             }
         }
 
@@ -202,34 +212,57 @@ namespace Hologram.Rendering
             {
                 Scene.SetFocus(true);
                 UI.SetFocus(false);
+                Toolbar.SetFocus(false);
                 hovered = Scene;
             }
             else if (IsManagerHovered(UI))
             {
                 Scene.SetFocus(false);
                 UI.SetFocus(true);
+                Toolbar.SetFocus(false);
                 hovered = UI;
+            }
+            else if (IsManagerHovered(Toolbar))
+            {
+                Scene.SetFocus(false);
+                UI.SetFocus(false);
+                Toolbar.SetFocus(true);
+                hovered = Toolbar;
             }
 
             if (hovered != previousHovered)
             {
                 previousHovered?.OnMouseLeave(MouseState.Position);
+                hovered?.OnMouseEnter(MouseState.Position);
             }
             else
             {
-                previousHovered?.OnMouseOver(MouseState.Position);
+                previousHovered?.OnMouseOver(CorrectedFlippedMouse);
+            }
+
+            if (IsMouseButtonPressed(MouseButton.Left))
+            {
+                hovered?.OnMousePress(new HologramMouse());
+            }
+            else if (IsMouseButtonDown(MouseButton.Left))
+            {
+                hovered?.OnMouseDown(new HologramMouse());
+            }
+            else if (IsMouseButtonReleased(MouseButton.Left))
+            {
+                hovered?.OnMouseRelease(new HologramMouse());
             }
 
             Scene.Update(args.Time);
 
             ManagerOld.Update();
 
-            UI.OnMouseOver(CorrectedFlippedMouse);
-
             if (cursorDisabled)
             {
                 MousePosition = LockPos;
             }
+
+            previousHovered = hovered;
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -241,6 +274,9 @@ namespace Hologram.Rendering
 
             GL.Viewport(UI.X, UI.Y, UI.Width, UI.Height);
             UI.Draw();
+
+            GL.Viewport(Toolbar.X, Toolbar.Y, Toolbar.Width, Toolbar.Height);
+            Toolbar.Draw();
 
             this.Context.SwapBuffers();
 

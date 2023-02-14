@@ -25,6 +25,7 @@ namespace Hologram.Engine
             Width = width;
             Height = height;
             RebuildMatrix();
+            OnResize();
         }
 
         public Vector2 Center => new Vector2(X + Width / 2, Y + Height / 2);
@@ -49,9 +50,9 @@ namespace Hologram.Engine
 
         protected abstract void RebuildMatrix();
 
-        public abstract void OnMouseOver(Vector2 mouse);
+        public abstract void OnMouseEnter(Vector2 mouse);
 
-        public abstract void OnMouseEntered(Vector2 mouse);
+        public abstract void OnMouseOver(Vector2 mouse);
 
         public abstract void OnMouseLeave(Vector2 mouse);
 
@@ -59,9 +60,12 @@ namespace Hologram.Engine
 
         public abstract void OnMouseDown(HologramMouse mouse);
         
-        public abstract void OnMouseReleased(HologramMouse mouse);
+        public abstract void OnMouseRelease(HologramMouse mouse);
         
-        
+        public virtual void OnResize()
+        {
+
+        }
         
         public Manager(MainWindow parent, int width, int height)
         {

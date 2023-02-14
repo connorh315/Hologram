@@ -132,19 +132,19 @@ namespace Hologram.Engine
             throw new NotImplementedException();
         }
 
-        public override void OnMouseEntered(Vector2 mouse)
+        public override void OnMouseEnter(Vector2 mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void OnMouseLeave(Vector2 mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void OnMouseOver(Vector2 mouse)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void OnMousePress(HologramMouse mouse)
@@ -152,7 +152,7 @@ namespace Hologram.Engine
             throw new NotImplementedException();
         }
 
-        public override void OnMouseReleased(HologramMouse mouse)
+        public override void OnMouseRelease(HologramMouse mouse)
         {
             throw new NotImplementedException();
         }

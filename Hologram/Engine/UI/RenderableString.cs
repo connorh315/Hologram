@@ -20,11 +20,16 @@ namespace Hologram.Engine.UI
         private int indicesBuffer;
         private ushort indicesCount;
 
-        public ushort Width { get; private set; }
+        private Font Font;
+
+        private ushort width;
+        public ushort Width => (ushort)(width * XScale);
 
         public RenderableString(string text, Font font, int x, int y, int z, int height) : base(x, y, z, 1, 1)
         {
-            XScale = YScale = height / ((float)font.Size - font.PaddingTop - font.PaddingBottom);
+            Font = font;
+
+            SetHeight(height);
             
 
             float[] vertices = new float[4 * 4 * text.Length];
@@ -96,7 +101,12 @@ namespace Hologram.Engine.UI
             GL.BufferData(BufferTarget.ElementArrayBuffer, 2 * indices.Length, indices, BufferUsageHint.StaticDraw);
 
             indicesCount = (ushort)indices.Length;
-            Width = (ushort)xCursor;
+            width = (ushort)xCursor;
+        }
+
+        public void SetHeight(int height)
+        {
+            XScale = YScale = height / ((float)Font.Size - Font.PaddingTop - Font.PaddingBottom);
         }
 
         public override void Draw()

@@ -67,6 +67,7 @@ namespace Hologram.Rendering
 
         public void ResizeViewport(Vector2i size)
         {
+            if (size.X == 0 || size.Y == 0) return;
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView((45f).Deg2Rad(), (float)size.X / size.Y, 0.5f, 300f);
             viewportSize = size;
         }

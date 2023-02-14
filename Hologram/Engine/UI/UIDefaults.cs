@@ -17,6 +17,7 @@ namespace Hologram.Engine.UI
         public static Shader ButtonShader = new Shader(ButtonS.VertexCode, ButtonS.FragmentCode);
         public static Shader TextShader = new Shader(TextS.VertexCode, TextS.FragmentCode);
         public static Shader QuadShader = new Shader(QuadS.VertexCode, QuadS.FragmentCode);
+        public static Shader BorderQuadShader = new Shader(BorderedQuadS.VertexCode, BorderedQuadS.FragmentCode);
 
         public static Font Poppins = new Font("Poppins");
     }

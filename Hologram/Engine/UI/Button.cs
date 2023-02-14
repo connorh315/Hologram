@@ -10,7 +10,7 @@ namespace Hologram.Engine.UI
         public override Shader Shader => UIDefaults.ButtonShader;
         public override Shader HoverShader => UIDefaults.ButtonShader;
 
-        public string Text;
+        public RenderableString Text;
         public Color4 BackgroundColor = UIDefaults.ButtonBG;
         public Color4 ForegroundColor = UIDefaults.FG;
 
@@ -18,9 +18,16 @@ namespace Hologram.Engine.UI
 
         public event Action Click;
 
-        public Button(int x, int y, int z, int width, int height, string text) : base(x, y, z, width, height)
+        public float PaddingY = 0.2f;
+
+        public Button(int x, int y, int z, int width, int height, string text, UIManager manager) : base(x, y, z, width, height)
         {
-            Text = text;
+            Text = new RenderableString(text, UIDefaults.Poppins, 0, 0, (int)ZPos + 2, 1);
+            manager.AddElement(Text);
+            int textHeight = (int)((1 - (2 * PaddingY)) * YScale);
+
+            Text.SetHeight(textHeight);
+            Text.SetPos(XPos + (XScale / 2) - (Text.Width / 2f), YPos + (YScale / 2) - (textHeight / 2f));
         }
 
         private void DrawColor(Color4 col)
@@ -55,7 +62,7 @@ namespace Hologram.Engine.UI
             window.SetCursor(CursorShape.Arrow);
         }
 
-        public override void OnClick(MainWindow window)
+        public override void OnMouseRelease(MainWindow window)
         {
             Click();
         }

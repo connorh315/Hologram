@@ -44,7 +44,7 @@ namespace Hologram.Engine.UI
         public Matrix4 GetModelMatrix() => modelMatrix;
 
         public float XPos { get { return modelMatrix.M41; } set { modelMatrix.M41 = value; } }
-        public float YPos => modelMatrix.M42;
+        public float YPos { get { return modelMatrix.M42; } set { modelMatrix.M42 = value; } }
         public float ZPos => modelMatrix.M43;
         public float XScale { get { return modelMatrix.M11; } set { modelMatrix.M11 = value; } }
         public float YScale { get { return modelMatrix.M22; } set { modelMatrix.M22 = value; } }
@@ -59,6 +59,22 @@ namespace Hologram.Engine.UI
             modelMatrix.M41 = x;
             modelMatrix.M42 = y;
             modelMatrix.M43 = z;
+        }
+
+        public virtual void SetSize(float width, float height)
+        {
+            float origWidth = XScale;
+            float origHeight = YScale;
+            XScale = width;
+            YScale = height;
+
+            OnResize(new Vector2(origWidth, origHeight));
+        }
+
+        public virtual void SetPos(float x, float y)
+        {
+            XPos = x;
+            YPos = y;
         }
 
         /// <summary>
@@ -82,7 +98,16 @@ namespace Hologram.Engine.UI
         }
 
         /// <summary>
-        /// When the mouse leaves this elements on bounds.
+        /// When the mouse stays inside this elements bounds.
+        /// </summary>
+        /// <param name="window"></param>
+        public virtual void OnMouseOver(MainWindow window)
+        {
+
+        }
+
+        /// <summary>
+        /// When the mouse leaves this elements bounds.
         /// </summary>
         /// <param name="window"></param>
         public virtual void OnMouseLeave(MainWindow window)
@@ -90,11 +115,22 @@ namespace Hologram.Engine.UI
 
         }
 
-        /// <summary>
-        /// When the mouse is inside this elements bounds and is clicked.
-        /// </summary>
-        /// <param name="window"></param>
-        public virtual void OnClick(MainWindow window)
+        public virtual void OnMousePress(MainWindow window)
+        {
+
+        }
+
+        public virtual void OnMouseDown(MainWindow window)
+        {
+
+        }
+
+        public virtual void OnMouseRelease(MainWindow window)
+        {
+
+        }
+
+        public virtual void OnResize(Vector2 originalSize)
         {
 
         }
