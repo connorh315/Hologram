@@ -43,6 +43,12 @@ namespace Hologram.Engine.UI
 
         public Matrix4 GetModelMatrix() => modelMatrix;
 
+        public float XPos { get { return modelMatrix.M41; } set { modelMatrix.M41 = value; } }
+        public float YPos => modelMatrix.M42;
+        public float ZPos => modelMatrix.M43;
+        public float XScale { get { return modelMatrix.M11; } set { modelMatrix.M11 = value; } }
+        public float YScale { get { return modelMatrix.M22; } set { modelMatrix.M22 = value; } }
+
         public UIElement(int x, int y, int z, int width, int height)
         {
             if (!BuiltQuad)

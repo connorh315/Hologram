@@ -6,16 +6,16 @@ namespace Hologram.Engine.UI
 {
     public class Font
     {
-        private byte size;
+        public byte Size;
         public byte PaddingLeft;
         public byte PaddingTop;
         public byte PaddingRight;
         public byte PaddingBottom;
-        private short spacingX;
-        private short spacingY;
+        public short spacingX;
+        public short spacingY;
         private byte stretchHeight;
         private short lineHeight;
-        private byte baseNum;
+        public byte BaseNum;
         public short ScaleWidth;
         public short ScaleHeight;
 
@@ -37,7 +37,7 @@ namespace Hologram.Engine.UI
 
             using (ModFile file = ModFile.Open(fileLocation))
             {
-                size = file.ReadByte();
+                Size = file.ReadByte();
                 PaddingLeft = file.ReadByte();
                 PaddingTop = file.ReadByte();
                 PaddingRight = file.ReadByte();
@@ -46,7 +46,7 @@ namespace Hologram.Engine.UI
                 spacingY = file.ReadShort(true);
                 stretchHeight = file.ReadByte();
                 lineHeight = file.ReadShort(true);
-                baseNum = file.ReadByte();
+                BaseNum = file.ReadByte();
                 ScaleWidth = file.ReadShort(true);
                 ScaleHeight = file.ReadShort(true);
 

@@ -179,9 +179,9 @@ namespace Hologram.Engine.UI
 
         public UIManager(MainWindow parent, int width, int height) : base(parent, width, height) 
         {
-            Font = new Font("Poppins");
+            Font = UIDefaults.Poppins;
 
-            AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, 1, 1));
+            AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, 1));
 
             Button test = new Button(100, 0, 0, 300, 150, "");
             test.Click += () =>
@@ -189,6 +189,10 @@ namespace Hologram.Engine.UI
                 Console.WriteLine("Button Clicked!");
             };
             AddElement(test);
+
+            Toolbar testToolbar = new Toolbar(20, 20, 5, 600, 100);
+            testToolbar.AddOption(this, "File");
+            AddElement(testToolbar);
 
             //Cursor.Setup();
         }
