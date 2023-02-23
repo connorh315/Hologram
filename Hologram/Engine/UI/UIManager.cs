@@ -187,6 +187,20 @@ namespace Hologram.Engine.UI
             }
         }
 
+        public void RemoveElement(UIElement element)
+        {
+            if (element.Shader == UIDefaults.TextShader)
+            {
+                textElements.Remove((RenderableString)element);
+            }
+            else
+            {
+                if (!interactableElements.ContainsKey(element.Shader)) return;
+
+                interactableElements[element.Shader].Remove(element);
+            }
+        }
+
         public UIManager(MainWindow parent, int width, int height) : base(parent, width, height) 
         {
             Font = UIDefaults.Poppins;

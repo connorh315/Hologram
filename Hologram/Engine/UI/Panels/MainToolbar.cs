@@ -12,11 +12,11 @@ namespace Hologram.Engine.UI.Panels
     {
         public Toolbar Toolbar;
 
-        public MainToolbar(MainWindow parent, int width, int height) : base(parent, width, height)
+        public MainToolbar(MainWindow parent, int width, int height, UIManager overlay) : base(parent, width, height)
         {
-            Toolbar = new Toolbar(0, 0, 0, Width, Height);
-            Toolbar.AddOption(this, "File");
-            Toolbar.AddOption(this, "Edit");
+            Toolbar = new Toolbar(0, 0, 0, Width, Height, this, overlay);
+            Toolbar.AddOption("File");
+            Toolbar.AddOption("Edit");
             AddElement(Toolbar);
         }
 

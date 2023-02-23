@@ -20,9 +20,12 @@ namespace Hologram.Engine.UI
 
         public UIManager Manager;
 
-        public Toolbar(int x, int y, int z, int width, int height) : base(x, y, z, width, height)
-        {
+        public UIManager Overlay;
 
+        public Toolbar(int x, int y, int z, int width, int height, UIManager manager, UIManager overlay) : base(x, y, z, width, height)
+        {
+            Manager = manager;
+            Overlay = overlay;
         }
 
         const int paddingX = 30;
@@ -39,14 +42,12 @@ namespace Hologram.Engine.UI
             XOffset += (ushort)(text.Width + (2 * paddingX));
         }
 
-        public void AddOption(UIManager manager, string title)
+        public void AddOption(string title)
         {
-            Manager = manager;
-
             RenderableString text = new RenderableString(title, UIDefaults.Poppins, 1, 1, (int)ZPos + 1, 1);
             PushOption(text);
             Options.Add(text);
-            manager.AddElement(text);
+            Manager.AddElement(text);
         }
 
         private void DrawColor(Color4 col)

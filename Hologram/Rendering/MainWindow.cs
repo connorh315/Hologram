@@ -18,12 +18,6 @@ namespace Hologram.Rendering
 {
     public class MainWindow : GameWindow
     {
-        //public Camera Camera;
-        //private Shader primaryShader;
-        //private Shader lineShader;
-
-        //public static int MeshColorLocation;
-
         private GLFWCallbacks.FramebufferSizeCallback fbSizeCallback;
         private int fbWidth;
         
@@ -47,8 +41,10 @@ namespace Hologram.Rendering
                 Size = new Vector2i(1280, 720)
             })
         {
-            Toolbar = new MainToolbar(this, Size.X, 100);
-            UI = new Inspector(this, Size.X, Size.Y);
+            Overlay = new UIManager(this, Size.X, Size.Y);
+            
+            Toolbar = new MainToolbar(this, Size.X, 100, Overlay);
+            UI = new Inspector(this, Size.X, Size.Y, Overlay);
             Scene = new SceneManager(this, Size.X, Size.Y);
 
             this.RenderFrequency = 120;
@@ -65,6 +61,7 @@ namespace Hologram.Rendering
         public UIManager Toolbar;
         public UIManager UI;
         public SceneManager Scene;
+        public UIManager Overlay;
 
         public List<Entity> Entities = new List<Entity>();
 
@@ -175,7 +172,7 @@ namespace Hologram.Rendering
             ScaleComponents(new Vector2i(width, height));
         }
 
-        private Manager? previousHovered;
+        public Manager? Hovered { get; private set; }
 
         private bool IsManagerHovered(Manager manager)
         {
@@ -206,51 +203,42 @@ namespace Hologram.Rendering
 
             Title = "Hologram - " + Math.Round(frameTimeBuffer.Length / totalTime) + " FPS";
 
-            Manager hovered = null;
+            Manager previousHovered = Hovered;
 
             if (IsManagerHovered(Scene))
             {
-                Scene.SetFocus(true);
-                UI.SetFocus(false);
-                Toolbar.SetFocus(false);
-                hovered = Scene;
+                Hovered = Scene;
             }
             else if (IsManagerHovered(UI))
             {
-                Scene.SetFocus(false);
-                UI.SetFocus(true);
-                Toolbar.SetFocus(false);
-                hovered = UI;
+                Hovered = UI;
             }
             else if (IsManagerHovered(Toolbar))
             {
-                Scene.SetFocus(false);
-                UI.SetFocus(false);
-                Toolbar.SetFocus(true);
-                hovered = Toolbar;
+                Hovered = Toolbar;
             }
 
-            if (hovered != previousHovered)
+            if (Hovered != previousHovered)
             {
                 previousHovered?.OnMouseLeave(MouseState.Position);
-                hovered?.OnMouseEnter(MouseState.Position);
+                Hovered?.OnMouseEnter(MouseState.Position);
             }
             else
             {
-                previousHovered?.OnMouseOver(CorrectedFlippedMouse);
+                Hovered?.OnMouseOver(CorrectedFlippedMouse);
             }
 
             if (IsMouseButtonPressed(MouseButton.Left))
             {
-                hovered?.OnMousePress(new HologramMouse());
+                Hovered?.OnMousePress(new HologramMouse());
             }
             else if (IsMouseButtonDown(MouseButton.Left))
             {
-                hovered?.OnMouseDown(new HologramMouse());
+                Hovered?.OnMouseDown(new HologramMouse());
             }
             else if (IsMouseButtonReleased(MouseButton.Left))
             {
-                hovered?.OnMouseRelease(new HologramMouse());
+                Hovered?.OnMouseRelease(new HologramMouse());
             }
 
             Scene.Update(args.Time);
@@ -261,8 +249,6 @@ namespace Hologram.Rendering
             {
                 MousePosition = LockPos;
             }
-
-            previousHovered = hovered;
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -277,6 +263,9 @@ namespace Hologram.Rendering
 
             GL.Viewport(Toolbar.X, Toolbar.Y, Toolbar.Width, Toolbar.Height);
             Toolbar.Draw();
+
+            GL.Viewport(Overlay.X, Overlay.Y, Overlay.Width, Overlay.Height);
+            Overlay.Draw();
 
             this.Context.SwapBuffers();
 

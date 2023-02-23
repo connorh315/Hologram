@@ -36,7 +36,7 @@ namespace Hologram.Engine
             Focused = focused;
         }
 
-        public bool HasFocus() => Focused;
+        public bool HasFocus() => Parent.Hovered == this;
 
         public MainWindow Parent { get; private set; }
         public void SetParent(MainWindow window)

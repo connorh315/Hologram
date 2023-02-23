@@ -12,7 +12,7 @@ namespace Hologram.Engine.UI.Panels
     {
         public Button TestButton;
 
-        public Inspector(MainWindow parent, int width, int height) : base(parent, width, height)
+        public Inspector(MainWindow parent, int width, int height, UIManager overlay) : base(parent, width, height)
         {
             TestButton = new Button(20, 20, 0, 300, 100, "Test", this);
             TestButton.Click += () =>
