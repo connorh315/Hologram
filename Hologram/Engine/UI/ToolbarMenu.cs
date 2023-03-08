@@ -22,7 +22,7 @@ namespace Hologram.Engine.UI
 
         public void AddOption(string title, Action callback)
         {
-            RenderableString text = new RenderableString(title, UIDefaults.Poppins, 5, topY - yOffset, (int)ZPos + 1, 1);
+            RenderableString text = new RenderableString(title, UIDefaults.Poppins, 5, topY - yOffset, ZPos + 1, 1);
             Overlay.AddElement(text);
         }
 

@@ -49,7 +49,7 @@ namespace Hologram.Engine.UI
         public float XScale { get { return modelMatrix.M11; } set { modelMatrix.M11 = value; } }
         public float YScale { get { return modelMatrix.M22; } set { modelMatrix.M22 = value; } }
 
-        public UIElement(int x, int y, int z, int width, int height)
+        public UIElement(float x, float y, float z, float width, float height)
         {
             if (!BuiltQuad)
                 BuildQuad();

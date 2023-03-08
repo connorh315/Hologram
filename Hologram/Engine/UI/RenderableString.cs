@@ -25,7 +25,7 @@ namespace Hologram.Engine.UI
         private ushort width;
         public ushort Width => (ushort)(width * XScale);
 
-        public RenderableString(string text, Font font, int x, int y, int z, int height) : base(x, y, z, 1, 1)
+        public RenderableString(string text, Font font, float x, float y, float z, int height) : base(x, y, z, 1, 1)
         {
             Font = font;
 
