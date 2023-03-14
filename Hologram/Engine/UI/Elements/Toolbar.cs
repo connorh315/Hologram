@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Hologram.Engine.UI
+namespace Hologram.Engine.UI.Elements
 {
     public class Toolbar : UIElement
     {
@@ -16,16 +16,14 @@ namespace Hologram.Engine.UI
 
         public float PaddingY = 0.2f;
 
-        public List<RenderableString> Options = new List<RenderableString>();
-
-        public UIManager Manager;
+        public List<ToolbarMenu> Options = new List<ToolbarMenu>();
 
         public UIManager Overlay;
 
-        public Toolbar(int x, int y, int z, int width, int height, UIManager manager, UIManager overlay) : base(x, y, z, width, height)
+        public Toolbar(UIElement parent) : base(parent)
         {
-            Manager = manager;
-            Overlay = overlay;
+            //Manager = manager;
+            //Overlay = overlay;
         }
 
         const int paddingX = 30;
@@ -34,25 +32,23 @@ namespace Hologram.Engine.UI
 
         private void PushOption(RenderableString text)
         {
-            int height = (int)((1 - (2 * PaddingY)) * YScale);
+            int height = (int)((1 - 2 * PaddingY) * YScale);
 
-            text.SetPos(XPos + XOffset + paddingX, YPos + (YScale / 2) - (height / 2f));
+            text.SetPos(XPos + XOffset + paddingX, YPos + YScale / 2 - height / 2f);
             text.SetHeight(height);
 
-            XOffset += (ushort)(text.Width + (2 * paddingX));
+            XOffset += (ushort)(text.Width + 2 * paddingX);
         }
 
-        public void AddOption(string title)
+        public void AddMenu(ToolbarMenu menu)
         {
-            RenderableString text = new RenderableString(title, UIDefaults.Poppins, 1, 1, (int)ZPos + 1, 1);
-            PushOption(text);
-            Options.Add(text);
-            Manager.AddElement(text);
+            PushOption(menu.Title);
+            Options.Add(menu);
         }
 
         private void DrawColor(Color4 col)
         {
-            GL.UniformMatrix4(Shader.GetUniformLocation("model"), false, ref modelMatrix);
+            GL.UniformMatrix4(Shader.GetUniformLocation("model"), false, ref elementMatrix);
             GL.Uniform4(Shader.GetUniformLocation("quadColor"), col);
 
             GL.BindVertexArray(QuadArray);
@@ -80,6 +76,8 @@ namespace Hologram.Engine.UI
             }
 
             DrawColor(BackgroundColor);
+
+            //base.Draw();
         }
 
         public override void DrawForHover(Color4 col)
@@ -95,11 +93,12 @@ namespace Hologram.Engine.UI
             float mouseX = window.CorrectedFlippedMouse.X;
 
             drawHover = false;
-            foreach (RenderableString text in Options)
+            foreach (ToolbarMenu menu in Options)
             {
+                RenderableString text = menu.Title;
                 float lowerX = text.XPos - paddingX;
                 float higherX = text.XPos + text.Width + paddingX;
-                if (mouseX > (lowerX) && mouseX < (higherX))
+                if (mouseX > lowerX && mouseX < higherX)
                 {
                     hoverQuadMatrix.M11 = higherX - lowerX;
                     hoverQuadMatrix.M22 = YScale;
@@ -122,9 +121,9 @@ namespace Hologram.Engine.UI
         {
             XOffset = 0;
 
-            foreach (RenderableString text in Options)
+            foreach (ToolbarMenu menu in Options)
             {
-                PushOption(text);
+                PushOption(menu.Title);
             }
         }
     }

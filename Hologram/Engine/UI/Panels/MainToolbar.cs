@@ -1,4 +1,5 @@
-﻿using Hologram.Rendering;
+﻿using Hologram.Engine.UI.Elements;
+using Hologram.Rendering;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,19 @@ namespace Hologram.Engine.UI.Panels
     {
         public Toolbar Toolbar;
 
-        public MainToolbar(MainWindow parent, int width, int height, UIManager overlay) : base(parent, width, height)
+        public MainToolbar(MainWindow parent, int width, int height) : base(parent, width, height)
         {
-            Toolbar = new Toolbar(0, 0, 0, Width, Height, this, overlay);
-            Toolbar.AddOption("File");
-            Toolbar.AddOption("Edit");
-            AddElement(Toolbar);
+            Toolbar = new Toolbar(Panel);
+            
+            ToolbarMenu fileMenu = new ToolbarMenu(Toolbar);
+            fileMenu.SetTitle("File");
+            fileMenu.AddOption("New", () => { });
+
+            ToolbarMenu editMenu = new ToolbarMenu(Toolbar);
+            editMenu.SetTitle("Edit");
+
+            Toolbar.AddMenu(fileMenu);
+            Toolbar.AddMenu(editMenu);
         }
 
         public override void OnResize()

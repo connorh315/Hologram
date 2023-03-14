@@ -41,10 +41,10 @@ namespace Hologram.Rendering
                 Size = new Vector2i(1280, 720)
             })
         {
-            Overlay = new UIManager(this, Size.X, Size.Y);
+            Overlay.Initialize(this, Size.X, Size.Y);
             
-            Toolbar = new MainToolbar(this, Size.X, 100, Overlay);
-            UI = new Inspector(this, Size.X, Size.Y, Overlay);
+            Toolbar = new MainToolbar(this, Size.X, 100);
+            UI = new Inspector(this, Size.X, Size.Y);
             Scene = new SceneManager(this, Size.X, Size.Y);
 
             this.RenderFrequency = 120;
@@ -61,7 +61,6 @@ namespace Hologram.Rendering
         public UIManager Toolbar;
         public UIManager UI;
         public SceneManager Scene;
-        public UIManager Overlay;
 
         public List<Entity> Entities = new List<Entity>();
 
@@ -164,6 +163,8 @@ namespace Hologram.Rendering
                 Scene.SetPos(uiWidth, 0);
                 Scene.SetSize(size.X - uiWidth, size.Y - toolbarHeight);
             }
+
+            Overlay.SetSize(size.X, size.Y);
         }
 
         private unsafe void SizeCallback(Window* window, int width, int height)
@@ -264,8 +265,10 @@ namespace Hologram.Rendering
             GL.Viewport(Toolbar.X, Toolbar.Y, Toolbar.Width, Toolbar.Height);
             Toolbar.Draw();
 
-            GL.Viewport(Overlay.X, Overlay.Y, Overlay.Width, Overlay.Height);
+            GL.Viewport(0, 0, Size.X, Size.Y);
             Overlay.Draw();
+            //GL.Viewport(Overlay.X, Overlay.Y, Overlay.Width, Overlay.Height);
+            //Overlay.Draw();
 
             this.Context.SwapBuffers();
 

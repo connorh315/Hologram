@@ -23,6 +23,8 @@ namespace Hologram.Engine.UI
 
         public Texture Texture;
 
+        public int Height;
+
         public Font(string cfntName)
         {
             string dir = AppDomain.CurrentDomain.BaseDirectory;
@@ -106,6 +108,8 @@ namespace Hologram.Engine.UI
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R8, width, height, 0, PixelFormat.Red, PixelType.UnsignedByte, buffer);
             }
+
+            Height = Size - PaddingTop - PaddingBottom;
         }
     }
 

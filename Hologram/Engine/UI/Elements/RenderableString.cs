@@ -8,7 +8,7 @@ using Hologram.Rendering.Shaders;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Hologram.Engine.UI
+namespace Hologram.Engine.UI.Elements
 {
     public class RenderableString : UIElement
     {
@@ -20,18 +20,20 @@ namespace Hologram.Engine.UI
         private int indicesBuffer;
         private ushort indicesCount;
 
-        private Font Font;
+        private Font font = UIDefaults.Poppins;
 
         private ushort width;
         public ushort Width => (ushort)(width * XScale);
 
-        public RenderableString(string text, Font font, float x, float y, float z, int height) : base(x, y, z, 1, 1)
+        public RenderableString(UIElement parent) : base(parent) { }
+
+        public void SetFont(Font font)
         {
-            Font = font;
+            this.font = font;
+        }
 
-            SetHeight(height);
-            
-
+        public void SetText(string text)
+        {
             float[] vertices = new float[4 * 4 * text.Length];
 
             float xCursor = 0;
@@ -55,17 +57,17 @@ namespace Hologram.Engine.UI
 
                 vertices[vertOffset] = xPos; // Top Left
                 vertices[vertOffset + 1] = yPos;
-                vertices[vertOffset + 2] = (thisChar.X) / textureWidth;
-                vertices[vertOffset + 3] = (thisChar.Y) / textureHeight;
-                
+                vertices[vertOffset + 2] = thisChar.X / textureWidth;
+                vertices[vertOffset + 3] = thisChar.Y / textureHeight;
+
                 vertices[vertOffset + 4] = xPos + thisChar.Width; // Top Right
                 vertices[vertOffset + 5] = yPos;
                 vertices[vertOffset + 6] = (thisChar.X + thisChar.Width) / textureWidth;
-                vertices[vertOffset + 7] = (thisChar.Y) / textureHeight;
+                vertices[vertOffset + 7] = thisChar.Y / textureHeight;
 
                 vertices[vertOffset + 8] = xPos; // Bottom Left
                 vertices[vertOffset + 9] = yPos - thisChar.Height;
-                vertices[vertOffset + 10] = (thisChar.X) / textureWidth;
+                vertices[vertOffset + 10] = thisChar.X / textureWidth;
                 vertices[vertOffset + 11] = (thisChar.Y + thisChar.Height) / textureHeight;
 
                 vertices[vertOffset + 12] = xPos + thisChar.Width; // Bottom right
@@ -75,16 +77,16 @@ namespace Hologram.Engine.UI
 
                 xCursor += thisChar.XAdvance - 16;
 
-                int idcOffset = (i * 6);
-                int vertIdcOffset = (i * 4);
-                indices[idcOffset] = (ushort)(vertIdcOffset);
+                int idcOffset = i * 6;
+                int vertIdcOffset = i * 4;
+                indices[idcOffset] = (ushort)vertIdcOffset;
                 indices[idcOffset + 1] = (ushort)(vertIdcOffset + 1);
                 indices[idcOffset + 2] = (ushort)(vertIdcOffset + 2);
                 indices[idcOffset + 3] = (ushort)(vertIdcOffset + 2);
                 indices[idcOffset + 4] = (ushort)(vertIdcOffset + 1);
                 indices[idcOffset + 5] = (ushort)(vertIdcOffset + 3);
             }
-            
+
             int vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, 4 * vertices.Length, vertices, BufferUsageHint.StaticDraw);
@@ -104,14 +106,18 @@ namespace Hologram.Engine.UI
             width = (ushort)xCursor;
         }
 
+        public float Height => YScale * font.Height;
+
         public void SetHeight(int height)
         {
-            XScale = YScale = height / ((float)Font.Size - Font.PaddingTop - Font.PaddingBottom);
+            XScale = YScale = height / (float)font.Height;
         }
 
         public override void Draw()
         {
-            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.TextShader, "model"), false, ref modelMatrix);
+            ShaderManager.Use(UIDefaults.TextShader);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.TextShader, "model"), false, ref elementMatrix);
             GL.Uniform4(UIDefaults.TextShader.GetUniformLocation("textColor"), Color);
             GL.BindVertexArray(vertexArray);
             GL.DrawElements(PrimitiveType.Triangles, indicesCount, DrawElementsType.UnsignedShort, 0);

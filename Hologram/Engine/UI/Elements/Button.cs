@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Hologram.Rendering;
 
-namespace Hologram.Engine.UI
+namespace Hologram.Engine.UI.Elements
 {
     public class Button : UIElement
     {
@@ -20,19 +20,18 @@ namespace Hologram.Engine.UI
 
         public float PaddingY = 0.2f;
 
-        public Button(int x, int y, int z, int width, int height, string text, UIManager manager) : base(x, y, z, width, height)
-        {
-            Text = new RenderableString(text, UIDefaults.Poppins, 0, 0, (int)ZPos + 2, 1);
-            manager.AddElement(Text);
-            int textHeight = (int)((1 - (2 * PaddingY)) * YScale);
+        public Button(UIElement parent) : base(parent) { }
 
-            Text.SetHeight(textHeight);
-            Text.SetPos(XPos + (XScale / 2) - (Text.Width / 2f), YPos + (YScale / 2) - (textHeight / 2f));
+        public void SetText(string text)
+        {
+            Text = new RenderableString(this);
+            Text.SetText(text);
+            UpdateTextPos();
         }
 
         private void DrawColor(Color4 col)
         {
-            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "model"), false, ref modelMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "model"), false, ref elementMatrix);
             GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), col);
             GL.Uniform1(GL.GetUniformLocation(UIDefaults.ButtonShader, "radius"), Radius);
 
@@ -43,6 +42,8 @@ namespace Hologram.Engine.UI
         public override void Draw()
         {
             DrawColor(BackgroundColor);
+
+            //base.Draw();
         }
 
         public override void DrawForHover(Color4 col)
@@ -65,6 +66,25 @@ namespace Hologram.Engine.UI
         public override void OnMouseRelease(MainWindow window)
         {
             Click();
+        }
+
+        private void UpdateTextPos()
+        {
+            if (Text == null) return;
+
+            int textHeight = (int)((1 - 2 * PaddingY) * YScale);
+            Text.SetHeight(textHeight);
+            Text.SetPos(XPos + XScale / 2 - Text.Width / 2f, YPos + YScale / 2 - textHeight / 2f);
+        }
+
+        public override void OnResize(Vector2 originalSize)
+        {
+            UpdateTextPos();
+        }
+
+        public override void OnMove(Vector2 originalPos)
+        {
+            UpdateTextPos();
         }
     }
 }

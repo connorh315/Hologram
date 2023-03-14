@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Hologram.Engine.UI
+namespace Hologram.Engine.UI.Elements
 {
     public abstract class UIElement
     {
@@ -12,6 +12,8 @@ namespace Hologram.Engine.UI
         private static bool BuiltQuad = false;
 
         public static int QuadArray;
+
+        public bool Enabled = true;
 
         private static void BuildQuad()
         {
@@ -39,26 +41,39 @@ namespace Hologram.Engine.UI
             BuiltQuad = true;
         }
 
-        protected Matrix4 modelMatrix = Matrix4.Identity;
+        protected Matrix4 elementMatrix = Matrix4.Identity;
 
-        public Matrix4 GetModelMatrix() => modelMatrix;
+        public Matrix4 GetModelMatrix() => elementMatrix;
 
-        public float XPos { get { return modelMatrix.M41; } set { modelMatrix.M41 = value; } }
-        public float YPos { get { return modelMatrix.M42; } set { modelMatrix.M42 = value; } }
-        public float ZPos => modelMatrix.M43;
-        public float XScale { get { return modelMatrix.M11; } set { modelMatrix.M11 = value; } }
-        public float YScale { get { return modelMatrix.M22; } set { modelMatrix.M22 = value; } }
+        public float XPos { get { return elementMatrix.M41; } set { elementMatrix.M41 = value; } }
+        public float YPos { get { return elementMatrix.M42; } set { elementMatrix.M42 = value; } }
+        public float ZPos { get { return elementMatrix.M43; } set { elementMatrix.M43 = value; } }
+        public float XScale { get { return elementMatrix.M11; } set { elementMatrix.M11 = value; } }
+        public float YScale { get { return elementMatrix.M22; } set { elementMatrix.M22 = value; } }
 
-        public UIElement(float x, float y, float z, float width, float height)
+        public UIManager Manager;
+
+        public UIElement(UIElement parent)
         {
             if (!BuiltQuad)
                 BuildQuad();
 
-            modelMatrix.M11 = width;
-            modelMatrix.M22 = height;
-            modelMatrix.M41 = x;
-            modelMatrix.M42 = y;
-            modelMatrix.M43 = z;
+            ZPos = parent.ZPos + 1;
+
+            parent.AddChild(this);
+
+            Manager.AddElement(this);
+        }
+
+        public UIElement() { }
+
+        protected List<UIElement> children = new List<UIElement>();
+
+        public virtual void AddChild(UIElement child)
+        {
+            children.Add(child);
+
+            child.Manager = Manager;
         }
 
         public virtual void SetSize(float width, float height)
@@ -73,14 +88,30 @@ namespace Hologram.Engine.UI
 
         public virtual void SetPos(float x, float y)
         {
+            float origX = XPos;
+            float origY = YPos;
             XPos = x;
             YPos = y;
+
+            OnMove(new Vector2(origX, origY));
+        }
+
+        public virtual void SetBounds(float x, float y, float width, float height)
+        {
+            SetPos(x, y);
+            SetSize(width, height);
         }
 
         /// <summary>
         /// Default draw method.
         /// </summary>
-        public abstract void Draw();
+        public virtual void Draw()
+        {
+            foreach (UIElement element in children)
+            {
+                element.Draw();
+            }
+        }
 
         /// <summary>
         /// Method for drawing to the framebuffer when trying to find the currently hovered element.
@@ -94,7 +125,7 @@ namespace Hologram.Engine.UI
         /// <param name="window"></param>
         public virtual void OnMouseEnter(MainWindow window)
         {
-            
+
         }
 
         /// <summary>
@@ -131,6 +162,11 @@ namespace Hologram.Engine.UI
         }
 
         public virtual void OnResize(Vector2 originalSize)
+        {
+
+        }
+
+        public virtual void OnMove(Vector2 originalPos)
         {
 
         }

@@ -1,6 +1,7 @@
 ﻿using Hologram.Rendering;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
+using Hologram.Engine.UI.Elements;
 
 namespace Hologram.Engine.UI
 {
@@ -26,6 +27,15 @@ namespace Hologram.Engine.UI
 
         public override void Draw()
         {
+            //ShaderManager.Use(UIDefaults.ButtonShader);
+            //GL.UniformMatrix4(UIDefaults.ButtonShader.GetUniformLocation("projection"), false, ref projection);
+
+            //ShaderManager.Use(UIDefaults.TextShader);
+            //Font.Texture.Use();
+            //GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
+
+            //Panel.Draw();
+
             foreach ((Shader shader, List<UIElement> elements) in interactableElements)
             {
                 ShaderManager.Use(shader);
@@ -34,17 +44,23 @@ namespace Hologram.Engine.UI
 
                 foreach (UIElement element in elements)
                 {
-                    element.Draw();
+                    if (element.Enabled)
+                    {
+                        element.Draw();
+                    }
                 }
             }
 
             ShaderManager.Use(UIDefaults.TextShader);
             Font.Texture.Use();
             GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
-            
+
             foreach (RenderableString element in textElements)
             {
-                element.Draw();
+                if (element.Enabled)
+                {
+                    element.Draw();
+                }
             }
         }
 
@@ -201,9 +217,14 @@ namespace Hologram.Engine.UI
             }
         }
 
+        public BasePanel Panel;
+
         public UIManager(MainWindow parent, int width, int height) : base(parent, width, height) 
         {
             Font = UIDefaults.Poppins;
+
+            Panel = new BasePanel();
+            Panel.Manager = this;
 
             //AddElement(new RenderableString("Hologram - Render Test", Font, 5, 360, 10, Font.Size / 2));
 
