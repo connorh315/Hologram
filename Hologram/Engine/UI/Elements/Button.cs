@@ -7,8 +7,8 @@ namespace Hologram.Engine.UI.Elements
 {
     public class Button : UIElement
     {
-        public override Shader Shader => UIDefaults.ButtonShader;
-        public override Shader HoverShader => UIDefaults.ButtonShader;
+        public override Shader Shader => UIDefaults.RoundedQuadShader;
+        public override Shader HoverShader => UIDefaults.RoundedQuadShader;
 
         public RenderableString Text;
         public Color4 BackgroundColor = UIDefaults.ButtonBG;
@@ -31,12 +31,7 @@ namespace Hologram.Engine.UI.Elements
 
         private void DrawColor(Color4 col)
         {
-            GL.UniformMatrix4(GL.GetUniformLocation(UIDefaults.ButtonShader, "model"), false, ref elementMatrix);
-            GL.Uniform4(GL.GetUniformLocation(UIDefaults.ButtonShader, "buttonColor"), col);
-            GL.Uniform1(GL.GetUniformLocation(UIDefaults.ButtonShader, "radius"), Radius);
-
-            GL.BindVertexArray(QuadArray);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            Surface.DrawRoundedRect(ref elementMatrix, col, Radius);
         }
 
         public override void Draw()

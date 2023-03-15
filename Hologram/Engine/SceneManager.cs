@@ -142,9 +142,9 @@ namespace Hologram.Engine
             
         }
 
-        public override void OnMouseOver(Vector2 mouse)
+        public override bool OnMouseOver(Vector2 mouse)
         {
-            
+            return true;
         }
 
         public override void OnMousePress(HologramMouse mouse)

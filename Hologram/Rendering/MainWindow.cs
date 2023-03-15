@@ -206,6 +206,11 @@ namespace Hologram.Rendering
 
             Manager previousHovered = Hovered;
 
+            
+            if (Overlay.CheckControl(CorrectedFlippedMouse))
+            {
+                Hovered = Overlay.GetManager();
+            }
             if (IsManagerHovered(Scene))
             {
                 Hovered = Scene;
@@ -224,7 +229,7 @@ namespace Hologram.Rendering
                 previousHovered?.OnMouseLeave(MouseState.Position);
                 Hovered?.OnMouseEnter(MouseState.Position);
             }
-            else
+            else if (Hovered != Overlay.GetManager())
             {
                 Hovered?.OnMouseOver(CorrectedFlippedMouse);
             }

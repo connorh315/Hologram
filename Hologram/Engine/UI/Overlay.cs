@@ -1,5 +1,6 @@
 ﻿using Hologram.Engine.UI.Elements;
 using Hologram.Rendering;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ namespace Hologram.Engine.UI
 
         public static void AddElement(UIElement element)
         {
+            element.Manager.RemoveElement(element);
+            element.Manager = manager;
+        
             manager.AddElement(element);
         }
 
@@ -39,6 +43,11 @@ namespace Hologram.Engine.UI
         public static void Draw()
         {
             manager.Draw();
+        }
+
+        public static bool CheckControl(Vector2 mousePos)
+        {
+            return manager.OnMouseOver(mousePos);
         }
     }
 }

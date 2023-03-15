@@ -30,54 +30,39 @@ namespace Hologram.Engine.UI.Elements
 
         public ushort XOffset = 0;
 
-        private void PushOption(RenderableString text)
+        private void PushOption(ToolbarMenu menu)
         {
+            RenderableString text = menu.Title;
             int height = (int)((1 - 2 * PaddingY) * YScale);
 
             text.SetPos(XPos + XOffset + paddingX, YPos + YScale / 2 - height / 2f);
             text.SetHeight(height);
 
+            menu.SetPos(XPos + XOffset, Manager.Y + YPos);
+            
             XOffset += (ushort)(text.Width + 2 * paddingX);
+
         }
 
         public void AddMenu(ToolbarMenu menu)
         {
-            PushOption(menu.Title);
+            PushOption(menu);
             Options.Add(menu);
         }
 
         private void DrawColor(Color4 col)
         {
-            GL.UniformMatrix4(Shader.GetUniformLocation("model"), false, ref elementMatrix);
-            GL.Uniform4(Shader.GetUniformLocation("quadColor"), col);
-
-            GL.BindVertexArray(QuadArray);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            Surface.DrawRect(ref elementMatrix, col);
         }
 
         public override void Draw()
         {
             if (drawHover)
             {
-                Shader original = ShaderManager.ActiveShader;
-                Shader border = UIDefaults.BorderQuadShader;
-                ShaderManager.Use(border);
-                Matrix4 projection = Manager.GetProjectionMatrix();
-                GL.UniformMatrix4(border.GetUniformLocation("projection"), false, ref projection);
-                GL.UniformMatrix4(border.GetUniformLocation("model"), false, ref hoverQuadMatrix);
-                GL.Uniform4(border.GetUniformLocation("quadColor"), HoverColor);
-                GL.Uniform4(border.GetUniformLocation("borderColor"), HoverBorderColor);
-                GL.Uniform1(border.GetUniformLocation("borderSize"), HoverBorderWidth);
-
-                GL.BindVertexArray(QuadArray);
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
-                ShaderManager.Use(original);
+                Surface.DrawOutlinedRect(ref hoverQuadMatrix, HoverColor, HoverBorderColor, HoverBorderWidth);
             }
 
             DrawColor(BackgroundColor);
-
-            //base.Draw();
         }
 
         public override void DrawForHover(Color4 col)
@@ -123,7 +108,7 @@ namespace Hologram.Engine.UI.Elements
 
             foreach (ToolbarMenu menu in Options)
             {
-                PushOption(menu.Title);
+                PushOption(menu);
             }
         }
     }

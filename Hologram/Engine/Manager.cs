@@ -52,7 +52,7 @@ namespace Hologram.Engine
 
         public abstract void OnMouseEnter(Vector2 mouse);
 
-        public abstract void OnMouseOver(Vector2 mouse);
+        public abstract bool OnMouseOver(Vector2 mouse);
 
         public abstract void OnMouseLeave(Vector2 mouse);
 

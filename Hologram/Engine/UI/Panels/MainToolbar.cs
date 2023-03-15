@@ -18,8 +18,10 @@ namespace Hologram.Engine.UI.Panels
             Toolbar = new Toolbar(Panel);
             
             ToolbarMenu fileMenu = new ToolbarMenu(Toolbar);
+            fileMenu.SetPos(100, 100);
             fileMenu.SetTitle("File");
             fileMenu.AddOption("New", () => { });
+            fileMenu.AddOption("Open", () => { });
 
             ToolbarMenu editMenu = new ToolbarMenu(Toolbar);
             editMenu.SetTitle("Edit");
@@ -33,9 +35,10 @@ namespace Hologram.Engine.UI.Panels
             Toolbar.SetSize(Width, Height);
         }
 
-        public override void OnMouseOver(Vector2 mouse)
+        public override bool OnMouseOver(Vector2 mouse)
         {
             Toolbar.OnMouseOver(Parent);
+            return true;
         }
 
         public override void OnMouseLeave(Vector2 mouse)

@@ -27,6 +27,8 @@ namespace Hologram.Engine.UI
 
         public override void Draw()
         {
+            Surface.SetManager(this);
+
             //ShaderManager.Use(UIDefaults.ButtonShader);
             //GL.UniformMatrix4(UIDefaults.ButtonShader.GetUniformLocation("projection"), false, ref projection);
 
@@ -91,7 +93,7 @@ namespace Hologram.Engine.UI
         //    return bestFit;
         //}
 
-        private UIElement? GetHovered(Vector2i mouse)
+        public UIElement? GetHovered(Vector2i mouse)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(X, Y, Width, Height);
@@ -142,14 +144,14 @@ namespace Hologram.Engine.UI
 
         private Vector2i previousMousePos = new Vector2i(-1, -1);
         private UIElement? previousHovered;
-        public override void OnMouseOver(Vector2 mouse)
+        public override bool OnMouseOver(Vector2 mouse)
         {
             Vector2i clean = new Vector2i((int)mouse.X, (int)mouse.Y);
-            if (clean == previousMousePos) return; // Need a dirty flag for when UI has been rebuilt. Something for later though
+            if (clean == previousMousePos) return previousHovered != null; // Need a dirty flag for when UI has been rebuilt. Something for later though
             previousMousePos = clean;
 
             UIElement? hovered = GetHovered(clean);
-            
+
             if (hovered != previousHovered)
             {
                 previousHovered?.OnMouseLeave(Parent);
@@ -161,6 +163,8 @@ namespace Hologram.Engine.UI
             }
 
             previousHovered = hovered;
+
+            return hovered != null;
         }
 
         public override void OnMouseRelease(HologramMouse mouse)

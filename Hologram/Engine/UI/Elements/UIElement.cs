@@ -53,12 +53,16 @@ namespace Hologram.Engine.UI.Elements
 
         public UIManager Manager;
 
+        public UIElement Parent;
+
         public UIElement(UIElement parent)
         {
             if (!BuiltQuad)
                 BuildQuad();
 
             ZPos = parent.ZPos + 1;
+
+            Parent = parent;
 
             parent.AddChild(this);
 

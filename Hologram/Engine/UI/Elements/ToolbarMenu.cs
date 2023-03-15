@@ -18,22 +18,28 @@ namespace Hologram.Engine.UI.Elements
         {
             Manager.RemoveElement(this);
             Overlay.AddElement(this);
+
+            boxWidth = minWidth;
         }
 
-        public Color4 BackgroundColor = new Color4(20, 20, 20, 255);
+        public Color4 BackgroundColor = new Color4(30, 30, 30, 255);
 
 
         public RenderableString Title;
 
         public List<(RenderableString Text, Action Callback)> Options = new();
 
-        public ushort BoxHeight;
+        private ushort boxHeight = 30;
 
-        private ushort currentY;
+        private ushort boxWidth = 0;
+
+        private int currentY = 0;
+
+        private ushort minWidth = 180;
 
         public void SetTitle(string text)
         {
-            Title = new RenderableString(this);
+            Title = new RenderableString(Parent);
             Title.SetText(text);
         }
 
@@ -41,24 +47,30 @@ namespace Hologram.Engine.UI.Elements
         {
             RenderableString text = new RenderableString(this);
             text.SetText(title);
+            text.SetHeight(14);
 
             Options.Add((text, callback));
             PushOption(text);
+
+            boxWidth = Math.Max((ushort)(text.Width + 32), boxWidth);
+
+            currentY -= boxHeight;
+
+            SetSize(boxWidth, Math.Abs(currentY));
+            SetPos(XPos, currentY + boxHeight);
         }
 
         private void PushOption(RenderableString text)
         {
-            text.SetPos(text.Width / 2f + XPos, currentY);
+            text.SetPos(XPos + 16, YPos + currentY - boxHeight + ((boxHeight - text.Height) / 2));
         }
 
         private void DrawColor(Color4 col)
         {
-            GL.UniformMatrix4(Shader.GetUniformLocation("model"), false, ref elementMatrix);
-            GL.Uniform4(Shader.GetUniformLocation("quadColor"), col);
-
-            GL.BindVertexArray(QuadArray);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            Surface.DrawRect(ref elementMatrix, col);
         }
+
+        private bool drawHover = false;
 
         public override void Draw()
         {
@@ -67,7 +79,31 @@ namespace Hologram.Engine.UI.Elements
 
         public override void DrawForHover(Color4 col)
         {
-            throw new NotImplementedException();
+            DrawColor(col);
+        }
+
+        public override void OnMove(Vector2 originalPos)
+        {
+            currentY = 0;
+            boxWidth = minWidth;
+
+            foreach ((RenderableString text, Action callback) in Options)
+            {
+                PushOption(text);
+
+                boxWidth = Math.Max((ushort)(text.Width + 32), boxWidth);
+
+                currentY -= boxHeight;
+            }
+
+            SetSize(boxWidth, Math.Abs(currentY));
+            YPos += currentY;
+        }
+
+        public override void OnMouseOver(MainWindow window)
+        {
+            int box = (int)((window.CorrectedFlippedMouse.Y - YPos) / boxHeight);
+            drawHover = true;
         }
     }
 }

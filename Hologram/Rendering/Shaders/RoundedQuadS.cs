@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hologram.Rendering.Shaders
 {
-    public static class ButtonS
+    public static class RoundedQuadS
     {
         public static string VertexCode = @"
             #version 330 core
