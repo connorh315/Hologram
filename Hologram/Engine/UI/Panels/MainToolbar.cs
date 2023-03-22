@@ -45,5 +45,10 @@ namespace Hologram.Engine.UI.Panels
         {
             Toolbar.OnMouseLeave(Parent);
         }
+
+        public override void OnMouseRelease(HologramMouse mouse)
+        {
+            Toolbar.OnMouseRelease(Parent);
+        }
     }
 }

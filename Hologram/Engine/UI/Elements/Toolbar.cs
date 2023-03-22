@@ -63,6 +63,11 @@ namespace Hologram.Engine.UI.Elements
             }
 
             DrawColor(BackgroundColor);
+
+            foreach (ToolbarMenu menu in Options)
+            {
+                Surface.DrawText(menu.Title);
+            }
         }
 
         public override void DrawForHover(Color4 col)
@@ -72,6 +77,8 @@ namespace Hologram.Engine.UI.Elements
 
         private Matrix4 hoverQuadMatrix = Matrix4.Identity;
         private bool drawHover = false;
+
+        private ToolbarMenu? activeMenu;
 
         public override void OnMouseOver(MainWindow window)
         {
@@ -92,8 +99,19 @@ namespace Hologram.Engine.UI.Elements
                     hoverQuadMatrix.M43 = ZPos + 0.1f;
 
                     drawHover = true;
-                    break;
+                    activeMenu = menu;
+                    return;
                 }
+            }
+
+            activeMenu = null;
+        }
+
+        public override void OnMouseRelease(MainWindow window)
+        {
+            if (activeMenu != null)
+            {
+                activeMenu.Enabled = !activeMenu.Enabled;
             }
         }
 

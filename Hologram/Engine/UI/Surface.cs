@@ -11,7 +11,8 @@ namespace Hologram.Engine.UI
         {
             UIDefaults.QuadShader,
             UIDefaults.BorderQuadShader,
-            UIDefaults.RoundedQuadShader
+            UIDefaults.RoundedQuadShader,
+            UIDefaults.TextShader
         };
 
         public static void SetManager(UIManager manager)
@@ -62,6 +63,13 @@ namespace Hologram.Engine.UI
 
             GL.BindVertexArray(UIElement.QuadArray);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+        }
+
+        public static void DrawText(RenderableString text)
+        {
+            ShaderManager.Use(UIDefaults.TextShader);
+            text.Font.Texture.Use();
+            text.Draw();
         }
     }
 }

@@ -19,6 +19,8 @@ namespace Hologram.Engine.UI.Elements
             Manager.RemoveElement(this);
             Overlay.AddElement(this);
 
+            Enabled = false;
+
             boxWidth = minWidth;
         }
 
@@ -75,6 +77,11 @@ namespace Hologram.Engine.UI.Elements
         public override void Draw()
         {
             DrawColor(BackgroundColor);
+
+            foreach ((RenderableString text, _) in Options)
+            {
+                Surface.DrawText(text);
+            }
         }
 
         public override void DrawForHover(Color4 col)

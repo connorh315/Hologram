@@ -20,7 +20,7 @@ namespace Hologram.Engine.UI.Elements
         private int indicesBuffer;
         private ushort indicesCount;
 
-        private Font font = UIDefaults.Poppins;
+        public Font Font = UIDefaults.Poppins;
 
         private ushort width;
         public ushort Width => (ushort)(width * XScale);
@@ -29,7 +29,7 @@ namespace Hologram.Engine.UI.Elements
 
         public void SetFont(Font font)
         {
-            this.font = font;
+            this.Font = font;
         }
 
         public void SetText(string text)
@@ -37,18 +37,18 @@ namespace Hologram.Engine.UI.Elements
             float[] vertices = new float[4 * 4 * text.Length];
 
             float xCursor = 0;
-            float yCursor = font.BaseNum;
+            float yCursor = Font.BaseNum;
 
             byte[] asciiBytes = Encoding.ASCII.GetBytes(text);
 
             ushort[] indices = new ushort[6 * text.Length];
 
-            float textureWidth = font.ScaleWidth;
-            float textureHeight = font.ScaleHeight;
+            float textureWidth = Font.ScaleWidth;
+            float textureHeight = Font.ScaleHeight;
 
             for (int i = 0; i < text.Length; i++)
             {
-                FontChar thisChar = font.Chars[asciiBytes[i]];
+                FontChar thisChar = Font.Chars[asciiBytes[i]];
 
                 float xPos = xCursor + thisChar.XOffset;
                 float yPos = yCursor - thisChar.YOffset; // y offset is how far DOWN the text should go.
@@ -106,11 +106,11 @@ namespace Hologram.Engine.UI.Elements
             width = (ushort)xCursor;
         }
 
-        public float Height => YScale * font.Height;
+        public float Height => YScale * Font.Height;
 
         public void SetHeight(int height)
         {
-            XScale = YScale = height / (float)font.Height;
+            XScale = YScale = height / (float)Font.Height;
         }
 
         public override void Draw()

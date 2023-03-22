@@ -29,21 +29,8 @@ namespace Hologram.Engine.UI
         {
             Surface.SetManager(this);
 
-            //ShaderManager.Use(UIDefaults.ButtonShader);
-            //GL.UniformMatrix4(UIDefaults.ButtonShader.GetUniformLocation("projection"), false, ref projection);
-
-            //ShaderManager.Use(UIDefaults.TextShader);
-            //Font.Texture.Use();
-            //GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
-
-            //Panel.Draw();
-
             foreach ((Shader shader, List<UIElement> elements) in interactableElements)
             {
-                ShaderManager.Use(shader);
-
-                GL.UniformMatrix4(shader.GetUniformLocation("projection"), false, ref projection);
-
                 foreach (UIElement element in elements)
                 {
                     if (element.Enabled)
@@ -52,46 +39,12 @@ namespace Hologram.Engine.UI
                     }
                 }
             }
-
-            ShaderManager.Use(UIDefaults.TextShader);
-            Font.Texture.Use();
-            GL.UniformMatrix4(UIDefaults.TextShader.GetUniformLocation("projection"), false, ref projection);
-
-            foreach (RenderableString element in textElements)
-            {
-                if (element.Enabled)
-                {
-                    element.Draw();
-                }
-            }
         }
 
         public override void Update(double deltaTime)
         {
             throw new NotImplementedException();
         }
-
-        //private UIElement? GetHovered(Vector2i mouse)
-        //{
-        //    Vector4 BL = new Vector4(0, 0, 0, 1);
-        //    Vector4 TR = new Vector4(1, 1, 0, 1);
-
-        //    UIElement bestFit = null;
-
-        //    for (int i = 0; i < Elements.Count; i++)
-        //    {
-        //        UIElement thisElement = Elements[i];
-
-        //        Vector4 result = thisElement.GetModelMatrix() * BL;
-        //        if (mouse.X < result.X || mouse.Y < result.Y) continue;
-        //        result = thisElement.GetModelMatrix() * TR;
-        //        if (mouse.X > result.X || mouse.Y > result.Y) continue;
-
-        //        bestFit = thisElement;
-        //    }
-
-        //    return bestFit;
-        //}
 
         public UIElement? GetHovered(Vector2i mouse)
         {

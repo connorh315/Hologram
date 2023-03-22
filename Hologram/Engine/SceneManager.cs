@@ -38,7 +38,7 @@ namespace Hologram.Engine
 
         public override void Update(double deltaTime)
         {
-            if (!HasFocus()) return;
+            if (!HasHover()) return;
 
             var input = Parent.KeyboardState;
 

@@ -36,7 +36,7 @@ namespace Hologram.Engine
             Focused = focused;
         }
 
-        public bool HasFocus() => Parent.Hovered == this;
+        public bool HasHover() => Parent.Hovered == this;
 
         public MainWindow Parent { get; private set; }
         public void SetParent(MainWindow window)
@@ -66,7 +66,12 @@ namespace Hologram.Engine
         {
 
         }
-        
+
+        public virtual void OnFocusLoss()
+        {
+
+        }
+
         public Manager(MainWindow parent, int width, int height)
         {
             Width = width;

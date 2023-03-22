@@ -175,6 +175,8 @@ namespace Hologram.Rendering
 
         public Manager? Hovered { get; private set; }
 
+        public Manager? Focused { get; private set; }
+
         private bool IsManagerHovered(Manager manager)
         {
             int x = (int)CorrectedFlippedMouse.X;
