@@ -6,79 +6,78 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.Engine
+namespace Hologram.Engine;
+
+public abstract class Manager
 {
-    public abstract class Manager
+    public int X = 0;
+    public int Y = 0;
+    public void SetPos(int x, int y)
     {
-        public int X = 0;
-        public int Y = 0;
-        public void SetPos(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
+        X = x;
+        Y = y;
+    }
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public void SetSize(int width, int height)
-        {
-            Width = width;
-            Height = height;
-            RebuildMatrix();
-            OnResize();
-        }
+    public int Width { get; private set; }
+    public int Height { get; private set; }
+    public void SetSize(int width, int height)
+    {
+        Width = width;
+        Height = height;
+        RebuildMatrix();
+        OnResize();
+    }
 
-        public Vector2 Center => new Vector2(X + Width / 2, Y + Height / 2);
+    public Vector2 Center => new Vector2(X + Width / 2, Y + Height / 2);
 
-        public bool Focused { get; private set; }
-        public void SetFocus(bool focused)
-        {
-            Focused = focused;
-        }
+    public bool Focused { get; private set; }
+    public void SetFocus(bool focused)
+    {
+        Focused = focused;
+    }
 
-        public bool HasHover() => Parent.Hovered == this;
+    public bool HasHover() => Parent.Hovered == this;
 
-        public MainWindow Parent { get; private set; }
-        public void SetParent(MainWindow window)
-        {
-            Parent = window;
-        }
+    public MainWindow Parent { get; private set; }
+    public void SetParent(MainWindow window)
+    {
+        Parent = window;
+    }
 
-        public abstract void Update(double deltaTime);
+    public abstract void Update(double deltaTime);
 
-        public abstract void Draw();
+    public abstract void Draw();
 
-        protected abstract void RebuildMatrix();
+    protected abstract void RebuildMatrix();
 
-        public abstract void OnMouseEnter(Vector2 mouse);
+    public abstract void OnMouseEnter(Vector2 mouse);
 
-        public abstract bool OnMouseOver(Vector2 mouse);
+    public abstract bool OnMouseOver(Vector2 mouse);
 
-        public abstract void OnMouseLeave(Vector2 mouse);
+    public abstract void OnMouseLeave(Vector2 mouse);
 
-        public abstract void OnMousePress(HologramMouse mouse);
+    public abstract void OnMousePress(HologramMouse mouse);
 
-        public abstract void OnMouseDown(HologramMouse mouse);
-        
-        public abstract void OnMouseRelease(HologramMouse mouse);
-        
-        public virtual void OnResize()
-        {
+    public abstract void OnMouseDown(HologramMouse mouse);
+    
+    public abstract void OnMouseRelease(HologramMouse mouse);
+    
+    public virtual void OnResize()
+    {
 
-        }
+    }
 
-        public virtual void OnFocusLoss()
-        {
+    public virtual void OnFocusLoss()
+    {
 
-        }
+    }
 
-        public Manager(MainWindow parent, int width, int height)
-        {
-            Width = width;
-            Height = height;
+    public Manager(MainWindow parent, int width, int height)
+    {
+        Width = width;
+        Height = height;
 
-            SetParent(parent);
-            RebuildMatrix();
-        }
+        SetParent(parent);
+        RebuildMatrix();
     }
 }

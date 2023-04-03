@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.Rendering.Shaders
+namespace Hologram.Rendering.Shaders;
+
+public class TextS
 {
-    public class TextS
-    {
-        public static string VertexCode = @"
+    public static string VertexCode = @"
             #version 330 core
 
             layout (location = 0) in vec2 pos;
@@ -26,7 +26,7 @@ namespace Hologram.Rendering.Shaders
             }
         ";
 
-        public static string FragmentCode = @"
+    public static string FragmentCode = @"
             #version 330 core
 
             in vec2 outUV;
@@ -55,5 +55,4 @@ namespace Hologram.Rendering.Shaders
                 color = vec4(alpha * textColor.r, alpha * textColor.g, alpha * textColor.b, alpha);
             }
         ";
-    }
 }

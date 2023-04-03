@@ -34,4 +34,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Connor\source\repos\Hologram\Hologram\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Connor\source\repos\Hologram\Hologram\.editorconfig" />
+  </ItemGroup>
+
 </Project>

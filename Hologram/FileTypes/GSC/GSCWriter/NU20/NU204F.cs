@@ -1,43 +1,42 @@
 ﻿using ModLib;
 using System.IO;
 
-namespace Hologram.FileTypes.GSC.GSCWriter.NU20
+namespace Hologram.FileTypes.GSC.GSCWriter.NU20;
+
+public class NU204F : NU20
 {
-    public class NU204F : NU20
+    protected override int Version => 0x4F;
+
+    protected override bool ReadINFO()
     {
-        protected override int Version => 0x4F;
+        if (!file.CheckString("OFNI", Locale.GSCStrings.ExpectedINFO)) return false;
 
-        protected override bool ReadINFO()
+        uint stringCount = file.ReadUint(true);
+        for (int i = 0; i < stringCount; i++)
         {
-            if (!file.CheckString("OFNI", Locale.GSCStrings.ExpectedINFO)) return false;
-
-            uint stringCount = file.ReadUint(true);
-            for (int i = 0; i < stringCount; i++)
-            {
-                file.ReadPascalString();
-            }
-
-            return true;
+            file.ReadPascalString();
         }
 
-        protected override bool ReadNTBL()
-        {
-            if (!file.CheckString("LBTN", Locale.GSCStrings.ExpectedNTBL)) return false;
-            if (!file.CheckInt(Version, Locale.GSCStrings.ExpectedNTBLVersion)) return false;
+        return true;
+    }
 
-            int filenameLength = file.ReadInt(true);
-            file.ReadString(filenameLength);
+    protected override bool ReadNTBL()
+    {
+        if (!file.CheckString("LBTN", Locale.GSCStrings.ExpectedNTBL)) return false;
+        if (!file.CheckInt(Version, Locale.GSCStrings.ExpectedNTBLVersion)) return false;
 
-            file.Seek(0x14, SeekOrigin.Current);
+        int filenameLength = file.ReadInt(true);
+        file.ReadString(filenameLength);
 
-            uint unknown = file.ReadUint(true);
-            //if (unknown != 1)
-            //{
-            //    Logger.Error("Unknown value at {0:X} does not meet assumption of 1!", file.Position - 4);
-            //    return false;
-            //}
+        file.Seek(0x14, SeekOrigin.Current);
 
-            return true;
-        }
+        uint unknown = file.ReadUint(true);
+        //if (unknown != 1)
+        //{
+        //    Logger.Error("Unknown value at {0:X} does not meet assumption of 1!", file.Position - 4);
+        //    return false;
+        //}
+
+        return true;
     }
 }

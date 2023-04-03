@@ -1,10 +1,9 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Hologram.Objects
+namespace Hologram.Objects;
+
+public class CameraBounds
 {
-    public class CameraBounds
-    {
-        public Vector3 Center;
-        public float DistSqrd;
-    }
+    public Vector3 Center;
+    public float DistSqrd;
 }

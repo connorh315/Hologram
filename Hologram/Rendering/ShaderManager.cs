@@ -1,19 +1,18 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Hologram.Rendering
-{
-    public static class ShaderManager
-    {
-        public static Shader ActiveShader { get; private set; }
+namespace Hologram.Rendering;
 
-        public static void Use(Shader shader)
+public static class ShaderManager
+{
+    public static Shader ActiveShader { get; private set; }
+
+    public static void Use(Shader shader)
+    {
+        if (true)
         {
-            if (true)
-            {
-                GL.UseProgram(shader);
-                ActiveShader = shader;
-            }
+            GL.UseProgram(shader);
+            ActiveShader = shader;
         }
     }
 }

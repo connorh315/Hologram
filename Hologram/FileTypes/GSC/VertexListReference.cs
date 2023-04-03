@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.FileTypes.GSC
-{
-    public class VertexListReference
-    {
-        public int GlobalOffset;
+namespace Hologram.FileTypes.GSC;
 
-        public int Reference;
-    }
+public class VertexListReference
+{
+    public int GlobalOffset;
+
+    public int Reference;
 }

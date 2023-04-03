@@ -2,36 +2,35 @@
 using Hologram.Objects;
 using OpenTK.Mathematics;
 
-namespace Hologram.FileTypes.DNO
+namespace Hologram.FileTypes.DNO;
+
+public class DMesh
 {
-    public class DMesh
+    private Mesh physicsMesh;
+
+    public DQuad[] Quads;
+
+    public Vector3[] Vertices;
+
+    public DBucket[] Buckets;
+
+    public DNode[] Nodes;
+
+    public DMaterial[] Materials;
+
+    public Mesh GetPhysicsMesh()
     {
-        private Mesh physicsMesh;
+        if (physicsMesh != null) return physicsMesh;
 
-        public DQuad[] Quads;
+        physicsMesh = new Mesh(Vertices.Length, Quads.Length, FaceType.Quads);
 
-        public Vector3[] Vertices;
+        physicsMesh.Vertices = Vertices;
 
-        public DBucket[] Buckets;
-
-        public DNode[] Nodes;
-
-        public DMaterial[] Materials;
-
-        public Mesh GetPhysicsMesh()
+        for (int i = 0; i < Quads.Length; i++)
         {
-            if (physicsMesh != null) return physicsMesh;
-
-            physicsMesh = new Mesh(Vertices.Length, Quads.Length, FaceType.Quads);
-
-            physicsMesh.Vertices = Vertices;
-
-            for (int i = 0; i < Quads.Length; i++)
-            {
-                physicsMesh.Faces[i] = Quads[i].Quad;
-            }
-
-            return physicsMesh;
+            physicsMesh.Faces[i] = Quads[i].Quad;
         }
+
+        return physicsMesh;
     }
 }

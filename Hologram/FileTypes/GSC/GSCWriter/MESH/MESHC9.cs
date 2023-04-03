@@ -1,65 +1,64 @@
 ﻿using System.IO;
 
-namespace Hologram.FileTypes.GSC.GSCWriter.MESH
+namespace Hologram.FileTypes.GSC.GSCWriter.MESH;
+
+public class MESHC9 : MESHAF
 {
-    public class MESHC9 : MESHAF
+    protected override int Version => 0xC9;
+    //protected override bool BigEndian => false;
+
+    protected override bool Setup()
     {
-        protected override int Version => 0xC9;
-        //protected override bool BigEndian => false;
+        parts = new PartData[partCount];
+        referenceId = 4;
 
-        protected override bool Setup()
+        for (int partId = 0; partId < partCount; partId++)
         {
-            parts = new PartData[partCount];
-            referenceId = 4;
+            uint unknown = file.ReadUint(true); // 1
+            if (!file.CheckString("SMNR", Locale.GSCStrings.ExpectedRNMS)) return false;
+            if (!file.CheckInt(0xC9, Locale.GSCStrings.ExpectedRNMSVersion)) return false;
 
-            for (int partId = 0; partId < partCount; partId++)
-            {
-                uint unknown = file.ReadUint(true); // 1
-                if (!file.CheckString("SMNR", Locale.GSCStrings.ExpectedRNMS)) return false;
-                if (!file.CheckInt(0xC9, Locale.GSCStrings.ExpectedRNMSVersion)) return false;
+            PartData part = ReadVertexData(partId);
 
-                PartData part = ReadVertexData(partId);
+            file.Seek(4, SeekOrigin.Current);
 
-                file.Seek(4, SeekOrigin.Current);
+            ReadIndicesAndPartData(part);
 
-                ReadIndicesAndPartData(part);
+            file.Seek(74, SeekOrigin.Current);
 
-                file.Seek(74, SeekOrigin.Current);
-
-                referenceId += 2;
-            }
-
-            return true;
+            referenceId += 2;
         }
 
-        protected override bool Write()
+        return true;
+    }
+
+    protected override bool Write()
+    {
+        referenceId = 4;
+
+        for (int partId = 0; partId < partCount; partId++)
         {
-            referenceId = 4;
+            PartData part = parts[partId];
 
-            for (int partId = 0; partId < partCount; partId++)
+            uint unknown = file.ReadUint(true); // 1
+            if (!file.CheckString("SMNR", Locale.GSCStrings.ExpectedRNMS)) return false;
+            if (!file.CheckInt(0xC9, Locale.GSCStrings.ExpectedRNMSVersion)) return false;
+
+            uint listCount = file.ReadUint(true);
+            for (int listId = 0; listId < listCount; listId++)
             {
-                PartData part = parts[partId];
-
-                uint unknown = file.ReadUint(true); // 1
-                if (!file.CheckString("SMNR", Locale.GSCStrings.ExpectedRNMS)) return false;
-                if (!file.CheckInt(0xC9, Locale.GSCStrings.ExpectedRNMSVersion)) return false;
-
-                uint listCount = file.ReadUint(true);
-                for (int listId = 0; listId < listCount; listId++)
-                {
-                    WriteVertexData();
-                }
-
-                file.Seek(4, SeekOrigin.Current);
-
-                WriteIndicesAndPartData(part);
-
-                file.Seek(4, SeekOrigin.Current);
+                WriteVertexData();
             }
 
-            UpdateSize();
+            file.Seek(4, SeekOrigin.Current);
 
-            return true;
+            WriteIndicesAndPartData(part);
+
+            file.Seek(4, SeekOrigin.Current);
         }
+
+        UpdateSize();
+
+        return true;
     }
 }

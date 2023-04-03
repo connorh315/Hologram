@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.FileTypes.GSC
+namespace Hologram.FileTypes.GSC;
+
+public class VertexDefinition
 {
-    public class VertexDefinition
-    {
 		public enum VariableEnum
 		{
 			position,
@@ -46,4 +46,3 @@ namespace Hologram.FileTypes.GSC
 
 		public int Offset;
 	}
-}

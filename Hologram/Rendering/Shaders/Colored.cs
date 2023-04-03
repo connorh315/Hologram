@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.Rendering.Shaders
+namespace Hologram.Rendering.Shaders;
+
+internal static class Colored
 {
-    internal static class Colored
-    {
-        public static string VertexCode = @"
+    public static string VertexCode = @"
             #version 330 core
             layout(location = 0) in vec3 Position;
             layout(location = 1) in vec3 Normal;
@@ -25,7 +25,7 @@ namespace Hologram.Rendering.Shaders
             }
         ";
 
-        public static string FragmentCode = @"
+    public static string FragmentCode = @"
             #version 330 core
 
             uniform vec3 PickingColor;
@@ -37,5 +37,4 @@ namespace Hologram.Rendering.Shaders
                 Color = vec4(PickingColor, 1);
             }
         ";
-    }
 }

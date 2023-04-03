@@ -1,26 +1,25 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Hologram.Rendering
+namespace Hologram.Rendering;
+
+public class Material
 {
-    public class Material
+    public Color4 Color = Color4.White;
+
+    public Texture Diffuse = Texture.WhiteTexture;
+
+    public Texture Normal = Texture.WhiteTexture;
+
+    public string MaterialName = "Unnamed";
+
+    public Material Duplicate()
     {
-        public Color4 Color = Color4.White;
-
-        public Texture Diffuse = Texture.WhiteTexture;
-
-        public Texture Normal = Texture.WhiteTexture;
-
-        public string MaterialName = "Unnamed";
-
-        public Material Duplicate()
+        return new Material()
         {
-            return new Material()
-            {
-                Color = Color,
-                Diffuse = Diffuse,
-                Normal = Normal,
-                MaterialName = MaterialName
-            };
-        }
+            Color = Color,
+            Diffuse = Diffuse,
+            Normal = Normal,
+            MaterialName = MaterialName
+        };
     }
 }

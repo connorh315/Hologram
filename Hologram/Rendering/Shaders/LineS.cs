@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hologram.Rendering.Shaders
+namespace Hologram.Rendering.Shaders;
+
+internal class LineS
 {
-    internal class LineS
-    {
-        public static string VertexCode = @"
+    public static string VertexCode = @"
             #version 330 core
             layout(location = 0) in vec3 Position;
 
@@ -22,7 +22,7 @@ namespace Hologram.Rendering.Shaders
             }
         ";
 
-        public static string FragmentCode = @"
+    public static string FragmentCode = @"
             #version 330 core
 
             out vec4 FragColor;
@@ -32,5 +32,4 @@ namespace Hologram.Rendering.Shaders
                 FragColor = vec4(0, 0, 1, 1);
             }
         ";
-    }
 }

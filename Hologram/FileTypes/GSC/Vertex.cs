@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Hologram.FileTypes.GSC
-{
+namespace Hologram.FileTypes.GSC;
+
 	public class Vertex
 	{
 		public Vector3 Position;
@@ -16,4 +16,3 @@ namespace Hologram.FileTypes.GSC
 
 		public Vector2 UVSet1;
 	}
-}

@@ -1,15 +1,14 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Hologram.FileTypes.DNO
+namespace Hologram.FileTypes.DNO;
+
+public class DBucket
 {
-    public class DBucket
-    {
-        public Vector3 Min;
+    public Vector3 Min;
 
-        public int MinInt;
+    public int MinInt;
 
-        public Vector3 Max;
+    public Vector3 Max;
 
-        public int MaxInt;
-    }
+    public int MaxInt;
 }
