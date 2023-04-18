@@ -8,5 +8,12 @@
         x:Class="Hologram.MainWindow"
         Title="Hologram">
 
-  <controls:CubeRenderingTkOpenGlControl Focusable="True"></controls:CubeRenderingTkOpenGlControl>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="0.4*"/>
+      <ColumnDefinition Width="0.6*"/>
+    </Grid.ColumnDefinitions>
+    <Rectangle Fill="Red"></Rectangle>
+    <controls:CubeRenderingTkOpenGlControl Grid.Column="1"></controls:CubeRenderingTkOpenGlControl>
+  </Grid>
 </Window>

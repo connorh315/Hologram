@@ -6,6 +6,10 @@ using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
 using OpenTK.Graphics.OpenGL4;
 using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform;
+using Avalonia.Layout;
 
 namespace OpenTKAvalonia;
 
@@ -75,8 +79,9 @@ public abstract class BaseTkOpenGlControl : OpenGlControlBase
         //As avalonia is using this opengl instance internally to render the entire window, stuff gets messy, so we workaround that here
         //to provide a good experience to the user.
         var oldViewport = new int[4];
+        double dpiScale = LayoutHelper.GetLayoutScale(this);
         GL.GetInteger(GetPName.Viewport, oldViewport);
-        GL.Viewport(0, 0, (int) Bounds.Width, (int) Bounds.Height);
+        GL.Viewport(0, 0, (int)( Bounds.Width * dpiScale), (int)( Bounds.Height * dpiScale));
 
         //Tell our subclass to render
         OpenTkRender();
