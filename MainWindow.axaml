@@ -8,12 +8,29 @@
         x:Class="Hologram.MainWindow"
         Title="Hologram">
 
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="0.4*"/>
-      <ColumnDefinition Width="0.6*"/>
-    </Grid.ColumnDefinitions>
-    <Rectangle Fill="Red"></Rectangle>
-    <controls:CubeRenderingTkOpenGlControl Grid.Column="1"></controls:CubeRenderingTkOpenGlControl>
-  </Grid>
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="New"/>
+        <MenuItem Header="Open"/>
+        <MenuItem Header="Save"/>
+        <Separator/>
+        <MenuItem Header="Exit"/>
+      </MenuItem>
+      <MenuItem Header="_Edit">
+        
+      </MenuItem>
+    </Menu>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="0.4*"/>
+        <ColumnDefinition Width="0.6*"/>
+      </Grid.ColumnDefinitions>
+      <StackPanel>
+        <Button Content="{Binding ButtonText}" Command="{Binding TestButtonClick}"/>
+        <Button>Test</Button>
+      </StackPanel>
+      <controls:CubeRenderingTkOpenGlControl Grid.Column="1"></controls:CubeRenderingTkOpenGlControl>
+    </Grid>
+  </DockPanel>
 </Window>

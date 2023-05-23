@@ -105,7 +105,7 @@ namespace Hologram
         protected override void OpenTkRender()
         {
             GL.Enable(EnableCap.DepthTest);
-            GL.ClearColor(Color4.Red);
+            GL.ClearColor(Color4.Gray);
 
             //Clear the previous frame
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -142,6 +142,8 @@ namespace Hologram
         //Demonstrating use of the Avalonia keyboard state provided by OpenTKAvalonia to control the camera 
         private void DoUpdate()
         {
+            if (!_isDragging) return;
+            
             var effectiveSpeed = Speed;
 
             if (KeyboardState.IsKeyDown(Key.LeftShift))
