@@ -11,8 +11,6 @@ using System.Diagnostics;
 using ModLib;
 using ImGuiNET;
 using Hologram.Objects.Entities;
-using Hologram.Engine.UI;
-using Hologram.Engine.UI.Panels;
 
 namespace Hologram.Rendering;
 
@@ -41,10 +39,6 @@ public class MainWindow : GameWindow
             Size = new Vector2i(1280, 720)
         })
     {
-        Overlay.Initialize(this, Size.X, Size.Y);
-        
-        Toolbar = new MainToolbar(this, Size.X, 100);
-        UI = new Inspector(this, Size.X, Size.Y);
         Scene = new SceneManager(this, Size.X, Size.Y);
 
         this.RenderFrequency = 120;
@@ -58,8 +52,6 @@ public class MainWindow : GameWindow
         SetupSizeCallback();
     }
 
-    public UIManager Toolbar;
-    public UIManager UI;
     public SceneManager Scene;
 
     public List<Entity> Entities = new List<Entity>();
@@ -144,27 +136,27 @@ public class MainWindow : GameWindow
 
     private void ScaleComponents(Vector2i size)
     {
-        const int toolbarHeight = 30; // todo: scale with dpi
-        int uiWidth = (int)(0.3 * size.X);
-        if (Toolbar != null)
-        {
-            Toolbar.SetPos(0, size.Y - toolbarHeight);
-            Toolbar.SetSize(size.X, toolbarHeight);
-        }
+        //const int toolbarHeight = 30; // todo: scale with dpi
+        //int uiWidth = (int)(0.3 * size.X);
+        //if (Toolbar != null)
+        //{
+        //    Toolbar.SetPos(0, size.Y - toolbarHeight);
+        //    Toolbar.SetSize(size.X, toolbarHeight);
+        //}
 
-        if (UI != null)
-        {
-            UI.SetPos(0, 0);
-            UI.SetSize(uiWidth, size.Y - toolbarHeight);
-        }
+        //if (UI != null)
+        //{
+        //    UI.SetPos(0, 0);
+        //    UI.SetSize(uiWidth, size.Y - toolbarHeight);
+        //}
 
-        if (Scene != null)
-        {
-            Scene.SetPos(uiWidth, 0);
-            Scene.SetSize(size.X - uiWidth, size.Y - toolbarHeight);
-        }
+        //if (Scene != null)
+        //{
+        //    Scene.SetPos(uiWidth, 0);
+        //    Scene.SetSize(size.X - uiWidth, size.Y - toolbarHeight);
+        //}
 
-        Overlay.SetSize(size.X, size.Y);
+        //Overlay.SetSize(size.X, size.Y);
     }
 
     private unsafe void SizeCallback(Window* window, int width, int height)
@@ -209,32 +201,32 @@ public class MainWindow : GameWindow
         Manager previousHovered = Hovered;
 
         
-        if (Overlay.CheckControl(CorrectedFlippedMouse))
-        {
-            Hovered = Overlay.GetManager();
-        }
+        //if (Overlay.CheckControl(CorrectedFlippedMouse))
+        //{
+        //    Hovered = Overlay.GetManager();
+        //}
         if (IsManagerHovered(Scene))
         {
             Hovered = Scene;
         }
-        else if (IsManagerHovered(UI))
-        {
-            Hovered = UI;
-        }
-        else if (IsManagerHovered(Toolbar))
-        {
-            Hovered = Toolbar;
-        }
+        //else if (IsManagerHovered(UI))
+        //{
+        //    Hovered = UI;
+        //}
+        //else if (IsManagerHovered(Toolbar))
+        //{
+        //    Hovered = Toolbar;
+        //}
 
-        if (Hovered != previousHovered)
-        {
-            previousHovered?.OnMouseLeave(MouseState.Position);
-            Hovered?.OnMouseEnter(MouseState.Position);
-        }
-        else if (Hovered != Overlay.GetManager())
-        {
-            Hovered?.OnMouseOver(CorrectedFlippedMouse);
-        }
+        //if (Hovered != previousHovered)
+        //{
+        //    previousHovered?.OnMouseLeave(MouseState.Position);
+        //    Hovered?.OnMouseEnter(MouseState.Position);
+        //}
+        //else if (Hovered != Overlay.GetManager())
+        //{
+        //    Hovered?.OnMouseOver(CorrectedFlippedMouse);
+        //}
 
         if (IsMouseButtonPressed(MouseButton.Left))
         {
@@ -266,14 +258,14 @@ public class MainWindow : GameWindow
         GL.Viewport(Scene.X, Scene.Y, Scene.Width, Scene.Height);
         Scene.Draw();
 
-        GL.Viewport(UI.X, UI.Y, UI.Width, UI.Height);
-        UI.Draw();
+        //GL.Viewport(UI.X, UI.Y, UI.Width, UI.Height);
+        //UI.Draw();
 
-        GL.Viewport(Toolbar.X, Toolbar.Y, Toolbar.Width, Toolbar.Height);
-        Toolbar.Draw();
+        //GL.Viewport(Toolbar.X, Toolbar.Y, Toolbar.Width, Toolbar.Height);
+        //Toolbar.Draw();
 
-        GL.Viewport(0, 0, Size.X, Size.Y);
-        Overlay.Draw();
+        //GL.Viewport(0, 0, Size.X, Size.Y);
+        //Overlay.Draw();
         //GL.Viewport(Overlay.X, Overlay.Y, Overlay.Width, Overlay.Height);
         //Overlay.Draw();
 
